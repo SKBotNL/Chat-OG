@@ -17,12 +17,13 @@ class BingTranslator(private val apiKey : String) {
     data class ErrorDetails(val code: Int, val message: String)
 
     private val endpoint = "https://api.cognitive.microsofttranslator.com"
+    private val subscriptionRegion = Config.getSubRegion()
 
     fun translate(text: String, language: String): Translated {
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder()
             .uri(URI.create("${endpoint}/translate?api-version=3.0&to=${language}"))
-            .headers("Content-Type", "application/json", "Ocp-Apim-Subscription-Key", apiKey, "Ocp-Apim-Subscription-Region", "germanywestcentral")
+            .headers("Content-Type", "application/json", "Ocp-Apim-Subscription-Key", apiKey, "Ocp-Apim-Subscription-Region", subscriptionRegion)
             .POST(HttpRequest.BodyPublishers.ofString("""[{"Text":"${text.replace("\"", """\"""")}"}]"""))
             .build()
 
