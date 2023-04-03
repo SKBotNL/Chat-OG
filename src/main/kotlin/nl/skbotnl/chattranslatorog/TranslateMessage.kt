@@ -24,9 +24,20 @@ class TranslateMessage : CommandExecutor {
         if (args == null) {
             return false
         }
+        if (args.isEmpty()) {
+            return false
+        }
         val player: Player = sender
 
-        val uuid = UUID.fromString(args[0])
+        val uuid: UUID?
+
+        try {
+            uuid = UUID.fromString(args[0])
+        }
+        catch (e: IllegalArgumentException) {
+            player.sendMessage("§cThat is not a valid UUID")
+            return true
+        }
 
         val sentMessage = messages[uuid] ?: return true
         val message = sentMessage.message
