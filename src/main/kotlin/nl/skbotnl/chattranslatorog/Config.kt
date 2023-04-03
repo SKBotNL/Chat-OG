@@ -11,7 +11,7 @@ object Config {
     fun load() {
         file = File(ChatTranslatorOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
-            file.createNewFile()
+            ChatTranslatorOG.plugin.saveDefaultConfig()
         }
 
         config = YamlConfiguration.loadConfiguration(file)

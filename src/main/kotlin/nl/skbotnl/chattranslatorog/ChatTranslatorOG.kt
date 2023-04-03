@@ -10,8 +10,6 @@ class ChatTranslatorOG : JavaPlugin() {
     override fun onEnable() {
         plugin = this
 
-        this.dataFolder.mkdirs()
-
         Config.load()
         LanguageDatabase.load()
 
