@@ -18,7 +18,7 @@ class Events : Listener {
 
         val oldTextComponent = event.message() as TextComponent
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} <${event.player.name}> ${oldTextComponent.content()}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name} ${ChatOG.chat.getPlayerSuffix(event.player)}> ${oldTextComponent.content()}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
