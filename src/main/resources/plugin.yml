@@ -1,0 +1,12 @@
+name: ChatTranslator-OG
+version: '${version}'
+main: nl.skbotnl.chattranslatorog.ChatTranslatorOG
+author: SKBotNL
+api-version: 1.18
+commands:
+  translatemessage:
+    description: translatemessage
+    usage: /translatemessage <uuid>
+  translatesettings:
+    description: translatesettings
+    usage: /translatesettings <language>
