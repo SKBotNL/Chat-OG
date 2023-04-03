@@ -18,12 +18,17 @@ class Events : Listener {
 
         val oldTextComponent = event.message() as TextComponent
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}${ChatOG.chat.getPlayerSuffix(event.player)}${oldTextComponent.content()}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}${ChatOG.chat.getPlayerSuffix(event.player)}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         chatString = convertColor(chatString)
+        chatString = "$chatString${oldTextComponent.content()}"
+
+        if (event.player.hasPermission("chat-og.color")) {
+            chatString = convertColor(chatString)
+        }
 
         var textComponent = Component.text(chatString)
         textComponent = textComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text(convertColor("&aClick to translate this message"))))

@@ -60,12 +60,15 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)}${sentMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentMessage.player)}${translated.translatedText}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)}${sentMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentMessage.player)}"
         if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(sentMessage.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         chatString = "&d[${translated.translatedFrom} -> ${language}] $chatString"
         chatString = convertColor(chatString)
+
+        // Don't convert color in translated messages
+        chatString = "$chatString${translated.translatedText}"
 
         player.sendMessage(chatString)
         return true
