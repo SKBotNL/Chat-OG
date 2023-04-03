@@ -28,7 +28,7 @@ class TranslateMessage : CommandExecutor {
         }
         val player: Player = sender
 
-        if (Helper.getBoatTimeout(player.uniqueId) != 0L) {
+        if (Helper.getTranslateTimeout(player.uniqueId) != 0L) {
             player.sendMessage(convertColor("&cYou're doing that too fast"))
             return true
         }

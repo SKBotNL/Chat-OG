@@ -6,7 +6,7 @@ import java.util.*
 object Helper {
     private var translateTimeout: MutableMap<UUID, Long> = HashMap()
 
-    fun getBoatTimeout(uuid: UUID): Long {
+    fun getTranslateTimeout(uuid: UUID): Long {
         val cooldown: Long
         if (!translateTimeout.containsKey(uuid)) {
             translateTimeout[uuid] = System.currentTimeMillis()
