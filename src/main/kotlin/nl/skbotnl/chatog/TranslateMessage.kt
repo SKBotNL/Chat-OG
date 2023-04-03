@@ -60,7 +60,7 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)} &f<${sentMessage.player.name}> ${translated.translatedText}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)}${sentMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentMessage.player)}${translated.translatedText}"
         if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(sentMessage.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
