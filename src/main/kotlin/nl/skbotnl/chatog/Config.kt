@@ -1,18 +1,17 @@
-package nl.skbotnl.chattranslatorog
+package nl.skbotnl.chatog
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
-import java.util.*
 
-object LanguageDatabase {
+object Config {
     private lateinit var config: FileConfiguration
     private lateinit var file: File
 
     fun load() {
-        file = File(ChatTranslatorOG.plugin.dataFolder, "languagesdatabase.yml")
+        file = File(ChatOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
-            file.createNewFile()
+            ChatOG.plugin.saveDefaultConfig()
         }
 
         config = YamlConfiguration.loadConfiguration(file)
@@ -24,12 +23,11 @@ object LanguageDatabase {
         config.save(file)
     }
 
-    fun setLanguage(uuid: UUID, language: String) {
-        config.set(uuid.toString(), language)
-        this.save()
+    fun getApiKey(): String {
+        return config.get("apikey").toString()
     }
 
-    fun getLanguage(uuid: UUID): String {
-        return config.get(uuid.toString()).toString()
+    fun getSubRegion(): String {
+        return config.get("subscriptionregion").toString()
     }
 }

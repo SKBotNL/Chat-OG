@@ -1,8 +1,9 @@
-name: ChatTranslator-OG
+name: Chat-OG
 version: '${version}'
-main: nl.skbotnl.chattranslatorog.ChatTranslatorOG
+main: nl.skbotnl.chatog.ChatOG
 author: SKBotNL
 api-version: 1.18
+depend: [PlaceholderAPI, Vault]
 commands:
   translatemessage:
     description: translatemessage

@@ -1,4 +1,4 @@
-package nl.skbotnl.chattranslatorog
+package nl.skbotnl.chatog
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

@@ -1,12 +1,13 @@
-package nl.skbotnl.chattranslatorog
+package nl.skbotnl.chatog
 
+import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.TextComponent
+import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
-import kotlin.collections.HashMap
 
 class TranslateMessage : CommandExecutor {
     data class SentMessage(val message: TextComponent, val player: Player)
@@ -27,13 +28,18 @@ class TranslateMessage : CommandExecutor {
         }
         val player: Player = sender
 
+        if (Helper.getBoatTimeout(player.uniqueId) != 0L) {
+            player.sendMessage(convertColor("&cYou're doing that too fast"))
+            return true
+        }
+
         val uuid: UUID?
 
         try {
             uuid = UUID.fromString(args[0])
         }
         catch (e: IllegalArgumentException) {
-            player.sendMessage("§cThat is not a valid UUID")
+            player.sendMessage(convertColor("&cThat is not a valid UUID"))
             return true
         }
 
@@ -43,7 +49,7 @@ class TranslateMessage : CommandExecutor {
         val language = LanguageDatabase.getLanguage(player.uniqueId)
 
         if (language == "null") {
-            player.sendMessage("§cPlease select the language to translate to first using /translatesettings")
+            player.sendMessage(convertColor("&cPlease select the language to translate to first using /translatesettings"))
             return true
         }
 
@@ -54,7 +60,14 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        player.sendMessage("§d[${translated.translatedFrom} -> ${language}] §f<${sentMessage.player.name}> ${translated.translatedText}")
+        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)} &f<${sentMessage.player.name}> ${translated.translatedText}"
+        if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
+            chatString = PlaceholderAPI.setPlaceholders(sentMessage.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
+        }
+        chatString = "&d[${translated.translatedFrom} -> ${language}] $chatString"
+        chatString = convertColor(chatString)
+
+        player.sendMessage(chatString)
         return true
     }
 }

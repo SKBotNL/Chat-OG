@@ -1,10 +1,13 @@
-package nl.skbotnl.chattranslatorog
+package nl.skbotnl.chatog
 
+import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
 
-class ChatTranslatorOG : JavaPlugin() {
+
+class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
+        lateinit var chat: Chat
     }
 
     override fun onEnable() {
@@ -12,6 +15,9 @@ class ChatTranslatorOG : JavaPlugin() {
 
         Config.load()
         LanguageDatabase.load()
+
+        val rsp = server.servicesManager.getRegistration(Chat::class.java)
+        chat = rsp!!.provider
 
         this.server.pluginManager.registerEvents(Events(), this)
         this.getCommand("translatemessage")?.setExecutor(TranslateMessage())

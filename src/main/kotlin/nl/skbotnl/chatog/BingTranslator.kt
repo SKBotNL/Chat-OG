@@ -1,6 +1,7 @@
-package nl.skbotnl.chattranslatorog
+package nl.skbotnl.chatog
 
 import com.google.gson.Gson
+import nl.skbotnl.chatog.Helper.convertColor
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -35,7 +36,7 @@ object BingTranslator {
 
         if (response.statusCode() == 401) {
             val errorResponse = gson.fromJson(body, Error::class.java)
-            return Translated(null, null, "§cSomething went wrong. §fError Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}")
+            return Translated(null, null, convertColor("&cSomething went wrong. &fError Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}"))
         }
 
         val translationResponse = gson.fromJson(body, Array<TranslationResponse>::class.java)
