@@ -17,7 +17,7 @@ class Events : Listener {
 
         val oldTextComponent = event.message() as TextComponent
         var textComponent = Component.text("<${event.player.name}> ${oldTextComponent.content()}")
-        textComponent = textComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to translate the message")))
+        textComponent = textComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§aClick to translate the message")))
 
         val randomUUID = UUID.randomUUID()
         textComponent = textComponent.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID"))
