@@ -15,8 +15,6 @@ class TranslateMessage : CommandExecutor {
         val messages: MutableMap<UUID, SentMessage> = HashMap()
     }
 
-    private val bingTranslator = BingTranslator(Config.getApiKey())
-
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             return false
@@ -49,7 +47,7 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val translated = bingTranslator.translate(message.content(), language)
+        val translated = BingTranslator.translate(message.content(), language)
 
         if (translated.error != null) {
             sender.sendMessage(translated.error)

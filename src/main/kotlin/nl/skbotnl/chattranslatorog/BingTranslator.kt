@@ -6,18 +6,19 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-class BingTranslator(private val apiKey : String) {
+object BingTranslator {
     data class Translated(val translatedText: String?, val translatedFrom: String?, val error: String?)
 
-    data class DetectedLanguage(val language: String, val score: Int)
+    data class DetectedLanguage(val language: String, val score: Double)
     data class Translation(val text: String, val to: String)
     data class TranslationResponse(val detectedLanguage: DetectedLanguage, val translations: List<Translation>)
 
     data class Error(val error: ErrorDetails)
     data class ErrorDetails(val code: Int, val message: String)
 
-    private val endpoint = "https://api.cognitive.microsofttranslator.com"
-    private val subscriptionRegion = Config.getSubRegion()
+    private const val endpoint = "https://api.cognitive.microsofttranslator.com"
+    var apiKey = Config.getApiKey()
+    var subscriptionRegion = Config.getSubRegion()
 
     fun translate(text: String, language: String): Translated {
         val client = HttpClient.newBuilder().build()

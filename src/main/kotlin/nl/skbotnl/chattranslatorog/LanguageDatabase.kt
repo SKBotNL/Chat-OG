@@ -10,12 +10,12 @@ object LanguageDatabase {
     private lateinit var file: File
 
     fun load() {
-        this.file = File(ChatTranslatorOG.plugin.dataFolder, "languagesdatabase.yml")
-        if (!this.file.exists()) {
-            this.file.createNewFile()
+        file = File(ChatTranslatorOG.plugin.dataFolder, "languagesdatabase.yml")
+        if (!file.exists()) {
+            file.createNewFile()
         }
 
-        config = YamlConfiguration.loadConfiguration(this.file)
+        config = YamlConfiguration.loadConfiguration(file)
 
         this.save()
     }

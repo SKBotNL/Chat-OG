@@ -10,3 +10,6 @@ commands:
   translatesettings:
     description: translatesettings
     usage: /translatesettings <language>
+  translatereload:
+    description: translatereload
+    usage: /translatereload
