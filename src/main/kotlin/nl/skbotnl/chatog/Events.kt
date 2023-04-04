@@ -159,6 +159,7 @@ class Events : Listener {
 
         var oldDeathMessage = event.deathMessage() as TranslatableComponent
         oldDeathMessage = oldDeathMessage.color(TextColor.color(16755200))
+        oldDeathMessage = oldDeathMessage.append(Component.text("."))
 
         val argList = oldDeathMessage.args().toMutableList()
         argList[0] = Component.text(nameString)
