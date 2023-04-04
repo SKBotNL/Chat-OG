@@ -43,7 +43,11 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val sentMessage = messages[uuid] ?: return true
+        val sentMessage = messages[uuid]
+        if (sentMessage == null) {
+            player.sendMessage(convertColor("&cCould not translate that message"))
+            return true
+        }
         val message = sentMessage.message
 
         val language = LanguageDatabase.getLanguage(player.uniqueId)
