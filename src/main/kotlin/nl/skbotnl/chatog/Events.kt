@@ -69,21 +69,18 @@ class Events : Listener {
         }
         event.isCancelled = true
 
-        val messageSplit = event.message.split(" ", ignoreCase = true, limit = 3)
-        val checkCount: Int = if (checkSplit == "/r" || checkSplit == "/reply") {
-            2
+        val messageSplit: List<String> = if (checkSplit == "/r" || checkSplit == "/reply") {
+            event.message.split(" ", ignoreCase = true, limit = 2)
         } else {
-            3
+            event.message.split(" ", ignoreCase = true, limit = 3)
         }
 
-        if (messageSplit.count() < checkCount) {
-            if (checkSplit == "/r" || checkSplit == "/reply") {
-                event.player.sendMessage(convertColor("&c${messageSplit[0]} <message>"))
-            }
-            else {
-                event.player.sendMessage(convertColor("&c${messageSplit[0]} <to> <message>"))
-            }
+        if (messageSplit.count() < 3 && !(checkSplit == "/r" || checkSplit == "/reply")) {
+            event.player.sendMessage(convertColor("&c${messageSplit[0]} <to> <message>"))
             return
+        }
+        if (messageSplit.count() < 2) {
+            event.player.sendMessage(convertColor("&c${messageSplit[0]} <message>"))
         }
 
         val player: Player?
