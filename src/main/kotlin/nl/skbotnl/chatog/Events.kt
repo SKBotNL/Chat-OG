@@ -23,12 +23,10 @@ class Events : Listener {
 
         val oldTextComponent = event.message() as TextComponent
 
-        var chatString =
-            "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}${ChatOG.chat.getPlayerSuffix(event.player)}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}${ChatOG.chat.getPlayerSuffix(event.player)}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            chatString =
-                PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         chatString = convertColor(chatString)
         chatString = "$chatString${oldTextComponent.content()}"
@@ -136,7 +134,7 @@ class Events : Listener {
         textComponent.content("$toSenderPrefix $message")
         event.player.sendMessage(textComponent)
 
-        var toPrefix = "&6[&4${player.name} &6-> &cme&6]&f"
+        var toPrefix = "&6[&4${event.player.name} &6-> &cme&6]&f"
         toPrefix = convertColor(toPrefix)
         textComponent.content("$toPrefix $message")
         player.sendMessage(textComponent)
