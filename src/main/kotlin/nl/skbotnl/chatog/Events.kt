@@ -81,6 +81,7 @@ class Events : Listener {
         }
         if (messageSplit.count() < 2) {
             event.player.sendMessage(convertColor("&c${messageSplit[0]} <message>"))
+            return
         }
 
         val player: Player?
