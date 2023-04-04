@@ -4,13 +4,16 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.TextColor
 import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import java.util.*
 
@@ -143,5 +146,24 @@ class Events : Listener {
         lastMessaged[player.uniqueId] = event.player.uniqueId
 
         return
+    }
+
+    @EventHandler
+    fun onDeath(event: PlayerDeathEvent) {
+        var nameString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            nameString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $nameString")
+        }
+        nameString = convertColor(nameString)
+
+        var oldDeathMessage = event.deathMessage() as TranslatableComponent
+        oldDeathMessage = oldDeathMessage.color(TextColor.color(16755200))
+
+        val argList = oldDeathMessage.args().toMutableList()
+        argList[0] = Component.text(nameString)
+        val deathMessage = oldDeathMessage.args(argList)
+
+        event.deathMessage(deathMessage)
     }
 }
