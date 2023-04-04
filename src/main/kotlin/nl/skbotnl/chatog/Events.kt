@@ -140,6 +140,7 @@ class Events : Listener {
         player.sendMessage(textComponent)
 
         lastMessaged[event.player.uniqueId] = player.uniqueId
+        lastMessaged[player.uniqueId] = event.player.uniqueId
 
         return
     }
