@@ -69,9 +69,9 @@ object DiscordBridge {
             val userComponent: TextComponent = if (highestRole == null) {
                 Component.text(author.username).color(NamedTextColor.GRAY)
             } else {
-                Component.text("[#${highestRole!!.name}] ${author.username}")
+                Component.text("[#${highestRole!!.name}] ${author.username}").color(textColor)
             }
-            val contentComponent = Component.text(" > ${message.content}").color(textColor)
+            val contentComponent = Component.text(" > ${message.content}").color(NamedTextColor.GRAY)
 
             val message = Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent, contentComponent)
             Bukkit.broadcast(message)
