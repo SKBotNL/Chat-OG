@@ -1,2 +1,9 @@
-apikey: <put your apikey here>
-subscriptionregion: <put the subscription region here>
+### Translator ###
+apiKey: <put your apikey here>
+subscriptionRegion: <put the subscription region here>
+
+### Discord ###
+discordEnabled: false
+botToken: <put the bot token here>
+channelId: <put the id of the channel here>
+webhook: <put the webhook here>

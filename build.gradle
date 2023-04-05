@@ -35,6 +35,10 @@ repositories {
     maven {
         url "https://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
+
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
@@ -42,6 +46,7 @@ dependencies {
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly 'me.clip:placeholderapi:2.11.3'
 
+    implementation "dev.kord:kord-core:0.8.2"
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 

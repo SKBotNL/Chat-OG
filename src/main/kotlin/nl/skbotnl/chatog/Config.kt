@@ -24,10 +24,26 @@ object Config {
     }
 
     fun getApiKey(): String {
-        return config.get("apikey").toString()
+        return config.get("apiKey").toString()
     }
 
     fun getSubRegion(): String {
-        return config.get("subscriptionregion").toString()
+        return config.get("subscriptionRegion").toString()
+    }
+
+    fun getDiscordEnabled(): Boolean {
+        return config.get("discordEnabled").toString().toBoolean()
+    }
+
+    fun getBotToken(): String {
+        return config.get("botToken").toString()
+    }
+
+    fun getChannelId(): String {
+        return config.get("channelId").toString()
+    }
+
+    fun getWebhook(): String {
+        return config.get("webhook").toString()
     }
 }

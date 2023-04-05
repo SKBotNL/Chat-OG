@@ -1,6 +1,9 @@
 package nl.skbotnl.chatog
 
 import io.papermc.paper.event.player.AsyncChatEvent
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -20,19 +23,25 @@ import java.util.*
 class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
 
+    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun chatEvent(event: AsyncChatEvent) {
         event.isCancelled = true
 
         val oldTextComponent = event.message() as TextComponent
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}${ChatOG.chat.getPlayerSuffix(event.player)}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
-        chatString = convertColor(chatString)
-        chatString = "$chatString${oldTextComponent.content()}"
+        val discordString = convertColor(chatString)
+
+        GlobalScope.launch {
+            DiscordBridge.sendMessage(oldTextComponent.content(), discordString, event.player.uniqueId)
+        }
+
+        chatString = "$discordString${ChatOG.chat.getPlayerSuffix(event.player)}${oldTextComponent.content()}"
 
         if (event.player.hasPermission("chat-og.color")) {
             chatString = convertColor(chatString)

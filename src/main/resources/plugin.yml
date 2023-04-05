@@ -11,6 +11,6 @@ commands:
   translatesettings:
     description: translatesettings
     usage: /translatesettings <language>
-  translatereload:
-    description: translatereload
-    usage: /translatereload
+  chatconfigreload:
+    description: chatconfigreload
+    usage: /chatconfigreload
