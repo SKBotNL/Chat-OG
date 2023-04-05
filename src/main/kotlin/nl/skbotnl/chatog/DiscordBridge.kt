@@ -21,6 +21,8 @@ import java.util.*
 
 object DiscordBridge {
     private lateinit var webhook: Webhook
+    var channelId = Config.getChannelId()
+
     suspend fun main() {
         val kord = Kord(Config.getBotToken())
 
@@ -35,7 +37,7 @@ object DiscordBridge {
         val (webhookId, webhookToken) = webhookMatches.destructured
         webhook = kord.getWebhookWithToken(Snowflake(webhookId), webhookToken)
 
-        val channelId = Config.getChannelId()
+
         kord.on<MessageCreateEvent> {
             if (message.channelId != Snowflake(channelId)) {
                 return@on

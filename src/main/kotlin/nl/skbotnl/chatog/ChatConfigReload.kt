@@ -9,6 +9,8 @@ class ChatConfigReload : CommandExecutor {
         Config.load()
         BingTranslator.apiKey = Config.getApiKey()
         BingTranslator.subscriptionRegion = Config.getSubRegion()
+
+        DiscordBridge.channelId = Config.getChannelId()
         return true
     }
 }
