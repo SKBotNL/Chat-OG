@@ -1,7 +1,7 @@
 package nl.skbotnl.chatog
 
-import me.clip.placeholderapi.PlaceholderAPI
-import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import java.util.*
 
 class TranslateMessage : CommandExecutor {
-    data class SentMessage(val message: TextComponent, val player: Player)
+    data class SentMessage(val message: String, val username: String, val prefix: Component, val suffix: Component)
 
     companion object {
         val messages: MutableMap<UUID, SentMessage> = HashMap()
@@ -48,7 +48,6 @@ class TranslateMessage : CommandExecutor {
             player.sendMessage(convertColor("&cCould not translate that message"))
             return true
         }
-        val message = sentMessage.message
 
         val language = LanguageDatabase.getLanguage(player.uniqueId)
 
@@ -57,22 +56,19 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val translated = BingTranslator.translate(message.content(), language)
+        val translated = BingTranslator.translate(sentMessage.message, language)
 
         if (translated.error != null) {
             sender.sendMessage(translated.error)
             return true
         }
 
-        var chatString = "${ChatOG.chat.getPlayerPrefix(sentMessage.player)}${sentMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentMessage.player)}"
-        if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(sentMessage.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
+        if (translated.translatedText == null) {
+            player.sendMessage(convertColor("&cCould not translate that message"))
+            return true
         }
-        chatString = "&d[${translated.translatedFrom} -> ${language}] $chatString"
-        chatString = convertColor(chatString)
 
-        // Don't convert color in translated messages
-        chatString = "$chatString${translated.translatedText}"
+        val chatString = Component.join(JoinConfiguration.noSeparators(), Component.text(convertColor("&d[${translated.translatedFrom} -> ${language}] ")), sentMessage.prefix, Component.text(sentMessage.username), sentMessage.suffix, Component.text(translated.translatedText))
 
         player.sendMessage(chatString)
         return true

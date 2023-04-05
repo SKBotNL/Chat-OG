@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.toList
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import java.util.*
@@ -54,7 +57,7 @@ object DiscordBridge {
                         highestRole = it
                         return@forEach
                     }
-                    if (it.getPosition() > highestRole!!.getPosition()) {
+                        if (it.getPosition() > highestRole!!.getPosition()) {
                         highestRole = it
                     }
                 }
@@ -75,8 +78,30 @@ object DiscordBridge {
             }
             val contentComponent = Component.text(" > ${message.content}").color(NamedTextColor.GRAY)
 
-            val message = Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent, contentComponent)
-            Bukkit.broadcast(message)
+            var messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent, contentComponent)
+            messageComponent = messageComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    Component.text(convertColor("&aClick to translate this message"))
+                )
+            )
+
+            val randomUUID = UUID.randomUUID()
+            messageComponent = messageComponent.clickEvent(
+                ClickEvent.clickEvent(
+                    ClickEvent.Action.RUN_COMMAND,
+                    "/translatemessage $randomUUID"
+                )
+            )
+
+            Bukkit.broadcast(messageComponent)
+
+            val prefixComponent: TextComponent = if (highestRole == null) {
+                Component.text(" ")
+            } else {
+                Component.text("[#${highestRole!!.name}] ").color(textColor)
+            }
+            TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(convertColor("&7${message.content}"), author.username, Component.join(JoinConfiguration.noSeparators(), discordComponent, prefixComponent), Component.text(" > ").color(NamedTextColor.GRAY))
         }
 
         kord.login {

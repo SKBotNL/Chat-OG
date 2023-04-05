@@ -66,7 +66,13 @@ class Events : Listener {
         event.viewers().forEach {
             it.sendMessage(textComponent)
         }
-        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(oldTextComponent, event.player)
+
+        var prefix = ChatOG.chat.getPlayerPrefix(event.player)
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            prefix = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $prefix")
+        }
+        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(oldTextComponent.content(), event.player.name, Component.text(convertColor(prefix)), Component.text(convertColor(ChatOG.chat.getPlayerSuffix(event.player))))
     }
 
     @EventHandler
@@ -133,7 +139,7 @@ class Events : Listener {
             )
         )
 
-        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(Component.text(message), event.player)
+        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(message, event.player.name, Component.text(convertColor("&6[PM]&4 ")), Component.text(convertColor(" &f> ")))
 
         if (event.player.hasPermission("chat-og.color")) {
             message = convertColor(message)
