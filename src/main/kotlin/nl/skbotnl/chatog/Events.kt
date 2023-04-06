@@ -10,6 +10,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.Bukkit
@@ -59,7 +60,7 @@ class Events : Listener {
         textComponent = textComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID"
+                "/translatemessage $randomUUID false"
             )
         )
 
@@ -67,12 +68,7 @@ class Events : Listener {
             it.sendMessage(textComponent)
         }
 
-        var prefix = ChatOG.chat.getPlayerPrefix(event.player)
-
-        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            prefix = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $prefix")
-        }
-        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(oldTextComponent.content(), event.player.name, Component.text(convertColor(prefix)), Component.text(convertColor(ChatOG.chat.getPlayerSuffix(event.player))))
+        TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(oldTextComponent.content(), event.player)
     }
 
     @EventHandler
@@ -112,8 +108,7 @@ class Events : Listener {
 
             val lastMessagedPlayer = lastMessaged[event.player.uniqueId]
             player = Bukkit.getPlayer(lastMessagedPlayer!!)
-        }
-        else {
+        } else {
             player = Bukkit.getPlayer(messageSplit[1])
             message = messageSplit[2]
         }
@@ -135,11 +130,11 @@ class Events : Listener {
         textComponent = textComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID"
+                "/translatemessage $randomUUID false"
             )
         )
 
-        TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(message, event.player.name, Component.text(convertColor("&6[PM]&4 ")), Component.text(convertColor(" &f> ")))
+        TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(message, event.player.name, Component.text(convertColor("&6[PM]&4 ")), Component.text(" > ").color(NamedTextColor.GRAY))
 
         if (event.player.hasPermission("chat-og.color")) {
             message = convertColor(message)

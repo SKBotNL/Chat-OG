@@ -46,4 +46,12 @@ object Config {
     fun getWebhook(): String {
         return config.get("webhook").toString()
     }
+
+    fun getRoles(): MutableSet<String>? {
+        return config.getConfigurationSection("roles")?.getKeys(false) ?: return null
+    }
+
+    fun getRole(role: String): String {
+        return config.get("roles.$role.message_color").toString()
+    }
 }

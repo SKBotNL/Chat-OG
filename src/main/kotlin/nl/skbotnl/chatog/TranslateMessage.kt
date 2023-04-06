@@ -1,7 +1,10 @@
 package nl.skbotnl.chatog
 
+import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -10,10 +13,15 @@ import org.bukkit.entity.Player
 import java.util.*
 
 class TranslateMessage : CommandExecutor {
-    data class SentMessage(val message: String, val username: String, val prefix: Component, val suffix: Component)
+    interface ISentMessage {
+        val message: String
+    }
+    data class SentChatMessage(override val message: String, val player: Player) : ISentMessage
+    data class SentCustomMessage(override val message: String, val username: String, val prefix: Component, val suffix: Component) : ISentMessage
 
     companion object {
-        val messages: MutableMap<UUID, SentMessage> = HashMap()
+        val chatMessages: MutableMap<UUID, SentChatMessage> = HashMap()
+        val customMessages: MutableMap<UUID, SentCustomMessage> = HashMap()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
@@ -24,6 +32,9 @@ class TranslateMessage : CommandExecutor {
             return false
         }
         if (args.isEmpty()) {
+            return false
+        }
+        if (args.count() < 2) {
             return false
         }
         val player: Player = sender
@@ -43,7 +54,14 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val sentMessage = messages[uuid]
+        val isCustomMessage = args[1].toBoolean()
+
+        val sentMessage: ISentMessage? = if (isCustomMessage) {
+            customMessages[uuid]
+        } else {
+            chatMessages[uuid]
+        }
+
         if (sentMessage == null) {
             player.sendMessage(convertColor("&cCould not translate that message"))
             return true
@@ -68,9 +86,32 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val chatString = Component.join(JoinConfiguration.noSeparators(), Component.text(convertColor("&d[${translated.translatedFrom} -> ${language}] ")), sentMessage.prefix, Component.text(sentMessage.username), sentMessage.suffix, Component.text(translated.translatedText))
+        val translateMessage: Component
+        if (isCustomMessage) {
+            val sentCustomMessage = sentMessage as SentCustomMessage
 
-        player.sendMessage(chatString)
+            val translatedComponent = Component.text("[${translated.translatedFrom} -> ${language}] ").color(NamedTextColor.LIGHT_PURPLE)
+
+            val suffixTextComponent = sentCustomMessage.suffix as TextComponent
+            val contentComponent = suffixTextComponent.content("${suffixTextComponent.content()}${translated.translatedText}")
+            translateMessage = Component.join(JoinConfiguration.noSeparators(), translatedComponent, sentCustomMessage.prefix, contentComponent)
+        } else {
+            val sentChatMessage = sentMessage as SentChatMessage
+            var chatString = "${ChatOG.chat.getPlayerPrefix(sentChatMessage.player)}${sentChatMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentChatMessage.player)}"
+            if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
+                chatString = PlaceholderAPI.setPlaceholders(
+                    sentMessage.player,
+                    "&8[%parties_color_code%%parties_party%&8] $chatString"
+                )
+            }
+            chatString = "&d[${translated.translatedFrom} -> ${language}] $chatString"
+            chatString = convertColor(chatString)
+
+            // Don't convert color in translated messages
+            translateMessage = Component.text("$chatString${translated.translatedText}")
+        }
+
+        player.sendMessage(translateMessage)
         return true
     }
 }

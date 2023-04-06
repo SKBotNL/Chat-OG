@@ -1,15 +1,14 @@
 package nl.skbotnl.chatog
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.core.Kord
-import dev.kord.core.behavior.execute
-import dev.kord.core.entity.Role
-import dev.kord.core.entity.Webhook
-import dev.kord.core.event.message.MessageCreateEvent
-import dev.kord.core.on
-import dev.kord.gateway.Intent
-import dev.kord.gateway.PrivilegedIntent
-import kotlinx.coroutines.flow.toList
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
+import dev.minn.jda.ktx.events.listener
+import dev.minn.jda.ktx.jdabuilder.intents
+import dev.minn.jda.ktx.jdabuilder.light
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
@@ -22,61 +21,88 @@ import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import java.util.*
 
+
 object DiscordBridge {
-    private lateinit var webhook: Webhook
+    lateinit var jda: JDA
+    private lateinit var webhook: WebhookClient
     var channelId = Config.getChannelId()
 
-    suspend fun main() {
-        val kord = Kord(Config.getBotToken())
+    fun main() {
+        webhook = WebhookClient.withUrl(Config.getWebhook())
 
-        val webhookRegex = Regex(".*discord.com/api/webhooks/(.*)/(.*)")
-
-        if (!webhookRegex.matches(Config.getWebhook())) {
-            ChatOG.plugin.logger.severe("Invalid webhook")
-            return
+        jda = light(Config.getBotToken(), enableCoroutines=true) {
+            intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
         }
 
-        val webhookMatches = webhookRegex.find(Config.getWebhook())!!
-        val (webhookId, webhookToken) = webhookMatches.destructured
-        webhook = kord.getWebhookWithToken(Snowflake(webhookId), webhookToken)
-
-
-        kord.on<MessageCreateEvent> {
-            if (message.channelId != Snowflake(channelId)) {
-                return@on
+        jda.listener<MessageReceivedEvent> {
+            if (it.channel.id != channelId) {
+                return@listener
             }
 
-            val author = message.author
-            val roleList = author?.asMember(message.getGuild().id)?.roles?.toList() ?: return@on
+            val message = it.message
 
-            var highestRole: Role? = null
-            if (roleList.isNotEmpty()) {
-                highestRole = roleList[0]
-                roleList.drop(1).forEach {
-                    if (highestRole == null) {
-                        highestRole = it
-                        return@forEach
+            val member = it.member ?: return@listener
+            val color = member.color
+            val textColor: TextColor = if (color == null) {
+                TextColor.color(153, 170, 181)
+            } else {
+                TextColor.color(color.rgb)
+            }
+
+            val roles: List<Role> = member.roles
+            val highestRole: Role = roles[roles.size - 1]
+
+            val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
+            val userComponent: TextComponent = if (color == null) {
+                Component.text(member.effectiveName).color(NamedTextColor.GRAY)
+            } else {
+                Component.text("[#${highestRole.name}] ${member.effectiveName}").color(textColor)
+            }
+
+            val configRoles = Config.getRoles()
+
+            var messageColor: NamedTextColor? = null
+            if (configRoles == null) {
+                messageColor = NamedTextColor.GRAY
+            } else {
+                for (roleId in configRoles) {
+                    if (!member.roles.contains(message.guild.getRoleById(roleId))) {
+                        continue
                     }
-                        if (it.getPosition() > highestRole!!.getPosition()) {
-                        highestRole = it
+
+                    val roleColor = Config.getRole(roleId)
+                    if (roleColor == "null") {
+                        continue
                     }
+
+                    messageColor = when (roleColor) {
+                        "BLACK" -> NamedTextColor.BLACK
+                        "DARK_BLUE" -> NamedTextColor.DARK_BLUE
+                        "DARK_GREEN" -> NamedTextColor.DARK_GREEN
+                        "DARK_AQUA" -> NamedTextColor.DARK_AQUA
+                        "DARK_RED" -> NamedTextColor.DARK_RED
+                        "DARK_PURPLE" -> NamedTextColor.DARK_PURPLE
+                        "GOLD" -> NamedTextColor.GOLD
+                        "GRAY" -> NamedTextColor.GRAY
+                        "DARK_GRAY" -> NamedTextColor.DARK_GRAY
+                        "BLUE" -> NamedTextColor.BLUE
+                        "GREEN" -> NamedTextColor.GREEN
+                        "AQUA" -> NamedTextColor.AQUA
+                        "RED" -> NamedTextColor.RED
+                        "LIGHT_PURPLE" -> NamedTextColor.LIGHT_PURPLE
+                        "YELLOW" -> NamedTextColor.YELLOW
+                        "WHITE" -> NamedTextColor.WHITE
+                        else -> {
+                            NamedTextColor.GRAY
+                        }
+                    }
+                }
+                if (messageColor == null) {
+                    messageColor = NamedTextColor.GRAY
                 }
             }
 
-
-            val textColor: TextColor = if (highestRole == null) {
-                TextColor.color(153, 170, 181)
-            } else {
-                TextColor.color(highestRole!!.color.rgb)
-            }
-
-            val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
-            val userComponent: TextComponent = if (highestRole == null) {
-                Component.text(author.username).color(NamedTextColor.GRAY)
-            } else {
-                Component.text("[#${highestRole!!.name}] ${author.username}").color(textColor)
-            }
-            val contentComponent = Component.text(" > ${message.content}").color(NamedTextColor.GRAY)
+            val contentComponent = Component.text(" > ${message.contentDisplay}").color(messageColor)
 
             var messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent, contentComponent)
             messageComponent = messageComponent.hoverEvent(
@@ -90,31 +116,22 @@ object DiscordBridge {
             messageComponent = messageComponent.clickEvent(
                 ClickEvent.clickEvent(
                     ClickEvent.Action.RUN_COMMAND,
-                    "/translatemessage $randomUUID"
+                    "/translatemessage $randomUUID true"
                 )
             )
 
             Bukkit.broadcast(messageComponent)
 
-            val prefixComponent: TextComponent = if (highestRole == null) {
-                Component.text(" ")
-            } else {
-                Component.text("[#${highestRole!!.name}] ").color(textColor)
-            }
-            TranslateMessage.messages[randomUUID] = TranslateMessage.SentMessage(convertColor("&7${message.content}"), author.username, Component.join(JoinConfiguration.noSeparators(), discordComponent, prefixComponent), Component.text(" > ").color(NamedTextColor.GRAY))
-        }
-
-        kord.login {
-            @OptIn(PrivilegedIntent::class)
-            intents += Intent.MessageContent
+            TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(message.contentDisplay, member.effectiveName, Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent), Component.text(" > ").color(messageColor))
         }
     }
 
-    suspend fun sendMessage(message: String, player: String, uuid: UUID) {
-        webhook.execute(webhook.token!!, null) {
-            username = removeColor(player)
-            avatarUrl = "https://crafatar.com/avatars/$uuid"
-            content = message
-        }
+    fun sendMessage(message: String, player: String, uuid: UUID) {
+        val builder = WebhookMessageBuilder()
+        builder.setUsername(removeColor(player))
+        builder.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+        builder.setContent(message)
+
+        webhook.send(builder.build())
     }
 }

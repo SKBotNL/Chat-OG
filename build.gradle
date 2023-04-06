@@ -1,17 +1,17 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 group = 'nl.skbotnl.chat-og'
-version = '1.0'
+version = '1.1'
 
 def apiVersion = "1.18.2"
 
 processResources {
     def props = [
-            version: version,
-            apiVersion: apiVersion,
+        version: version,
+        apiVersion: apiVersion,
     ]
 
     inputs.properties props // Indicates to rerun if version changes.
@@ -44,10 +44,15 @@ repositories {
 dependencies {
     compileOnly "org.purpurmc.purpur:purpur-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compileOnly 'me.clip:placeholderapi:2.11.3'
+    compileOnly "me.clip:placeholderapi:2.11.3"
 
-    implementation "dev.kord:kord-core:0.8.2"
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation("net.dv8tion:JDA:5.0.0-beta.6") {
+        exclude module: 'opus-java'
+    }
+    implementation "com.github.minndevelopment:jda-ktx:9fc90f616b7c9b68b8680c7bf37d6af361bb0fbb"
+    implementation "club.minnced:discord-webhooks:0.8.2"
+
+    implementation "com.google.code.gson:gson:2.10.1"
 }
 
 shadowJar {
@@ -57,11 +62,11 @@ shadowJar {
 jar.dependsOn shadowJar
 
 tasks.jar.configure {
-    classifier = "part"
+    archiveClassifier = "part"
 }
 
 tasks.shadowJar.configure {
-    classifier = null
+    archiveClassifier = null
 }
 
 kotlin {

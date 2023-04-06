@@ -7,7 +7,7 @@ depend: [PlaceholderAPI, Vault]
 commands:
   translatemessage:
     description: translatemessage
-    usage: /translatemessage <uuid>
+    usage: /translatemessage <uuid> <iscustommessage>
   translatesettings:
     description: translatesettings
     usage: /translatesettings <language>
