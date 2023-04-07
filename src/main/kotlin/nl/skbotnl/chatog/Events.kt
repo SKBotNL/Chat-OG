@@ -13,6 +13,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.translation.GlobalTranslator
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.removeColor
@@ -21,10 +22,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerAdvancementDoneEvent
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
 import java.util.*
 
@@ -40,6 +38,7 @@ class Events : Listener {
             discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
         }
         discordString = convertColor(discordString)
+
         GlobalScope.launch {
             DiscordBridge.sendEmbed("${removeColor(discordString)} joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
         }
@@ -54,8 +53,24 @@ class Events : Listener {
             discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
         }
         discordString = convertColor(discordString)
+
         GlobalScope.launch {
             DiscordBridge.sendEmbed("${removeColor(discordString)} left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun kickEvent(event: PlayerKickEvent) {
+        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+        }
+        discordString = convertColor(discordString)
+
+        GlobalScope.launch {
+            DiscordBridge.sendEmbed("${removeColor(discordString)} was kicked with reason: `${(event.reason() as TextComponent).content()}`. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
 
@@ -69,20 +84,20 @@ class Events : Listener {
         }
         discordString = convertColor(discordString)
 
-        val advancementKey = (event.advancement.display?.title() as TranslatableComponent).key()
-        val translatedAdvancement = GlobalTranslator.translator().translate(advancementKey, Locale.US)
-        Bukkit.broadcastMessage(translatedAdvancement.toString())
+        val advancementTitleKey = event.advancement.display?.title() ?: return
+        val advancementTitle = PlainTextComponentSerializer.plainText().serialize(advancementTitleKey)
+
         val advancementMessage = when (event.advancement.display?.frame()) {
-            GOAL -> "has reached the goal [$translatedAdvancement]"
-            TASK -> "has made the advancement [$translatedAdvancement]"
-            CHALLENGE -> "has completed the challenge [$translatedAdvancement]"
+            GOAL -> "has reached the goal [$advancementTitle]"
+            TASK -> "has made the advancement [$advancementTitle]"
+            CHALLENGE -> "has completed the challenge [$advancementTitle]"
             else -> {
                 return
             }
         }
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} $advancementMessage.", event.player.uniqueId, 0xffff00)
+            DiscordBridge.sendEmbed("${removeColor(discordString)} $advancementMessage.", event.player.uniqueId, 0xFFFF00)
         }
     }
 
