@@ -75,6 +75,9 @@ object DiscordBridge {
                         messageColor = TextColor.color(roleColor.elementAt(0).toString().toInt(), roleColor.elementAt(1).toString().toInt(), roleColor.elementAt(2).toString().toInt())
                         continue
                     }
+                    if (roleColor !is String) {
+                        continue
+                    }
                     if (roleColor == "null") {
                         continue
                     }
