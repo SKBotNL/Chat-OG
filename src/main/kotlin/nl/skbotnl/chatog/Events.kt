@@ -1,5 +1,6 @@
 package nl.skbotnl.chatog
 
+import io.papermc.paper.advancement.AdvancementDisplay.Frame.*
 import io.papermc.paper.event.player.AsyncChatEvent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -12,17 +13,86 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.translation.GlobalTranslator
 import nl.skbotnl.chatog.Helper.convertColor
+import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.server.BroadcastMessageEvent
 import java.util.*
 
 class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun joinEvent(event: PlayerJoinEvent) {
+        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+        }
+        discordString = convertColor(discordString)
+        GlobalScope.launch {
+            DiscordBridge.sendEmbed("${removeColor(discordString)} joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun quitEvent(event: PlayerQuitEvent) {
+        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+        }
+        discordString = convertColor(discordString)
+        GlobalScope.launch {
+            DiscordBridge.sendEmbed("${removeColor(discordString)} left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun advancementEvent(event: PlayerAdvancementDoneEvent) {
+        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
+            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+        }
+        discordString = convertColor(discordString)
+
+        val advancementKey = (event.advancement.display?.title() as TranslatableComponent).key()
+        val translatedAdvancement = GlobalTranslator.translator().translate(advancementKey, Locale.US)
+        Bukkit.broadcastMessage(translatedAdvancement.toString())
+        val advancementMessage = when (event.advancement.display?.frame()) {
+            GOAL -> "has reached the goal [$translatedAdvancement]"
+            TASK -> "has made the advancement [$translatedAdvancement]"
+            CHALLENGE -> "has completed the challenge [$translatedAdvancement]"
+            else -> {
+                return
+            }
+        }
+
+        GlobalScope.launch {
+            DiscordBridge.sendEmbed("${removeColor(discordString)} $advancementMessage.", event.player.uniqueId, 0xffff00)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun broadcastEvent(event: BroadcastMessageEvent) {
+        GlobalScope.launch {
+            DiscordBridge.sendMessage((event.message() as TextComponent).content(), "[Server] Broadcast", null)
+        }
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
@@ -156,6 +226,7 @@ class Events : Listener {
         return
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
         var nameString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
@@ -174,5 +245,10 @@ class Events : Listener {
         val deathMessage = oldDeathMessage.args(argList)
 
         event.deathMessage(deathMessage)
+
+        GlobalScope.launch {
+            val translatedDeathMessage = GlobalTranslator.translator().translate(oldDeathMessage.key(), Locale.US)
+            DiscordBridge.sendEmbed("${removeColor(nameString)} was $translatedDeathMessage.", event.player.uniqueId, 0xFF0000)
+        }
     }
 }

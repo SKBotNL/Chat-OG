@@ -1,6 +1,8 @@
 package nl.skbotnl.chatog
 
 import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.send.WebhookEmbed
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.events.listener
 import dev.minn.jda.ktx.jdabuilder.intents
@@ -133,12 +135,22 @@ object DiscordBridge {
         }
     }
 
-    fun sendMessage(message: String, player: String, uuid: UUID) {
-        val builder = WebhookMessageBuilder()
-        builder.setUsername(removeColor(player))
-        builder.setAvatarUrl("https://crafatar.com/avatars/$uuid")
-        builder.setContent(message)
+    fun sendMessage(message: String, player: String, uuid: UUID?) {
+        val webhookMessage = WebhookMessageBuilder()
+            .setUsername(removeColor(player))
+            .setContent(message)
+        if (uuid != null) {
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+        }
 
-        webhook.send(builder.build())
+        webhook.send(webhookMessage.build())
+    }
+
+    fun sendEmbed(message: String, uuid: UUID, color: Int) {
+        val webhookMessage = WebhookEmbedBuilder()
+            .setColor(color)
+            .setAuthor(WebhookEmbed.EmbedAuthor(message, "https://crafatar.com/avatars/$uuid", null))
+
+        webhook.send(webhookMessage.build())
     }
 }
