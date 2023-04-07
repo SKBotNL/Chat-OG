@@ -50,7 +50,7 @@ dependencies {
         exclude module: 'opus-java'
     }
     implementation "com.github.minndevelopment:jda-ktx:9fc90f616b7c9b68b8680c7bf37d6af361bb0fbb"
-    implementation "club.minnced:discord-webhooks:0.8.2"
+    implementation "com.github.SKBotNL:discord-webhooks:0.8.3"
 
     implementation "com.google.code.gson:gson:2.10.1"
 }
