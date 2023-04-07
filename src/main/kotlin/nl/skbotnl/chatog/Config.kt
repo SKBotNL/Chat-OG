@@ -51,7 +51,11 @@ object Config {
         return config.getConfigurationSection("roles")?.getKeys(false) ?: return null
     }
 
-    fun getRole(role: String): String {
-        return config.get("roles.$role.message_color").toString()
+    fun getRoleMessageColor(role: String): Any {
+        val messageColor = config.getStringList("roles.$role.message_color")
+        if (messageColor.isEmpty()) {
+            return config.get("roles.$role.message_color").toString()
+        }
+        return messageColor
     }
 }

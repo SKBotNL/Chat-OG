@@ -9,10 +9,16 @@ channelId: <put the id of the channel here>
 webhook: <put the webhook here>
 
 # Configure the text color (after the username (Discord -> Minecraft)) for certain roles
-# for example:
+# For example:
 #
 # roles:
 #     1234567891234567890:
 #         message_color: RED
 #
 # message_color can be one of these: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
+#
+# You can also use RGB as the color:
+#
+# roles:
+#     1234567891234567890:
+#         message_color: [255, 255, 255]

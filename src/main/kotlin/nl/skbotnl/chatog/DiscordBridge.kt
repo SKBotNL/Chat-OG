@@ -61,7 +61,7 @@ object DiscordBridge {
 
             val configRoles = Config.getRoles()
 
-            var messageColor: NamedTextColor? = null
+            var messageColor: TextColor? = null
             if (configRoles == null) {
                 messageColor = NamedTextColor.GRAY
             } else {
@@ -70,7 +70,11 @@ object DiscordBridge {
                         continue
                     }
 
-                    val roleColor = Config.getRole(roleId)
+                    val roleColor = Config.getRoleMessageColor(roleId)
+                    if (roleColor is List<*>) {
+                        messageColor = TextColor.color(roleColor.elementAt(0).toString().toInt(), roleColor.elementAt(1).toString().toInt(), roleColor.elementAt(2).toString().toInt())
+                        continue
+                    }
                     if (roleColor == "null") {
                         continue
                     }
