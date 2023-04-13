@@ -112,6 +112,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun chatEvent(event: AsyncChatEvent) {
+        if (event.isCancelled) return
         event.isCancelled = true
 
         val oldTextComponent = event.message() as TextComponent
