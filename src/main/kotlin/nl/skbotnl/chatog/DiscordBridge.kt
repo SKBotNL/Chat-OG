@@ -5,12 +5,15 @@ import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.events.listener
+import dev.minn.jda.ktx.jdabuilder.cache
 import dev.minn.jda.ktx.jdabuilder.intents
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
@@ -27,6 +30,7 @@ import java.util.*
 object DiscordBridge {
     lateinit var jda: JDA
     private lateinit var webhook: WebhookClient
+    var guildId = Config.getGuildId()
     var channelId = Config.getChannelId()
 
     fun main() {
@@ -34,6 +38,11 @@ object DiscordBridge {
 
         jda = light(Config.getBotToken(), enableCoroutines=true) {
             intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+            cache += listOf(CacheFlag.EMOJI)
+        }
+
+        jda.listener<ReadyEvent> {
+            sendEmbed("The server has started", null, 0x00FF00)
         }
 
         jda.listener<MessageReceivedEvent> {
@@ -112,8 +121,16 @@ object DiscordBridge {
             }
 
             val contentComponent = Component.text(" > ${message.contentDisplay}").color(messageColor)
+            var replyComponent = Component.text("")
 
-            var messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent, contentComponent)
+            if (message.messageReference != null) {
+                val replyMessage = message.messageReference!!.message
+                if (replyMessage != null) {
+                    replyComponent = Component.text("[Reply to: ${replyMessage.author.name}] ").color(NamedTextColor.GREEN)
+                }
+            }
+
+            var messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, replyComponent, userComponent, contentComponent)
             messageComponent = messageComponent.hoverEvent(
                 HoverEvent.hoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
@@ -146,10 +163,15 @@ object DiscordBridge {
         webhook.send(webhookMessage.build())
     }
 
-    fun sendEmbed(message: String, uuid: UUID, color: Int) {
+    fun sendEmbed(message: String, uuid: UUID?, color: Int) {
+        var iconUrl: String? = null
+        if (uuid != null) {
+            iconUrl = "https://crafatar.com/avatars/$uuid"
+        }
+
         val webhookMessage = WebhookEmbedBuilder()
             .setColor(color)
-            .setAuthor(WebhookEmbed.EmbedAuthor(message, "https://crafatar.com/avatars/$uuid", null))
+            .setAuthor(WebhookEmbed.EmbedAuthor(message, iconUrl, null))
 
         webhook.send(webhookMessage.build())
     }

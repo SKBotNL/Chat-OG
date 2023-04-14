@@ -104,8 +104,13 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun broadcastEvent(event: BroadcastMessageEvent) {
+        val content = (event.message() as TextComponent).content()
+        if (content == "") {
+            return
+        }
+
         GlobalScope.launch {
-            DiscordBridge.sendMessage((event.message() as TextComponent).content(), "[Server] Broadcast", null)
+            DiscordBridge.sendMessage(content, "[Server] Broadcast", null)
         }
     }
 
@@ -124,8 +129,23 @@ class Events : Listener {
         }
         val discordString = convertColor(chatString)
 
+        var messageString = oldTextComponent.content()
+        val guildEmojis = DiscordBridge.jda.getGuildById(DiscordBridge.guildId)?.emojis
+
+        if (guildEmojis != null) {
+            val regex = Regex(":(.*?):+")
+            regex.findAll(oldTextComponent.content()).iterator().forEach {
+                guildEmojis.forEach { emoji ->
+                    if (emoji.name == it.groupValues[1]) {
+                        val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                        messageString = messageString.replace(it.value, replaceWith)
+                    }
+                }
+            }
+        }
+
         GlobalScope.launch {
-            DiscordBridge.sendMessage(oldTextComponent.content(), discordString, event.player.uniqueId)
+            DiscordBridge.sendMessage(messageString, discordString, event.player.uniqueId)
         }
 
         chatString = "$discordString${ChatOG.chat.getPlayerSuffix(event.player)}${oldTextComponent.content()}"

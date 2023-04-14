@@ -12,6 +12,7 @@ class ChatConfigReload : CommandExecutor {
         BingTranslator.subscriptionRegion = Config.getSubRegion()
 
         DiscordBridge.channelId = Config.getChannelId()
+        DiscordBridge.guildId = Config.getGuildId()
 
         sender.sendMessage(convertColor("&aReloaded the config!"))
         return true

@@ -43,6 +43,10 @@ object Config {
         return config.get("channelId").toString()
     }
 
+    fun getGuildId(): String {
+        return config.get("guildId").toString()
+    }
+
     fun getWebhook(): String {
         return config.get("webhook").toString()
     }

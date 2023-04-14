@@ -36,7 +36,8 @@ class ChatOG : JavaPlugin() {
 
     override fun onDisable() {
         if (Config.getDiscordEnabled()) {
-            DiscordBridge.jda.shutdownNow()
+            DiscordBridge.sendEmbed("The server has stopped", null, 0xFF0000)
+            DiscordBridge.jda.shutdown()
         }
     }
 }
