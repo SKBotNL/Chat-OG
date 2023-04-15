@@ -26,12 +26,13 @@ import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import java.util.*
 
-
 object DiscordBridge {
     lateinit var jda: JDA
     private lateinit var webhook: WebhookClient
     var guildId = Config.getGuildId()
     var channelId = Config.getChannelId()
+
+    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
 
     fun main() {
         webhook = WebhookClient.withUrl(Config.getWebhook())
@@ -120,7 +121,41 @@ object DiscordBridge {
                 }
             }
 
-            val contentComponent = Component.text(" > ${message.contentDisplay}").color(messageColor)
+            val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
+
+            message.contentDisplay.split(" ").forEach { word ->
+                val urlIter = urlRegex.findAll(word).iterator()
+                if (urlIter.hasNext()) {
+                    urlIter.forEach { link ->
+                        var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(0, 116, 204))
+                        linkComponent = linkComponent.hoverEvent(
+                            HoverEvent.hoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.text(convertColor("&aClick to open link"))
+                            )
+                        )
+
+                        linkComponent = linkComponent.clickEvent(
+                            ClickEvent.clickEvent(
+                                ClickEvent.Action.OPEN_URL,
+                                link.groups[2]!!.value
+                            )
+                        )
+
+                        val beforeComponent = Component.text(link.groups[1]?.value ?: "").color(messageColor)
+                        val afterComponent = Component.text(link.groups[4]?.value ?: "").color(messageColor)
+
+                        val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+
+                        messageComponents += fullComponent
+                    }
+                    return@forEach
+                }
+                messageComponents += Component.text(word).color(messageColor)
+            }
+
+            val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents)
+
             var replyComponent = Component.text("")
 
             if (message.messageReference != null) {

@@ -7,6 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
@@ -16,6 +17,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.translation.GlobalTranslator
 import nl.skbotnl.chatog.Helper.convertColor
+import nl.skbotnl.chatog.Helper.getColor
 import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -114,6 +116,8 @@ class Events : Listener {
         }
     }
 
+    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
+
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun chatEvent(event: AsyncChatEvent) {
@@ -129,7 +133,7 @@ class Events : Listener {
         }
         val discordString = convertColor(chatString)
 
-        var messageString = oldTextComponent.content()
+        var discordMessageString = oldTextComponent.content()
         val guildEmojis = DiscordBridge.jda.getGuildById(DiscordBridge.guildId)?.emojis
 
         if (guildEmojis != null) {
@@ -138,23 +142,64 @@ class Events : Listener {
                 guildEmojis.forEach { emoji ->
                     if (emoji.name == it.groupValues[1]) {
                         val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
-                        messageString = messageString.replace(it.value, replaceWith)
+                        discordMessageString = discordMessageString.replace(it.value, replaceWith)
                     }
                 }
             }
         }
 
         GlobalScope.launch {
-            DiscordBridge.sendMessage(messageString, discordString, event.player.uniqueId)
+            DiscordBridge.sendMessage(discordMessageString, discordString, event.player.uniqueId)
         }
 
-        chatString = "$discordString${ChatOG.chat.getPlayerSuffix(event.player)}${oldTextComponent.content()}"
+        val messageComponents = mutableListOf<Component>()
+
+        oldTextComponent.content().split(" ").forEach { word ->
+            val urlIter = urlRegex.findAll(word).iterator()
+            val chatColor = getColor(ChatOG.chat.getPlayerSuffix(event.player))
+
+            if (urlIter.hasNext()) {
+                urlIter.forEach { link ->
+                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(0, 116, 204))
+                    linkComponent = linkComponent.hoverEvent(
+                        HoverEvent.hoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            Component.text(convertColor("&aClick to open link"))
+                        )
+                    )
+
+                    linkComponent = linkComponent.clickEvent(
+                        ClickEvent.clickEvent(
+                            ClickEvent.Action.OPEN_URL,
+                            link.groups[2]!!.value
+                        )
+                    )
+
+                    val beforeComponent = Component.text(
+                        convertColor(chatColor + (link.groups[1]?.value ?: ""))
+                    )
+                    val afterComponent = Component.text(
+                        convertColor(chatColor + (link.groups[4]?.value ?: ""))
+                    )
+
+                    val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+
+                    messageComponents += fullComponent
+                }
+                return@forEach
+            }
+            messageComponents += Component.text(convertColor(chatColor + word))
+        }
+
+        val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
+
+        chatString = "$discordString${ChatOG.chat.getPlayerSuffix(event.player)}"
 
         if (event.player.hasPermission("chat-og.color")) {
             chatString = convertColor(chatString)
         }
 
-        var textComponent = Component.text(chatString)
+        var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
