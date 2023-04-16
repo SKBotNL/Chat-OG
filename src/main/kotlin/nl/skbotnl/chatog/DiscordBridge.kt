@@ -123,11 +123,24 @@ object DiscordBridge {
 
             val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
 
-            message.contentDisplay.split(" ").forEach { word ->
+            var messageString = ""
+
+            if (message.attachments.isNotEmpty()) {
+                messageString = "\n"
+                message.attachments.forEach{ attachment ->
+                    messageString += attachment.url + " "
+                }
+            }
+
+            for (word in message.contentDisplay.split(" ")) {
                 val urlIter = urlRegex.findAll(word).iterator()
                 if (urlIter.hasNext()) {
-                    urlIter.forEach { link ->
-                        var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(0, 116, 204))
+                    for (url in urlIter) {
+                        if (BlocklistManager.checkUrl(word)) {
+                            return@listener
+                        }
+
+                        var linkComponent = Component.text(url.groups[2]!!.value).color(TextColor.color(0, 116, 204))
                         linkComponent = linkComponent.hoverEvent(
                             HoverEvent.hoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
@@ -138,22 +151,23 @@ object DiscordBridge {
                         linkComponent = linkComponent.clickEvent(
                             ClickEvent.clickEvent(
                                 ClickEvent.Action.OPEN_URL,
-                                link.groups[2]!!.value
+                                url.groups[2]!!.value
                             )
                         )
 
-                        val beforeComponent = Component.text(link.groups[1]?.value ?: "").color(messageColor)
-                        val afterComponent = Component.text(link.groups[4]?.value ?: "").color(messageColor)
+                        val beforeComponent = Component.text(url.groups[1]?.value ?: "").color(messageColor)
+                        val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
 
                         val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
 
                         messageComponents += fullComponent
                     }
-                    return@forEach
+                    continue
                 }
                 messageComponents += Component.text(word).color(messageColor)
             }
 
+            messageComponents += Component.text(messageString)
             val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents)
 
             var replyComponent = Component.text("")

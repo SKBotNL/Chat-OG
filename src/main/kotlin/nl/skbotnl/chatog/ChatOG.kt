@@ -1,8 +1,10 @@
 package nl.skbotnl.chatog
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.scheduler.BukkitRunnable
 
 class ChatOG : JavaPlugin() {
     companion object {
@@ -10,11 +12,15 @@ class ChatOG : JavaPlugin() {
         lateinit var chat: Chat
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onEnable() {
         plugin = this
 
         Config.load()
         LanguageDatabase.load()
+        GlobalScope.launch {
+            BlocklistManager.load()
+        }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)
         chat = rsp!!.provider
@@ -25,19 +31,15 @@ class ChatOG : JavaPlugin() {
         this.getCommand("translatesettings")?.tabCompleter = TranslateSettingsTabCompleter()
         this.getCommand("chatconfigreload")?.setExecutor(ChatConfigReload())
 
-        if (Config.getDiscordEnabled()) {
-            object : BukkitRunnable() {
-                override fun run() {
-                    DiscordBridge.main()
-                }
-            }.runTaskAsynchronously(this)
+        GlobalScope.launch {
+            DiscordBridge.main()
         }
     }
 
     override fun onDisable() {
         if (Config.getDiscordEnabled()) {
             DiscordBridge.sendEmbed("The server has stopped", null, 0xFF0000)
-            DiscordBridge.jda.shutdown()
+            DiscordBridge.jda.shutdownNow()
         }
     }
 }

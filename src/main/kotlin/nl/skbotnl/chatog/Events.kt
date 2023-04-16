@@ -148,10 +148,6 @@ class Events : Listener {
             }
         }
 
-        GlobalScope.launch {
-            DiscordBridge.sendMessage(discordMessageString, discordString, event.player.uniqueId)
-        }
-
         val messageComponents = mutableListOf<Component>()
 
         oldTextComponent.content().split(" ").forEach { word ->
@@ -160,6 +156,16 @@ class Events : Listener {
 
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
+                    if (BlocklistManager.checkUrl(word)) {
+                        event.player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
+                        for (player in Bukkit.getOnlinePlayers()) {
+                            if (player.hasPermission("group.moderator")) {
+                                player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: $word."))
+                            }
+                        }
+                        return
+                    }
+
                     var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(0, 116, 204))
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
@@ -188,16 +194,22 @@ class Events : Listener {
                 }
                 return@forEach
             }
-            messageComponents += Component.text(convertColor(chatColor + word))
+            val wordText = if (event.player.hasPermission("chat-og.color")) {
+                convertColor(chatColor + word)
+            }
+            else {
+                convertColor(chatColor) + word
+            }
+            messageComponents += Component.text(wordText)
+        }
+
+        GlobalScope.launch {
+            DiscordBridge.sendMessage(discordMessageString, discordString, event.player.uniqueId)
         }
 
         val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        chatString = "$discordString${ChatOG.chat.getPlayerSuffix(event.player)}"
-
-        if (event.player.hasPermission("chat-og.color")) {
-            chatString = convertColor(chatString)
-        }
+        chatString = convertColor("$discordString${ChatOG.chat.getPlayerSuffix(event.player)}")
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
