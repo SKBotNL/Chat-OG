@@ -99,7 +99,7 @@ object BlocklistManager {
         }
 
         blockList.forEach {
-            if (it in baseUrl!!) {
+            if (it == baseUrl!!) {
                 return true
             }
         }

@@ -27,8 +27,8 @@ import org.bukkit.Bukkit
 import java.util.*
 
 object DiscordBridge {
-    lateinit var jda: JDA
-    private lateinit var webhook: WebhookClient
+    var jda: JDA? = null
+    var webhook: WebhookClient? = null
     var guildId = Config.getGuildId()
     var channelId = Config.getChannelId()
 
@@ -42,11 +42,11 @@ object DiscordBridge {
             cache += listOf(CacheFlag.EMOJI)
         }
 
-        jda.listener<ReadyEvent> {
+        jda!!.listener<ReadyEvent> {
             sendEmbed("The server has started", null, 0x00FF00)
         }
 
-        jda.listener<MessageReceivedEvent> {
+        jda!!.listener<MessageReceivedEvent> {
             if (it.channel.id != channelId) {
                 return@listener
             }
@@ -159,7 +159,6 @@ object DiscordBridge {
                         val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
 
                         val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
-
                         messageComponents += fullComponent
                     }
                     continue
@@ -202,6 +201,11 @@ object DiscordBridge {
     }
 
     fun sendMessage(message: String, player: String, uuid: UUID?) {
+        if (webhook == null) {
+            ChatOG.plugin.logger.warning("Webhook has not been set")
+            return
+        }
+
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
             .setContent(message)
@@ -209,10 +213,15 @@ object DiscordBridge {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
 
-        webhook.send(webhookMessage.build())
+        webhook!!.send(webhookMessage.build())
     }
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int) {
+        if (webhook == null) {
+            ChatOG.plugin.logger.warning("Webhook has not been set")
+            return
+        }
+
         var iconUrl: String? = null
         if (uuid != null) {
             iconUrl = "https://crafatar.com/avatars/$uuid"
@@ -222,6 +231,6 @@ object DiscordBridge {
             .setColor(color)
             .setAuthor(WebhookEmbed.EmbedAuthor(message, iconUrl, null))
 
-        webhook.send(webhookMessage.build())
+        webhook!!.send(webhookMessage.build())
     }
 }

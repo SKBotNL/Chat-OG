@@ -19,7 +19,7 @@ class ChatOG : JavaPlugin() {
         Config.load()
         LanguageDatabase.load()
         GlobalScope.launch {
-            BlocklistManager.load()
+                BlocklistManager.load()
         }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)
@@ -31,15 +31,19 @@ class ChatOG : JavaPlugin() {
         this.getCommand("translatesettings")?.tabCompleter = TranslateSettingsTabCompleter()
         this.getCommand("chatconfigreload")?.setExecutor(ChatConfigReload())
 
-        GlobalScope.launch {
-            DiscordBridge.main()
+        if (Config.getDiscordEnabled()) {
+            GlobalScope.launch {
+                DiscordBridge.main()
+            }
         }
     }
 
     override fun onDisable() {
         if (Config.getDiscordEnabled()) {
-            DiscordBridge.sendEmbed("The server has stopped", null, 0xFF0000)
-            DiscordBridge.jda.shutdownNow()
+            if (DiscordBridge.jda != null) {
+                DiscordBridge.sendEmbed("The server has stopped", null, 0xFF0000)
+                DiscordBridge.jda!!.shutdownNow()
+            }
         }
     }
 }

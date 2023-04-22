@@ -133,16 +133,19 @@ class Events : Listener {
         }
         val discordString = convertColor(chatString)
 
-        var discordMessageString = oldTextComponent.content()
-        val guildEmojis = DiscordBridge.jda.getGuildById(DiscordBridge.guildId)?.emojis
+        var discordMessageString: String? = null
+        if (DiscordBridge.jda != null) {
+            discordMessageString = oldTextComponent.content()
+            val guildEmojis = DiscordBridge.jda!!.getGuildById(DiscordBridge.guildId)?.emojis
 
-        if (guildEmojis != null) {
-            val regex = Regex(":(.*?):+")
-            regex.findAll(oldTextComponent.content()).iterator().forEach {
-                guildEmojis.forEach { emoji ->
-                    if (emoji.name == it.groupValues[1]) {
-                        val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
-                        discordMessageString = discordMessageString.replace(it.value, replaceWith)
+            if (guildEmojis != null) {
+                val regex = Regex(":(.*?):+")
+                regex.findAll(oldTextComponent.content()).iterator().forEach {
+                    guildEmojis.forEach { emoji ->
+                        if (emoji.name == it.groupValues[1]) {
+                            val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                            discordMessageString = discordMessageString!!.replace(it.value, replaceWith)
+                        }
                     }
                 }
             }
@@ -203,8 +206,10 @@ class Events : Listener {
             messageComponents += Component.text(wordText)
         }
 
-        GlobalScope.launch {
-            DiscordBridge.sendMessage(discordMessageString, discordString, event.player.uniqueId)
+        if (DiscordBridge.jda != null) {
+            GlobalScope.launch {
+                DiscordBridge.sendMessage(discordMessageString!!, discordString, event.player.uniqueId)
+            }
         }
 
         val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
