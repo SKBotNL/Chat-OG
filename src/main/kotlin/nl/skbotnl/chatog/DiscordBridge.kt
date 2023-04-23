@@ -10,6 +10,7 @@ import dev.minn.jda.ktx.jdabuilder.cache
 import dev.minn.jda.ktx.jdabuilder.intents
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
@@ -43,9 +44,12 @@ object DiscordBridge {
             cache += listOf(CacheFlag.EMOJI)
         }
 
+        jda!!.presence.setPresence(Activity.playing(Config.getStatus()), false)
+
         jda!!.listener<ReadyEvent> {
             sendMessageWithBot("The server has started <:stonks:899680228216029195>")
         }
+
 
         jda!!.listener<MessageReceivedEvent> {
             if (it.channel.id != channelId) {

@@ -35,6 +35,10 @@ object Config {
         return config.get("discordEnabled").toString().toBoolean()
     }
 
+    fun getStatus(): String {
+        return config.get("status").toString()
+    }
+
     fun getBotToken(): String {
         return config.get("botToken").toString()
     }
