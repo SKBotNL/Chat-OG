@@ -42,7 +42,7 @@ class Events : Listener {
         discordString = convertColor(discordString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
+            DiscordBridge.sendEmbed("${removeColor(discordString)} has joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
         }
     }
 
@@ -57,7 +57,7 @@ class Events : Listener {
         discordString = convertColor(discordString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed("${removeColor(discordString)} has left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
 
