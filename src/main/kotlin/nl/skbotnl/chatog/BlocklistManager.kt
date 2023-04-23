@@ -88,7 +88,7 @@ object BlocklistManager {
         blockList = tempList
     }
 
-    private val urlRegex = Regex("^(https?|ftp|file)://([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])")
+    private val urlRegex = Regex("^(https?|ftp|file)://([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*?[^/]*)")
     fun checkUrl(url: String): Boolean {
         var baseUrl: String? = null
         urlRegex.findAll(url).iterator().forEach { urlMatch ->

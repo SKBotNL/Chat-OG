@@ -39,10 +39,10 @@ repositories {
 
 dependencies {
     compileOnly "org.purpurmc.purpur:purpur-api:1.18.2-R0.1-SNAPSHOT"
-    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     compileOnly "me.clip:placeholderapi:2.11.3"
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.6") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.8") {
         exclude module: 'opus-java'
     }
     implementation "com.github.minndevelopment:jda-ktx:9fc90f616b7c9b68b8680c7bf37d6af361bb0fbb"

@@ -5,11 +5,12 @@ import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.events.listener
+import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.jdabuilder.cache
 import dev.minn.jda.ktx.jdabuilder.intents
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -43,16 +44,20 @@ object DiscordBridge {
         }
 
         jda!!.listener<ReadyEvent> {
-            sendEmbed("The server has started.", null, 0x00FF00)
+            sendMessageWithBot("The server has started <:stonks:899680228216029195>")
         }
 
         jda!!.listener<MessageReceivedEvent> {
             if (it.channel.id != channelId) {
                 return@listener
             }
+            if (it.author.isBot) {
+                return@listener
+            }
 
             val message = it.message
 
+            val user = it.author
             val member = it.member ?: return@listener
             val color = member.color
             val textColor: TextColor = if (color == null) {
@@ -61,7 +66,9 @@ object DiscordBridge {
                 TextColor.color(color.rgb)
             }
 
-            val topRole: Role = member.roles.maxBy { role -> role.positionRaw }
+            val roles = member.roles
+            val roleIds = roles.map{ role -> role.id }
+            val topRole = roles.maxBy { role -> role.positionRaw }
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
             val userComponent: TextComponent = if (color == null) {
@@ -151,6 +158,11 @@ object DiscordBridge {
                 if (urlIter.hasNext()) {
                     for (url in urlIter) {
                         if (BlocklistManager.checkUrl(word)) {
+                            for (player in Bukkit.getOnlinePlayers()) {
+                                if (player.hasPermission("group.moderator")) {
+                                    player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${user.name}#${user.discriminator} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
+                                }
+                            }
                             return@listener
                         }
 
@@ -177,7 +189,12 @@ object DiscordBridge {
                     }
                     continue
                 }
-                messageComponents += Component.text(word).color(messageColor)
+
+                var messageText = word
+                if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
+                    messageText = convertColor(messageText)
+                }
+                messageComponents += Component.text(messageText).color(messageColor)
             }
 
             val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents + attachmentComponents)
@@ -213,9 +230,17 @@ object DiscordBridge {
         }
     }
 
+    fun sendMessageWithBot(message: String) {
+        val channel = jda!!.getChannel<MessageChannel>(channelId)
+        if (channel == null) {
+            ChatOG.plugin.logger.warning("ChannelId has not been set or is invalid")
+        }
+
+        channel!!.sendMessage(message).complete()
+    }
     fun sendMessage(message: String, player: String, uuid: UUID?) {
         if (webhook == null) {
-            ChatOG.plugin.logger.warning("Webhook has not been set")
+            ChatOG.plugin.logger.warning("Webhook has not been set or is invalid")
             return
         }
 
@@ -231,7 +256,7 @@ object DiscordBridge {
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int) {
         if (webhook == null) {
-            ChatOG.plugin.logger.warning("Webhook has not been set")
+            ChatOG.plugin.logger.warning("Webhook has not been set or is invalid")
             return
         }
 

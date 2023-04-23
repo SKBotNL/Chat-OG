@@ -170,7 +170,7 @@ class Events : Listener {
                         event.player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
                         for (player in Bukkit.getOnlinePlayers()) {
                             if (player.hasPermission("group.moderator")) {
-                                player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: $word."))
+                                player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
                             }
                         }
                         return

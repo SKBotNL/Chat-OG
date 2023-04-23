@@ -51,6 +51,10 @@ object Config {
         return config.get("webhook").toString()
     }
 
+    fun getColorCodeRoles(): MutableList<String> {
+        return config.getStringList("colorCodeRoles")
+    }
+
     fun getRoles(): MutableSet<String>? {
         return config.getConfigurationSection("roles")?.getKeys(false) ?: return null
     }
