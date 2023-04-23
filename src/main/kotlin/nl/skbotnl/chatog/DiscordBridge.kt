@@ -43,7 +43,7 @@ object DiscordBridge {
         }
 
         jda!!.listener<ReadyEvent> {
-            sendEmbed("The server has started", null, 0x00FF00)
+            sendEmbed("The server has started <:stonks:899680228216029195>", null, 0x00FF00)
         }
 
         jda!!.listener<MessageReceivedEvent> {
