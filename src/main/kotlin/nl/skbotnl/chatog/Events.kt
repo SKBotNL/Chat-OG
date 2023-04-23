@@ -6,6 +6,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
@@ -136,7 +137,13 @@ class Events : Listener {
         var discordMessageString: String? = null
         if (DiscordBridge.jda != null) {
             discordMessageString = oldTextComponent.content()
-            val guildEmojis = DiscordBridge.jda!!.getGuildById(DiscordBridge.guildId)?.emojis
+            var guildEmojis: List<RichCustomEmoji>? = null
+            try {
+                guildEmojis = DiscordBridge.jda!!.getGuildById(DiscordBridge.guildId)?.emojis
+            }
+            catch (e: Exception) {
+                ChatOG.plugin.logger.warning("Can't get the guilds emoji's, is the guildId set?")
+            }
 
             if (guildEmojis != null) {
                 val regex = Regex(":(.*?):+")
@@ -169,7 +176,7 @@ class Events : Listener {
                         return
                     }
 
-                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(0, 116, 204))
+                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(34, 100, 255))
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,

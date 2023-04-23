@@ -43,7 +43,7 @@ object DiscordBridge {
         }
 
         jda!!.listener<ReadyEvent> {
-            sendEmbed("The server has started <:stonks:899680228216029195>", null, 0x00FF00)
+            sendEmbed("The server has started.", null, 0x00FF00)
         }
 
         jda!!.listener<MessageReceivedEvent> {
@@ -61,14 +61,13 @@ object DiscordBridge {
                 TextColor.color(color.rgb)
             }
 
-            val roles: List<Role> = member.roles
-            val highestRole: Role = roles[roles.size - 1]
+            val topRole: Role = member.roles.maxBy { role -> role.positionRaw }
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
             val userComponent: TextComponent = if (color == null) {
                 Component.text(member.effectiveName).color(NamedTextColor.GRAY)
             } else {
-                Component.text("[#${highestRole.name}] ${member.effectiveName}").color(textColor)
+                Component.text("[#${topRole.name}] ${member.effectiveName}").color(textColor)
             }
 
             val configRoles = Config.getRoles()
@@ -123,16 +122,31 @@ object DiscordBridge {
 
             val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
 
-            var messageString = ""
+            val attachmentComponents = mutableListOf<Component>()
 
             if (message.attachments.isNotEmpty()) {
-                messageString = "\n"
-                message.attachments.forEach{ attachment ->
-                    messageString += attachment.url + " "
+                message.attachments.forEach { attachment ->
+                    var linkComponent = Component.text(attachment.url).color(TextColor.color(34, 100, 255))
+
+                    linkComponent = linkComponent.hoverEvent(
+                        HoverEvent.hoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            Component.text(convertColor("&aClick to open link"))
+                        )
+                    )
+
+                    linkComponent = linkComponent.clickEvent(
+                        ClickEvent.clickEvent(
+                            ClickEvent.Action.OPEN_URL,
+                            attachment.url
+                        )
+                    )
+
+                    attachmentComponents += linkComponent
                 }
             }
 
-            for (word in message.contentDisplay.split(" ")) {
+            for (word in (message.contentDisplay).split(" ")) {
                 val urlIter = urlRegex.findAll(word).iterator()
                 if (urlIter.hasNext()) {
                     for (url in urlIter) {
@@ -140,7 +154,7 @@ object DiscordBridge {
                             return@listener
                         }
 
-                        var linkComponent = Component.text(url.groups[2]!!.value).color(TextColor.color(0, 116, 204))
+                        var linkComponent = Component.text(url.groups[2]!!.value).color(TextColor.color(34, 100, 255))
                         linkComponent = linkComponent.hoverEvent(
                             HoverEvent.hoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
@@ -166,8 +180,7 @@ object DiscordBridge {
                 messageComponents += Component.text(word).color(messageColor)
             }
 
-            messageComponents += Component.text(messageString)
-            val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents)
+            val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents + attachmentComponents)
 
             var replyComponent = Component.text("")
 
