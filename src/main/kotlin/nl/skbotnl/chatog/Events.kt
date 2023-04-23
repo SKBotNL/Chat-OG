@@ -16,7 +16,6 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.kyori.adventure.translation.GlobalTranslator
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.getColor
 import nl.skbotnl.chatog.Helper.removeColor
@@ -352,8 +351,8 @@ class Events : Listener {
         event.deathMessage(deathMessage)
 
         GlobalScope.launch {
-            val translatedDeathMessage = GlobalTranslator.translator().translate(oldDeathMessage.key(), Locale.US)
-            DiscordBridge.sendEmbed("${removeColor(nameString)} was $translatedDeathMessage.", event.player.uniqueId, 0xFF0000)
+            val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(oldDeathMessage)
+            DiscordBridge.sendEmbed(removeColor(translatedDeathMessage), event.player.uniqueId, 0xFF0000)
         }
     }
 }
