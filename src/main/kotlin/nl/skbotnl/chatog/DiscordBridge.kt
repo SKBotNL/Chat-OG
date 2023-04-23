@@ -50,7 +50,6 @@ object DiscordBridge {
             sendMessageWithBot("The server has started <:stonks:899680228216029195>")
         }
 
-
         jda!!.listener<MessageReceivedEvent> {
             if (it.channel.id != channelId) {
                 return@listener

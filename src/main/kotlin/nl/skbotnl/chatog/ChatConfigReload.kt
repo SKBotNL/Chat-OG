@@ -1,6 +1,7 @@
 package nl.skbotnl.chatog
 
 import club.minnced.discord.webhook.WebhookClient
+import net.dv8tion.jda.api.entities.Activity
 import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -15,6 +16,7 @@ class ChatConfigReload : CommandExecutor {
         DiscordBridge.channelId = Config.getChannelId()
         DiscordBridge.guildId = Config.getGuildId()
         DiscordBridge.webhook = WebhookClient.withUrl(Config.getWebhook())
+        DiscordBridge.jda!!.presence.setPresence(Activity.playing(Config.getStatus()), false)
 
         sender.sendMessage(convertColor("&aReloaded the config!"))
         return true
