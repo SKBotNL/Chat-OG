@@ -146,7 +146,7 @@ object DiscordBridge {
                 }
             }
 
-            for (word in (message.contentDisplay).split(" ")) {
+            for (word in message.contentDisplay.split(" ")) {
                 val urlIter = urlRegex.findAll(word).iterator()
                 if (urlIter.hasNext()) {
                     for (url in urlIter) {
