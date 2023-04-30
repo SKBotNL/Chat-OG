@@ -34,6 +34,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun joinEvent(event: PlayerJoinEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
@@ -49,6 +53,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun quitEvent(event: PlayerQuitEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
@@ -64,6 +72,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun kickEvent(event: PlayerKickEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
@@ -72,6 +84,7 @@ class Events : Listener {
         discordString = convertColor(discordString)
 
         GlobalScope.launch {
+            // TODO: event reason content isnt working
             DiscordBridge.sendEmbed("${removeColor(discordString)} was kicked with reason: `${(event.reason() as TextComponent).content()}`. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
@@ -79,6 +92,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun advancementEvent(event: PlayerAdvancementDoneEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
@@ -106,6 +123,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun broadcastEvent(event: BroadcastMessageEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         val content = (event.message() as TextComponent).content()
         if (content == "") {
             return
@@ -333,6 +354,10 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
+        if (DiscordBridge.jda != null) {
+            return
+        }
+        
         var nameString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
