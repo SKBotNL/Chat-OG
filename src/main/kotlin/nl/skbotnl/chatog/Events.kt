@@ -34,7 +34,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun joinEvent(event: PlayerJoinEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
@@ -53,7 +53,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun quitEvent(event: PlayerQuitEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
@@ -72,7 +72,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun kickEvent(event: PlayerKickEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
@@ -92,7 +92,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun advancementEvent(event: PlayerAdvancementDoneEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
@@ -123,7 +123,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun broadcastEvent(event: BroadcastMessageEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
@@ -354,7 +354,7 @@ class Events : Listener {
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
-        if (DiscordBridge.jda == null) {
+        if (!Config.getDiscordEnabled()) {
             return
         }
         
