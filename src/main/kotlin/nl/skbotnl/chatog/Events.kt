@@ -30,7 +30,7 @@ import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
 import java.util.*
 
-class   Events : Listener {
+class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
 
     @OptIn(DelicateCoroutinesApi::class)
