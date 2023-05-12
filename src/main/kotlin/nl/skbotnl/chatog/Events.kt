@@ -18,6 +18,8 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.getColor
+import nl.skbotnl.chatog.Helper.getColorSection
+import nl.skbotnl.chatog.Helper.getFirstColorSection
 import nl.skbotnl.chatog.Helper.removeColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -28,7 +30,7 @@ import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
 import java.util.*
 
-class Events : Listener {
+class   Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -225,7 +227,18 @@ class Events : Listener {
                 return@forEach
             }
             val wordText = if (event.player.hasPermission("chat-og.color")) {
-                convertColor(chatColor + word)
+                if (messageComponents.isNotEmpty()) {
+                    val lastContent = (messageComponents.last() as TextComponent).content()
+                    if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
+                        convertColor(getColorSection(lastContent) + word)
+                    }
+                    else {
+                        convertColor(chatColor + word)
+                    }
+                }
+                else {
+                    convertColor(chatColor + word)
+                }
             }
             else {
                 convertColor(chatColor) + word

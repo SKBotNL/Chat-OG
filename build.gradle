@@ -45,7 +45,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.8") {
         exclude module: 'opus-java'
     }
-    implementation "com.github.minndevelopment:jda-ktx:9fc90f616b7c9b68b8680c7bf37d6af361bb0fbb"
+    implementation "com.github.MinnDevelopment:jda-ktx:9fc90f616b"
     implementation "com.github.SKBotNL:discord-webhooks:0.8.3"
 
     implementation "com.google.code.gson:gson:2.10.1"

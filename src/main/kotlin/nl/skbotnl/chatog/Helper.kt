@@ -32,6 +32,29 @@ object Helper {
         return tempText
     }
 
+    fun getColorSection(text: String): String {
+        val it = colorRegex.findAll(text).iterator()
+
+        var last = ""
+        while (it.hasNext()) {
+            last = it.next().value
+        }
+
+        return last
+    }
+
+    fun getFirstColorSection(text: String): String {
+        val it = colorRegex.findAll(text).iterator()
+
+        var first = ""
+        while (it.hasNext()) {
+            first = it.next().value
+            break
+        }
+
+        return first
+    }
+
     private val getColorRegex = Regex("(&)?&([0-9a-fk-orA-FK-OR])")
     fun getColor(text: String): String {
         val it = getColorRegex.findAll(text).iterator()
