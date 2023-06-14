@@ -25,4 +25,4 @@ commands:
     usage: /dc OR /dc <message here>
   d:
     description: Toggle or talk in donor chat
-    usage: /dc OR /dc <message here>
+    usage: /d OR /d <message here>
