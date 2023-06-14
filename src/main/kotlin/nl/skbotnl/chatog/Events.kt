@@ -16,11 +16,13 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import nl.skbotnl.chatog.ChatSystemHelper.ChatType
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.getColor
 import nl.skbotnl.chatog.Helper.getColorSection
 import nl.skbotnl.chatog.Helper.getFirstColorSection
 import nl.skbotnl.chatog.Helper.removeColor
+import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -40,15 +42,15 @@ class Events : Listener {
             return
         }
         
-        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
         }
-        discordString = convertColor(discordString)
+        colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} has joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
+            DiscordBridge.sendEmbed("${removeColor(colorChatString)} has joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
         }
     }
 
@@ -59,15 +61,15 @@ class Events : Listener {
             return
         }
         
-        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
         }
-        discordString = convertColor(discordString)
+        colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} has left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed("${removeColor(colorChatString)} has left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
 
@@ -78,16 +80,15 @@ class Events : Listener {
             return
         }
         
-        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
         }
-        discordString = convertColor(discordString)
+        colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
-            // TODO: event reason content isnt working
-            DiscordBridge.sendEmbed("${removeColor(discordString)} was kicked with reason: `${(event.reason() as TextComponent).content()}`. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed("${removeColor(colorChatString)} was kicked with reason: \"${(event.reason() as TextComponent).content()}\". ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
 
@@ -98,12 +99,12 @@ class Events : Listener {
             return
         }
         
-        var discordString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            discordString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $discordString")
+            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
         }
-        discordString = convertColor(discordString)
+        colorChatString = convertColor(colorChatString)
 
         val advancementTitleKey = event.advancement.display?.title() ?: return
         val advancementTitle = PlainTextComponentSerializer.plainText().serialize(advancementTitleKey)
@@ -118,7 +119,7 @@ class Events : Listener {
         }
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(discordString)} $advancementMessage.", event.player.uniqueId, 0xFFFF00)
+            DiscordBridge.sendEmbed("${removeColor(colorChatString)} $advancementMessage.", event.player.uniqueId, 0xFFFF00)
         }
     }
 
@@ -149,19 +150,28 @@ class Events : Listener {
 
         val oldTextComponent = event.message() as TextComponent
 
+        if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
+            ChatSystemHelper.sendMessageInStaffChat(event.player, oldTextComponent.content())
+            return
+        }
+        if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.DONORCHAT) {
+            ChatSystemHelper.sendMessageInDonorChat(event.player, oldTextComponent.content())
+            return
+        }
+
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
-        val discordString = convertColor(chatString)
+        val colorChatString = convertColor(chatString)
 
         var discordMessageString: String? = null
         if (DiscordBridge.jda != null) {
             discordMessageString = oldTextComponent.content()
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
-                guildEmojis = DiscordBridge.jda!!.getGuildById(DiscordBridge.guildId)?.emojis
+                guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
             }
             catch (e: Exception) {
                 ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
@@ -248,13 +258,13 @@ class Events : Listener {
 
         if (DiscordBridge.jda != null) {
             GlobalScope.launch {
-                DiscordBridge.sendMessage(discordMessageString!!, discordString, event.player.uniqueId)
+                DiscordBridge.sendMessage(discordMessageString!!, colorChatString, event.player.uniqueId)
             }
         }
 
         val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        chatString = convertColor("$discordString${ChatOG.chat.getPlayerSuffix(event.player)}")
+        chatString = convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(event.player)}")
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
@@ -281,9 +291,33 @@ class Events : Listener {
 
     @EventHandler
     fun commandPreprocess(event: PlayerCommandPreprocessEvent) {
-        val checkSplit = event.message.split(" ", ignoreCase = true, limit = 2)[0]
+        val checkSplit = event.message.split(" ", limit = 2)[0]
 
         if (!(checkSplit == "/msg" || checkSplit == "/whisper" || checkSplit == "/pm" || checkSplit == "/reply" || checkSplit == "/r")) {
+            if (checkSplit == "/s") {
+                event.isCancelled = true
+
+                if (!event.player.hasPermission("chat-og.staff")) {
+                    event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: &cYou do not have permission to run this command."))
+                    return
+                }
+
+                val args = event.message.split(" ").drop(1)
+
+                if (args.isEmpty()) {
+                    if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
+                        ChatSystemHelper.inChat[event.player.uniqueId] = ""
+
+                        event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: You are now talking in normal chat."))
+                        return
+                    }
+                    ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
+                    event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: You are now talking in staff chat."))
+                    return
+                }
+
+                ChatSystemHelper.sendMessageInStaffChat(event.player, args.joinToString(separator=" "))
+            }
             return
         }
         event.isCancelled = true

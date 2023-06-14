@@ -1,14 +1,18 @@
-### Translator ###
+# ---Translator---
 apiKey: <put your apikey here>
 subscriptionRegion: <put the subscription region here>
 
-### Discord ###
+# ---Discord---
 discordEnabled: false
 status: Playing Minecraft
 botToken: <put the bot token here>
 guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
+staffChannelId: <put the id of the channel here>
+donorChannelId: <put the id of the channel here>
 webhook: <put the webhook here>
+staffWebhook: <put the webhook here>
+donorWebhook: <put the webhook here>
 
 # Configure which roles can use color codes with Discord -> Minecraft
 # For example:

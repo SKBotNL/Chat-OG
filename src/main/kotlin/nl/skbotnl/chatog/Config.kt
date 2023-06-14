@@ -47,12 +47,28 @@ object Config {
         return config.get("channelId").toString()
     }
 
+    fun getStaffChannelId(): String {
+        return config.get("staffChannelId").toString()
+    }
+
+    fun getDonorChannelId(): String {
+        return config.get("donorChannelId").toString()
+    }
+
     fun getGuildId(): String {
         return config.get("guildId").toString()
     }
 
     fun getWebhook(): String {
         return config.get("webhook").toString()
+    }
+
+    fun getStaffWebhook(): String {
+        return config.get("staffWebhook").toString()
+    }
+
+    fun getDonorWebhook(): String {
+        return config.get("donorWebhook").toString()
     }
 
     fun getColorCodeRoles(): MutableList<String> {

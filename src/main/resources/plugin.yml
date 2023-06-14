@@ -6,11 +6,23 @@ api-version: 1.18
 depend: [PlaceholderAPI, Vault]
 commands:
   translatemessage:
-    description: translatemessage
+    description: Internal command for translating messages
     usage: /translatemessage <uuid> <iscustommessage>
   translatesettings:
-    description: translatesettings
+    description: Change which language you want the translator to translate to
     usage: /translatesettings <language>
   chatconfigreload:
-    description: chatconfigreload
+    description: Reload Chat-OG's config
     usage: /chatconfigreload
+  sc:
+    description: Toggle or talk in staff chat
+    usage: /sc OR /sc <message here>
+  s:
+    description: Toggle or talk in staff chat
+    usage: /s OR /s <message here>
+  dc:
+    description: Toggle or talk in donor chat
+    usage: /dc OR /dc <message here>
+  d:
+    description: Toggle or talk in donor chat
+    usage: /dc OR /dc <message here>

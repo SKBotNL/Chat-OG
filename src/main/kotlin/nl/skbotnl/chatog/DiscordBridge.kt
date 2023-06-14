@@ -12,6 +12,7 @@ import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -25,33 +26,66 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.removeColor
+import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import java.util.*
 
 object DiscordBridge {
     var jda: JDA? = null
     var webhook: WebhookClient? = null
+    var staffWebhook: WebhookClient? = null
+    var donorWebhook: WebhookClient? = null
     var guildId = Config.getGuildId()
     var channelId = Config.getChannelId()
+    var staffChannelId = Config.getStaffChannelId()
+    var donorChannelId = Config.getDonorChannelId()
 
     private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
 
     fun main() {
-        webhook = WebhookClient.withUrl(Config.getWebhook())
+        try {
+            webhook = WebhookClient.withUrl(Config.getWebhook())
+        }
+        catch (e: IllegalArgumentException) {
+            ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
+        }
+        try {
+            staffWebhook = WebhookClient.withUrl(Config.getStaffWebhook())
+        }
+        catch (e: IllegalArgumentException) {
+            ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
+        }
+        try {
+            donorWebhook = WebhookClient.withUrl(Config.getDonorWebhook())
+        }
+        catch (e: IllegalArgumentException) {
+            ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
+        }
 
         jda = light(Config.getBotToken(), enableCoroutines=true) {
             intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             cache += listOf(CacheFlag.EMOJI)
         }
 
-        jda!!.presence.setPresence(Activity.playing(Config.getStatus()), false)
+        jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
 
-        jda!!.listener<ReadyEvent> {
+        jda?.listener<ReadyEvent> {
             sendMessageWithBot("The server has started <:stonks:899680228216029195>")
+            jda?.getGuildById(guildId)?.upsertCommand("list", "List all online players.")?.queue()
         }
 
-        jda!!.listener<MessageReceivedEvent> {
-            if (it.channel.id != channelId) {
+        jda?.listener<SlashCommandInteractionEvent> {
+            if (it.name == "list") {
+                if (Bukkit.getOnlinePlayers().isEmpty()) {
+                    it.reply("There are no players online.").queue()
+                    return@listener
+                }
+                it.reply(Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }).queue()
+            }
+        }
+
+        jda?.listener<MessageReceivedEvent> {
+            if (it.channel.id != channelId && it.channel.id != staffChannelId && it.channel.id != donorChannelId ) {
                 return@listener
             }
             if (it.author.isBot) {
@@ -211,7 +245,19 @@ object DiscordBridge {
                 }
             }
 
-            var messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, replyComponent, userComponent, contentComponent)
+            var messageComponent: Component
+            if (it.channel.id == staffChannelId) {
+                val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
+                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, staffComponent, replyComponent, userComponent, contentComponent)
+            }
+            else if (it.channel.id == donorChannelId) {
+                val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
+                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, donorComponent, replyComponent, userComponent, contentComponent)
+            }
+            else {
+                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, replyComponent, userComponent, contentComponent)
+            }
+
             messageComponent = messageComponent.hoverEvent(
                 HoverEvent.hoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
@@ -227,23 +273,39 @@ object DiscordBridge {
                 )
             )
 
-            Bukkit.broadcast(messageComponent)
+            if (it.channel.id == staffChannelId) {
+                for (p in Bukkit.getOnlinePlayers()) {
+                    if (p.hasPermission("chat-og.staff")) {
+                        p.sendMessage(messageComponent)
+                    }
+                }
+            }
+            else if (it.channel.id == donorChannelId) {
+                for (p in Bukkit.getOnlinePlayers()) {
+                    if (p.hasPermission("chat-og.donors")) {
+                        p.sendMessage(messageComponent)
+                    }
+                }
+            }
+            else {
+                Bukkit.broadcast(messageComponent)
+            }
 
             TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(message.contentDisplay, member.effectiveName, Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent), Component.text(" > ").color(messageColor))
         }
     }
 
     fun sendMessageWithBot(message: String) {
-        val channel = jda!!.getChannel<MessageChannel>(channelId)
+        val channel = jda?.getChannel<MessageChannel>(channelId)
         if (channel == null) {
-            ChatOG.plugin.logger.warning("ChannelId has not been set or is invalid")
+            ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
         }
 
-        channel!!.sendMessage(message).complete()
+        channel?.sendMessage(message)?.complete()
     }
     fun sendMessage(message: String, player: String, uuid: UUID?) {
         if (webhook == null) {
-            ChatOG.plugin.logger.warning("Webhook has not been set or is invalid")
+            ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
             return
         }
 
@@ -254,7 +316,39 @@ object DiscordBridge {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
 
-        webhook!!.send(webhookMessage.build())
+        webhook?.send(webhookMessage.build())
+    }
+
+    fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
+        if (staffWebhook == null) {
+            ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
+            return
+        }
+
+        val webhookMessage = WebhookMessageBuilder()
+            .setUsername(removeColor(player))
+            .setContent(message)
+        if (uuid != null) {
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+        }
+
+        staffWebhook?.send(webhookMessage.build())
+    }
+
+    fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
+        if (donorWebhook == null) {
+            ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
+            return
+        }
+
+        val webhookMessage = WebhookMessageBuilder()
+            .setUsername(removeColor(player))
+            .setContent(message)
+        if (uuid != null) {
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+        }
+
+        donorWebhook?.send(webhookMessage.build())
     }
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int) {
@@ -272,6 +366,6 @@ object DiscordBridge {
             .setColor(color)
             .setAuthor(WebhookEmbed.EmbedAuthor(message, iconUrl, null))
 
-        webhook!!.send(webhookMessage.build())
+        webhook?.send(webhookMessage.build())
     }
 }

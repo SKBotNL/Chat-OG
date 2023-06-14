@@ -4,6 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.milkbowl.vault.chat.Chat
+import nl.skbotnl.chatog.commands.*
 import org.bukkit.plugin.java.JavaPlugin
 
 class ChatOG : JavaPlugin() {
@@ -30,6 +31,9 @@ class ChatOG : JavaPlugin() {
         this.getCommand("translatesettings")?.setExecutor(TranslateSettings())
         this.getCommand("translatesettings")?.tabCompleter = TranslateSettingsTabCompleter()
         this.getCommand("chatconfigreload")?.setExecutor(ChatConfigReload())
+        this.getCommand("sc")?.setExecutor(StaffChat())
+        this.getCommand("dc")?.setExecutor(DonorChat())
+        this.getCommand("d")?.setExecutor(DonorChat())
 
         if (Config.getDiscordEnabled()) {
             GlobalScope.launch {
