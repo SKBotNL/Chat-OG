@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -25,6 +26,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import nl.skbotnl.chatog.Helper.convertColor
+import nl.skbotnl.chatog.Helper.convertMentions
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
@@ -65,6 +67,7 @@ object DiscordBridge {
         jda = light(Config.getBotToken(), enableCoroutines=true) {
             intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             cache += listOf(CacheFlag.EMOJI)
+            setMemberCachePolicy(MemberCachePolicy.ALL)
         }
 
         jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
@@ -303,7 +306,7 @@ object DiscordBridge {
 
         channel?.sendMessage(message)?.complete()
     }
-    fun sendMessage(message: String, player: String, uuid: UUID?) {
+    suspend fun sendMessage(message: String, player: String, uuid: UUID?) {
         if (webhook == null) {
             ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
             return
@@ -311,7 +314,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(message)
+            .setContent(convertMentions(message))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
@@ -319,7 +322,7 @@ object DiscordBridge {
         webhook?.send(webhookMessage.build())
     }
 
-    fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
+    suspend fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
         if (staffWebhook == null) {
             ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
             return
@@ -327,7 +330,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(message)
+            .setContent(convertMentions(message))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
@@ -335,7 +338,7 @@ object DiscordBridge {
         staffWebhook?.send(webhookMessage.build())
     }
 
-    fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
+    suspend fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
         if (donorWebhook == null) {
             ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
             return
@@ -343,7 +346,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(message)
+            .setContent(convertMentions(message))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }

@@ -42,7 +42,7 @@ dependencies {
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     compileOnly "me.clip:placeholderapi:2.11.3"
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.9") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
         exclude module: 'opus-java'
     }
 

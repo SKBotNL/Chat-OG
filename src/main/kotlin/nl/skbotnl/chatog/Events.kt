@@ -174,7 +174,7 @@ class Events : Listener {
                 guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
             }
             catch (e: Exception) {
-                ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
+                ChatOG.plugin.logger.warning("Can't get the guild's emojis, is guildId set?")
             }
 
             if (guildEmojis != null) {
