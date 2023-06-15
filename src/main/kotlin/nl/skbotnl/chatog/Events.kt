@@ -87,8 +87,10 @@ class Events : Listener {
         }
         colorChatString = convertColor(colorChatString)
 
+        val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
+
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(colorChatString)} was kicked with reason: \"${(event.reason() as TextComponent).content()}\". ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed("${removeColor(colorChatString)} was kicked with reason: \"${reason}\". ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
         }
     }
 
