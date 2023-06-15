@@ -83,7 +83,7 @@ object DiscordBridge {
                     it.reply("There are no players online.").queue()
                     return@listener
                 }
-                it.reply("${Bukkit.getOnlinePlayers().count()} players online:\n${Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }}").queue()
+                it.reply("${Bukkit.getOnlinePlayers().count()} player(s) online:\n${Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }}").queue()
             }
         }
 
