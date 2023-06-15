@@ -95,7 +95,7 @@ object Helper {
         val handleIter = getHandle.findAll(tempText).iterator()
         handleIter.forEach { handle ->
             for (member in members) {
-                if (member.user.discriminator == "0000" && member.user.name.lowercase() == handle.groupValues[1]) {
+                if (member.user.discriminator == "0000" && member.user.name.lowercase() == handle.groupValues[1].lowercase()) {
                     tempText = tempText.replace(handle.value, member.asMention)
                 }
             }
