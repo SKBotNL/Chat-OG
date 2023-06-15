@@ -4,7 +4,7 @@ subscriptionRegion: <put the subscription region here>
 
 # ---Discord---
 discordEnabled: false
-status: Playing Minecraft
+status: Minecraft
 botToken: <put the bot token here>
 guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
