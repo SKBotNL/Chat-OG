@@ -200,7 +200,7 @@ object DiscordBridge {
                         if (BlocklistManager.checkUrl(word)) {
                             for (player in Bukkit.getOnlinePlayers()) {
                                 if (player.hasPermission("group.moderator")) {
-                                    player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${user.name}#${user.discriminator} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
+                                    player.sendMessage(convertColor("[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
                                 }
                             }
                             return@listener
@@ -244,7 +244,7 @@ object DiscordBridge {
             if (message.messageReference != null) {
                 val replyMessage = message.messageReference!!.message
                 if (replyMessage != null) {
-                    replyComponent = Component.text("[Reply to: ${replyMessage.author.name}] ").color(NamedTextColor.GREEN)
+                    replyComponent = Component.text("[Reply to: ${replyMessage.author.effectiveName}] ").color(NamedTextColor.GREEN)
                 }
             }
 

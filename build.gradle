@@ -1,12 +1,21 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "checkstyle"
 }
 
 group = 'nl.skbotnl.chat-og'
 version = '1.3'
 
 def apiVersion = "1.18.2"
+
+checkstyle {
+    toolVersion '9.3'
+    configFile file("config/checkstyle/checkstyle.xml")
+}
+checkstyleMain {
+    source ='src/main/kotlin'
+}
 
 processResources {
     def props = [
