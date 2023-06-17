@@ -30,7 +30,7 @@ class StaffChat : CommandExecutor {
             return true
         }
 
-        ChatSystemHelper.sendMessageInStaffChat(sender, args.joinToString(separator=" "))
+        ChatSystemHelper.sendMessageInStaffChat(sender, args.joinToString(separator = " "))
 
         return true
     }

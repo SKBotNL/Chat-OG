@@ -30,7 +30,7 @@ class DonorChat : CommandExecutor {
             return true
         }
 
-        ChatSystemHelper.sendMessageInDonorChat(sender, args.joinToString(separator=" "))
+        ChatSystemHelper.sendMessageInDonorChat(sender, args.joinToString(separator = " "))
 
         return true
     }

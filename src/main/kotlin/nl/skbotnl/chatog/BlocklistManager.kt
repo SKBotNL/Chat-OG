@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object BlocklistManager {
     private var blockList = mutableListOf<String>()
+
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun load() {
         ChatOG.plugin.logger.info("Loading the blocklists...")

@@ -20,6 +20,7 @@ object Helper {
         }
         return cooldown
     }
+
     fun convertColor(text: String): String {
         return ChatColor.translateAlternateColorCodes('&', text)
     }

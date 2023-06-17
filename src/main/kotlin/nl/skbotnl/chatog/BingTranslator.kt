@@ -25,7 +25,14 @@ object BingTranslator {
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder()
             .uri(URI.create("${endpoint}/translate?api-version=3.0&to=${language}"))
-            .headers("Content-Type", "application/json", "Ocp-Apim-Subscription-Key", apiKey, "Ocp-Apim-Subscription-Region", subscriptionRegion)
+            .headers(
+                "Content-Type",
+                "application/json",
+                "Ocp-Apim-Subscription-Key",
+                apiKey,
+                "Ocp-Apim-Subscription-Region",
+                subscriptionRegion
+            )
             .POST(HttpRequest.BodyPublishers.ofString("""[{"Text":"${text.replace("\"", """\"""")}"}]"""))
             .build()
 
@@ -36,11 +43,19 @@ object BingTranslator {
 
         if (response.statusCode() == 401) {
             val errorResponse = gson.fromJson(body, Error::class.java)
-            return Translated(null, null, convertColor("&cSomething went wrong. &fError Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}"))
+            return Translated(
+                null,
+                null,
+                convertColor("&cSomething went wrong. &fError Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}")
+            )
         }
 
         val translationResponse = gson.fromJson(body, Array<TranslationResponse>::class.java)
 
-        return Translated(translationResponse[0].translations[0].text, translationResponse[0].detectedLanguage.language, null)
+        return Translated(
+            translationResponse[0].translations[0].text,
+            translationResponse[0].detectedLanguage.language,
+            null
+        )
     }
 }

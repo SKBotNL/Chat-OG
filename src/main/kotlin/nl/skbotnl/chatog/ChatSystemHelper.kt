@@ -41,8 +41,7 @@ object ChatSystemHelper {
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
                 guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
             }
 
@@ -51,7 +50,7 @@ object ChatSystemHelper {
                 regex.findAll(text).iterator().forEach {
                     guildEmojis.forEach { emoji ->
                         if (emoji.name == it.groupValues[1]) {
-                            val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                            val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
                             discordMessageString = discordMessageString.replace(it.value, replaceWith)
                         }
                     }
@@ -108,7 +107,8 @@ object ChatSystemHelper {
                         Helper.convertColor(chatColor + (link.groups[4]?.value ?: ""))
                     )
 
-                    val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+                    val fullComponent =
+                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
 
                     messageComponents += fullComponent
                 }
@@ -119,16 +119,13 @@ object ChatSystemHelper {
                     val lastContent = (messageComponents.last() as TextComponent).content()
                     if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
                         Helper.convertColor(Helper.getColorSection(lastContent) + word)
-                    }
-                    else {
+                    } else {
                         Helper.convertColor(chatColor + word)
                     }
-                }
-                else {
+                } else {
                     Helper.convertColor(chatColor + word)
                 }
-            }
-            else {
+            } else {
                 Helper.convertColor(chatColor) + word
             }
             messageComponents += Component.text(wordText)
@@ -140,11 +137,13 @@ object ChatSystemHelper {
             }
         }
 
-        val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
+        val messageComponent =
+            Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
         chatString = Helper.convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(player)}")
 
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+        var textComponent =
+            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -184,8 +183,7 @@ object ChatSystemHelper {
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
                 guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
             }
 
@@ -194,7 +192,7 @@ object ChatSystemHelper {
                 regex.findAll(text).iterator().forEach {
                     guildEmojis.forEach { emoji ->
                         if (emoji.name == it.groupValues[1]) {
-                            val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                            val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
                             discordMessageString = discordMessageString.replace(it.value, replaceWith)
                         }
                     }
@@ -251,7 +249,8 @@ object ChatSystemHelper {
                         Helper.convertColor(chatColor + (link.groups[4]?.value ?: ""))
                     )
 
-                    val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+                    val fullComponent =
+                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
 
                     messageComponents += fullComponent
                 }
@@ -262,16 +261,13 @@ object ChatSystemHelper {
                     val lastContent = (messageComponents.last() as TextComponent).content()
                     if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
                         Helper.convertColor(Helper.getColorSection(lastContent) + word)
-                    }
-                    else {
+                    } else {
                         Helper.convertColor(chatColor + word)
                     }
-                }
-                else {
+                } else {
                     Helper.convertColor(chatColor + word)
                 }
-            }
-            else {
+            } else {
                 Helper.convertColor(chatColor) + word
             }
             messageComponents += Component.text(wordText)
@@ -283,11 +279,13 @@ object ChatSystemHelper {
             }
         }
 
-        val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
+        val messageComponent =
+            Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
         chatString = Helper.convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(player)}")
 
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+        var textComponent =
+            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,

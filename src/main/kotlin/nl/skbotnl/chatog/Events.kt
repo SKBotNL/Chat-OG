@@ -7,6 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
+import net.ess3.api.events.VanishStatusChangeEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
@@ -30,6 +31,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
+import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 import java.util.*
 
 class Events : Listener {
@@ -37,74 +39,110 @@ class Events : Listener {
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun joinEvent(event: PlayerJoinEvent) {
+    fun onJoin(event: PlayerJoinEvent) {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+
+        if (ChatOG.essentials.getUser(event.player).isVanished) {
+            return
+        }
+
         var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
+            colorChatString = PlaceholderAPI.setPlaceholders(
+                event.player,
+                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+            )
         }
         colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(colorChatString)} has joined the game. ${Bukkit.getOnlinePlayers().count()} player(s) online.", event.player.uniqueId, 0x00FF00)
+            DiscordBridge.sendEmbed(
+                "${removeColor(colorChatString)} has joined the game. ${
+                    Bukkit.getOnlinePlayers().count()
+                } player(s) online.", event.player.uniqueId, 0x00FF00
+            )
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun quitEvent(event: PlayerQuitEvent) {
+    fun onQuit(event: PlayerQuitEvent) {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+
+        if (ChatOG.essentials.getUser(event.player).isVanished) {
+            return
+        }
+
         var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
+            colorChatString = PlaceholderAPI.setPlaceholders(
+                event.player,
+                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+            )
         }
         colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(colorChatString)} has left the game. ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed(
+                "${removeColor(colorChatString)} has left the game. ${
+                    Bukkit.getOnlinePlayers().count() - 1
+                } player(s) online.", event.player.uniqueId, 0xFF0000
+            )
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun kickEvent(event: PlayerKickEvent) {
+    fun onKick(event: PlayerKickEvent) {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+
+        if (ChatOG.essentials.getUser(event.player).isVanished) {
+            return
+        }
+
         var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
+            colorChatString = PlaceholderAPI.setPlaceholders(
+                event.player,
+                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+            )
         }
         colorChatString = convertColor(colorChatString)
 
         val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(colorChatString)} was kicked with reason: \"${reason}\". ${Bukkit.getOnlinePlayers().count() - 1} player(s) online.", event.player.uniqueId, 0xFF0000)
+            DiscordBridge.sendEmbed(
+                "${removeColor(colorChatString)} was kicked with reason: \"${reason}\". ${
+                    Bukkit.getOnlinePlayers().count() - 1
+                } player(s) online.", event.player.uniqueId, 0xFF0000
+            )
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun advancementEvent(event: PlayerAdvancementDoneEvent) {
+    fun onAdvancement(event: PlayerAdvancementDoneEvent) {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+
         var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $colorChatString")
+            colorChatString = PlaceholderAPI.setPlaceholders(
+                event.player,
+                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+            )
         }
         colorChatString = convertColor(colorChatString)
 
@@ -121,17 +159,24 @@ class Events : Listener {
         }
 
         GlobalScope.launch {
-            DiscordBridge.sendEmbed("${removeColor(colorChatString)} $advancementMessage.", event.player.uniqueId, 0xFFFF00)
+            DiscordBridge.sendEmbed(
+                "${removeColor(colorChatString)} $advancementMessage.",
+                event.player.uniqueId,
+                0xFFFF00
+            )
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun broadcastEvent(event: BroadcastMessageEvent) {
+    fun onBroadcast(event: BroadcastMessageEvent) {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+        if (event.message() !is TextComponent) {
+            return
+        }
+
         val content = (event.message() as TextComponent).content()
         if (content == "") {
             return
@@ -146,7 +191,7 @@ class Events : Listener {
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    fun chatEvent(event: AsyncChatEvent) {
+    fun onChat(event: AsyncChatEvent) {
         if (event.isCancelled) return
         event.isCancelled = true
 
@@ -164,7 +209,8 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
+            chatString =
+                PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         val colorChatString = convertColor(chatString)
 
@@ -174,8 +220,7 @@ class Events : Listener {
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
                 guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 ChatOG.plugin.logger.warning("Can't get the guild's emojis, is guildId set?")
             }
 
@@ -184,7 +229,7 @@ class Events : Listener {
                 regex.findAll(oldTextComponent.content()).iterator().forEach {
                     guildEmojis.forEach { emoji ->
                         if (emoji.name == it.groupValues[1]) {
-                            val replaceWith = "<${if(emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                            val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
                             discordMessageString = discordMessageString!!.replace(it.value, replaceWith)
                         }
                     }
@@ -204,7 +249,16 @@ class Events : Listener {
                         event.player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
                         for (player in Bukkit.getOnlinePlayers()) {
                             if (player.hasPermission("group.moderator")) {
-                                player.sendMessage(convertColor("[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
+                                player.sendMessage(
+                                    convertColor(
+                                        "[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: ${
+                                            word.replace(
+                                                ".",
+                                                "[dot]"
+                                            )
+                                        }."
+                                    )
+                                )
                             }
                         }
                         return
@@ -232,7 +286,8 @@ class Events : Listener {
                         convertColor(chatColor + (link.groups[4]?.value ?: ""))
                     )
 
-                    val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+                    val fullComponent =
+                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
 
                     messageComponents += fullComponent
                 }
@@ -243,16 +298,13 @@ class Events : Listener {
                     val lastContent = (messageComponents.last() as TextComponent).content()
                     if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
                         convertColor(getColorSection(lastContent) + word)
-                    }
-                    else {
+                    } else {
                         convertColor(chatColor + word)
                     }
-                }
-                else {
+                } else {
                     convertColor(chatColor + word)
                 }
-            }
-            else {
+            } else {
                 convertColor(chatColor) + word
             }
             messageComponents += Component.text(wordText)
@@ -264,11 +316,13 @@ class Events : Listener {
             }
         }
 
-        val messageComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
+        val messageComponent =
+            Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
         chatString = convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(event.player)}")
 
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+        var textComponent =
+            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -288,11 +342,12 @@ class Events : Listener {
             it.sendMessage(textComponent)
         }
 
-        TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(oldTextComponent.content(), event.player)
+        TranslateMessage.chatMessages[randomUUID] =
+            TranslateMessage.SentChatMessage(oldTextComponent.content(), event.player)
     }
 
     @EventHandler
-    fun commandPreprocess(event: PlayerCommandPreprocessEvent) {
+    fun onCommandPreprocess(event: PlayerCommandPreprocessEvent) {
         val checkSplit = event.message.split(" ", limit = 2)[0]
 
         if (!(checkSplit == "/msg" || checkSplit == "/whisper" || checkSplit == "/pm" || checkSplit == "/reply" || checkSplit == "/r")) {
@@ -318,7 +373,7 @@ class Events : Listener {
                     return
                 }
 
-                ChatSystemHelper.sendMessageInStaffChat(event.player, args.joinToString(separator=" "))
+                ChatSystemHelper.sendMessageInStaffChat(event.player, args.joinToString(separator = " "))
             }
             return
         }
@@ -378,7 +433,12 @@ class Events : Listener {
             )
         )
 
-        TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(message, event.player.name, Component.text(convertColor("&6[PM]&4 ")), Component.text(" > ").color(NamedTextColor.GRAY))
+        TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(
+            message,
+            event.player.name,
+            Component.text(convertColor("&6[PM]&4 ")),
+            Component.text(" > ").color(NamedTextColor.GRAY)
+        )
 
         if (event.player.hasPermission("chat-og.color")) {
             message = convertColor(message)
@@ -406,11 +466,12 @@ class Events : Listener {
         if (!Config.getDiscordEnabled()) {
             return
         }
-        
+
         var nameString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            nameString = PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $nameString")
+            nameString =
+                PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $nameString")
         }
         nameString = convertColor(nameString)
 
@@ -427,6 +488,34 @@ class Events : Listener {
         GlobalScope.launch {
             val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(oldDeathMessage)
             DiscordBridge.sendEmbed(removeColor(translatedDeathMessage), event.player.uniqueId, 0xFF0000)
+        }
+    }
+
+    @EventHandler
+    fun onVanish(event: VanishStatusChangeEvent) {
+        if (event.value) {
+            val playerQuitEvent = PlayerQuitEvent(
+                event.affected.base,
+                Component.translatable(
+                    "multiplayer.player.left",
+                    NamedTextColor.YELLOW,
+                    event.affected.base.displayName()
+                ),
+                PlayerQuitEvent.QuitReason.DISCONNECTED
+            )
+            JoinQuitListener().onQuit(playerQuitEvent)
+            onQuit(playerQuitEvent)
+        } else {
+            val playerJoinEvent = PlayerJoinEvent(
+                event.affected.base,
+                Component.translatable(
+                    "multiplayer.player.joined",
+                    NamedTextColor.YELLOW,
+                    event.affected.base.displayName()
+                )
+            )
+            JoinQuitListener().onJoin(playerJoinEvent)
+            onJoin(playerJoinEvent)
         }
     }
 }

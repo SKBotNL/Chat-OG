@@ -1,16 +1,19 @@
 package nl.skbotnl.chatog
 
+import com.earth2me.essentials.Essentials
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
+        var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -20,7 +23,7 @@ class ChatOG : JavaPlugin() {
         Config.load()
         LanguageDatabase.load()
         GlobalScope.launch {
-                BlocklistManager.load()
+            BlocklistManager.load()
         }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)

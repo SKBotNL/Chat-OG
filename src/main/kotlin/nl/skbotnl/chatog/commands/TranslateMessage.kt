@@ -20,8 +20,14 @@ class TranslateMessage : CommandExecutor {
     interface ISentMessage {
         val message: String
     }
+
     data class SentChatMessage(override val message: String, val player: Player) : ISentMessage
-    data class SentCustomMessage(override val message: String, val username: String, val prefix: Component, val suffix: Component) :
+    data class SentCustomMessage(
+        override val message: String,
+        val username: String,
+        val prefix: Component,
+        val suffix: Component
+    ) :
         ISentMessage
 
     companion object {
@@ -53,8 +59,7 @@ class TranslateMessage : CommandExecutor {
 
         try {
             uuid = UUID.fromString(args[0])
-        }
-        catch (e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
             player.sendMessage(convertColor("&cThat is not a valid UUID"))
             return true
         }
@@ -95,14 +100,23 @@ class TranslateMessage : CommandExecutor {
         if (isCustomMessage) {
             val sentCustomMessage = sentMessage as SentCustomMessage
 
-            val translatedComponent = Component.text("[${translated.translatedFrom} -> ${language}] ").color(NamedTextColor.LIGHT_PURPLE)
+            val translatedComponent =
+                Component.text("[${translated.translatedFrom} -> ${language}] ").color(NamedTextColor.LIGHT_PURPLE)
 
             val suffixTextComponent = sentCustomMessage.suffix as TextComponent
-            val contentComponent = suffixTextComponent.content("${suffixTextComponent.content()}${translated.translatedText}")
-            translateMessage = Component.join(JoinConfiguration.noSeparators(), translatedComponent, sentCustomMessage.prefix, contentComponent)
+            val contentComponent =
+                suffixTextComponent.content("${suffixTextComponent.content()}${translated.translatedText}")
+            translateMessage = Component.join(
+                JoinConfiguration.noSeparators(),
+                translatedComponent,
+                sentCustomMessage.prefix,
+                contentComponent
+            )
         } else {
             val sentChatMessage = sentMessage as SentChatMessage
-            var chatString = "${ChatOG.chat.getPlayerPrefix(sentChatMessage.player)}${sentChatMessage.player.name}${ChatOG.chat.getPlayerSuffix(sentChatMessage.player)}"
+            var chatString = "${ChatOG.chat.getPlayerPrefix(sentChatMessage.player)}${sentChatMessage.player.name}${
+                ChatOG.chat.getPlayerSuffix(sentChatMessage.player)
+            }"
             if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%parties_party%") != "") {
                 chatString = PlaceholderAPI.setPlaceholders(
                     sentMessage.player,

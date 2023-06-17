@@ -47,24 +47,21 @@ object DiscordBridge {
     fun main() {
         try {
             webhook = WebhookClient.withUrl(Config.getWebhook())
-        }
-        catch (e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
         }
         try {
             staffWebhook = WebhookClient.withUrl(Config.getStaffWebhook())
-        }
-        catch (e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
         }
         try {
             donorWebhook = WebhookClient.withUrl(Config.getDonorWebhook())
-        }
-        catch (e: IllegalArgumentException) {
+        } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
         }
 
-        jda = light(Config.getBotToken(), enableCoroutines=true) {
+        jda = light(Config.getBotToken(), enableCoroutines = true) {
             intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             cache += listOf(CacheFlag.EMOJI)
             setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -79,16 +76,24 @@ object DiscordBridge {
 
         jda?.listener<SlashCommandInteractionEvent> {
             if (it.name == "list") {
-                if (Bukkit.getOnlinePlayers().isEmpty()) {
-                    it.reply("There are no players online.").queue()
-                    return@listener
+                try {
+                    if (Bukkit.getOnlinePlayers().isEmpty()) {
+                        it.reply("There are no players online.").queue()
+                        return@listener
+                    }
+                    it.reply(
+                        "${Bukkit.getOnlinePlayers().count()} player(s) online:\n${
+                            Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }
+                        }"
+                    ).queue()
+                } catch (e: Exception) {
+                    ChatOG.plugin.logger.warning("Could not respond to /list interaction")
                 }
-                it.reply("${Bukkit.getOnlinePlayers().count()} player(s) online:\n${Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }}").queue()
             }
         }
 
         jda?.listener<MessageReceivedEvent> {
-            if (it.channel.id != channelId && it.channel.id != staffChannelId && it.channel.id != donorChannelId ) {
+            if (it.channel.id != channelId && it.channel.id != staffChannelId && it.channel.id != donorChannelId) {
                 return@listener
             }
             if (it.author.isBot) {
@@ -107,7 +112,7 @@ object DiscordBridge {
             }
 
             val roles = member.roles
-            val roleIds = roles.map{ role -> role.id }
+            val roleIds = roles.map { role -> role.id }
             val topRole = roles.maxBy { role -> role.positionRaw }
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
@@ -130,7 +135,11 @@ object DiscordBridge {
 
                     val roleColor = Config.getRoleMessageColor(roleId)
                     if (roleColor is List<*>) {
-                        messageColor = TextColor.color(roleColor.elementAt(0).toString().toInt(), roleColor.elementAt(1).toString().toInt(), roleColor.elementAt(2).toString().toInt())
+                        messageColor = TextColor.color(
+                            roleColor.elementAt(0).toString().toInt(),
+                            roleColor.elementAt(1).toString().toInt(),
+                            roleColor.elementAt(2).toString().toInt()
+                        )
                         continue
                     }
                     if (roleColor !is String) {
@@ -200,7 +209,16 @@ object DiscordBridge {
                         if (BlocklistManager.checkUrl(word)) {
                             for (player in Bukkit.getOnlinePlayers()) {
                                 if (player.hasPermission("group.moderator")) {
-                                    player.sendMessage(convertColor("[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${word.replace(".", "[dot]")}."))
+                                    player.sendMessage(
+                                        convertColor(
+                                            "[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${
+                                                word.replace(
+                                                    ".",
+                                                    "[dot]"
+                                                )
+                                            }."
+                                        )
+                                    )
                                 }
                             }
                             return@listener
@@ -224,7 +242,12 @@ object DiscordBridge {
                         val beforeComponent = Component.text(url.groups[1]?.value ?: "").color(messageColor)
                         val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
 
-                        val fullComponent = Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+                        val fullComponent = Component.join(
+                            JoinConfiguration.noSeparators(),
+                            beforeComponent,
+                            linkComponent,
+                            afterComponent
+                        )
                         messageComponents += fullComponent
                     }
                     continue
@@ -237,28 +260,50 @@ object DiscordBridge {
                 messageComponents += Component.text(messageText).color(messageColor)
             }
 
-            val contentComponent = Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents + attachmentComponents)
+            val contentComponent = Component.join(
+                JoinConfiguration.separator(Component.text(" ")),
+                messageComponents + attachmentComponents
+            )
 
             var replyComponent = Component.text("")
 
             if (message.messageReference != null) {
                 val replyMessage = message.messageReference!!.message
                 if (replyMessage != null) {
-                    replyComponent = Component.text("[Reply to: ${replyMessage.author.effectiveName}] ").color(NamedTextColor.GREEN)
+                    replyComponent =
+                        Component.text("[Reply to: ${replyMessage.author.effectiveName}] ").color(NamedTextColor.GREEN)
                 }
             }
 
             var messageComponent: Component
             if (it.channel.id == staffChannelId) {
                 val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
-                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, staffComponent, replyComponent, userComponent, contentComponent)
-            }
-            else if (it.channel.id == donorChannelId) {
+                messageComponent = Component.join(
+                    JoinConfiguration.noSeparators(),
+                    discordComponent,
+                    staffComponent,
+                    replyComponent,
+                    userComponent,
+                    contentComponent
+                )
+            } else if (it.channel.id == donorChannelId) {
                 val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
-                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, donorComponent, replyComponent, userComponent, contentComponent)
-            }
-            else {
-                messageComponent = Component.join(JoinConfiguration.noSeparators(), discordComponent, replyComponent, userComponent, contentComponent)
+                messageComponent = Component.join(
+                    JoinConfiguration.noSeparators(),
+                    discordComponent,
+                    donorComponent,
+                    replyComponent,
+                    userComponent,
+                    contentComponent
+                )
+            } else {
+                messageComponent = Component.join(
+                    JoinConfiguration.noSeparators(),
+                    discordComponent,
+                    replyComponent,
+                    userComponent,
+                    contentComponent
+                )
             }
 
             messageComponent = messageComponent.hoverEvent(
@@ -282,19 +327,22 @@ object DiscordBridge {
                         p.sendMessage(messageComponent)
                     }
                 }
-            }
-            else if (it.channel.id == donorChannelId) {
+            } else if (it.channel.id == donorChannelId) {
                 for (p in Bukkit.getOnlinePlayers()) {
                     if (p.hasPermission("chat-og.donors")) {
                         p.sendMessage(messageComponent)
                     }
                 }
-            }
-            else {
+            } else {
                 Bukkit.broadcast(messageComponent)
             }
 
-            TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(message.contentDisplay, member.effectiveName, Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent), Component.text(" > ").color(messageColor))
+            TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(
+                message.contentDisplay,
+                member.effectiveName,
+                Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent),
+                Component.text(" > ").color(messageColor)
+            )
         }
     }
 
@@ -306,6 +354,7 @@ object DiscordBridge {
 
         channel?.sendMessage(message)?.complete()
     }
+
     suspend fun sendMessage(message: String, player: String, uuid: UUID?) {
         if (webhook == null) {
             ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
