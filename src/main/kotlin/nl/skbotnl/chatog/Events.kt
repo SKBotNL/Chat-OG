@@ -485,8 +485,9 @@ class Events : Listener {
 
         event.deathMessage(deathMessage)
 
+        val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(deathMessage)
+
         GlobalScope.launch {
-            val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(oldDeathMessage)
             DiscordBridge.sendEmbed(removeColor(translatedDeathMessage), event.player.uniqueId, 0xFF0000)
         }
     }
