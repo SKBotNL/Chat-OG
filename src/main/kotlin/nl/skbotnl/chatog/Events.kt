@@ -44,7 +44,7 @@ class Events : Listener {
             return
         }
 
-        if (ChatOG.essentials.getUser(event.player).isVanished) {
+        if (ChatOG.essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
             return
         }
 
@@ -509,11 +509,7 @@ class Events : Listener {
         } else {
             val playerJoinEvent = PlayerJoinEvent(
                 event.affected.base,
-                Component.translatable(
-                    "multiplayer.player.joined",
-                    NamedTextColor.YELLOW,
-                    event.affected.base.displayName()
-                )
+                Component.text("")
             )
             JoinQuitListener().onJoin(playerJoinEvent)
             onJoin(playerJoinEvent)
