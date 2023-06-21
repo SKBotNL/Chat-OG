@@ -13,7 +13,7 @@ guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
 staffChannelId: <put the id of the channel here>
 donorChannelId: <put the id of the channel here>
-webhook: <put the webhook here>w
+webhook: <put the webhook here>
 staffWebhook: <put the webhook here>
 donorWebhook: <put the webhook here>
 
