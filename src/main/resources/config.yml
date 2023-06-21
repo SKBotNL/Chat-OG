@@ -3,14 +3,17 @@ apiKey: <put your apikey here>
 subscriptionRegion: <put the subscription region here>
 
 # ---Discord---
+# discordEnabled needs to be true for staffDiscordEnabled and donorDiscordEnabled to have any effect
 discordEnabled: false
+staffDiscordEnabled: false
+donorDiscordEnabled: false
 status: Minecraft
 botToken: <put the bot token here>
 guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
 staffChannelId: <put the id of the channel here>
 donorChannelId: <put the id of the channel here>
-webhook: <put the webhook here>
+webhook: <put the webhook here>w
 staffWebhook: <put the webhook here>
 donorWebhook: <put the webhook here>
 

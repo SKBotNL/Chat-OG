@@ -94,9 +94,10 @@ object DiscordBridge {
         }
 
         jda?.listener<MessageReceivedEvent> {
-            if (it.channel.id != channelId && it.channel.id != staffChannelId && it.channel.id != donorChannelId) {
+            if (it.channel.id != channelId && (if (Config.getStaffDiscordEnabled()) it.channel.id != staffChannelId else true) && (if (Config.getDonorDiscordEnabled()) it.channel.id != donorChannelId else true)) {
                 return@listener
             }
+
             if (it.author.isBot) {
                 return@listener
             }

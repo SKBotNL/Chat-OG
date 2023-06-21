@@ -35,6 +35,14 @@ object Config {
         return config.get("discordEnabled").toString().toBoolean()
     }
 
+    fun getStaffDiscordEnabled(): Boolean {
+        return config.get("staffDiscordEnabled").toString().toBoolean()
+    }
+
+    fun getDonorDiscordEnabled(): Boolean {
+        return config.get("donorDiscordEnabled").toString().toBoolean()
+    }
+
     fun getStatus(): String {
         return config.get("status").toString()
     }

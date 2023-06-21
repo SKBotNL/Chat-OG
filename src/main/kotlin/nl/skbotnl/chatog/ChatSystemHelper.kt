@@ -36,7 +36,7 @@ object ChatSystemHelper {
         val colorChatString = Helper.convertColor(chatString)
 
         var discordMessageString = ""
-        if (DiscordBridge.jda != null) {
+        if (DiscordBridge.jda != null && Config.getStaffDiscordEnabled()) {
             discordMessageString = text
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
@@ -131,7 +131,7 @@ object ChatSystemHelper {
             messageComponents += Component.text(wordText)
         }
 
-        if (DiscordBridge.jda != null) {
+        if (DiscordBridge.jda != null && Config.getStaffDiscordEnabled()) {
             GlobalScope.launch {
                 DiscordBridge.sendStaffMessage(discordMessageString, colorChatString, player.uniqueId)
             }
@@ -178,7 +178,7 @@ object ChatSystemHelper {
         val colorChatString = Helper.convertColor(chatString)
 
         var discordMessageString = ""
-        if (DiscordBridge.jda != null) {
+        if (DiscordBridge.jda != null && Config.getDonorDiscordEnabled()) {
             discordMessageString = text
             var guildEmojis: List<RichCustomEmoji>? = null
             try {
@@ -273,7 +273,7 @@ object ChatSystemHelper {
             messageComponents += Component.text(wordText)
         }
 
-        if (DiscordBridge.jda != null) {
+        if (DiscordBridge.jda != null && Config.getDonorDiscordEnabled()) {
             GlobalScope.launch {
                 DiscordBridge.sendDonorMessage(discordMessageString, colorChatString, player.uniqueId)
             }
