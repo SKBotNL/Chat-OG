@@ -76,6 +76,7 @@ object DiscordBridge {
 
         jda?.listener<SlashCommandInteractionEvent> {
             if (it.name == "list") {
+                it.deferReply().queue()
                 try {
                     if (Bukkit.getOnlinePlayers().isEmpty()) {
                         it.reply("There are no players online.").queue()
