@@ -79,10 +79,10 @@ object DiscordBridge {
                 it.deferReply().queue()
                 try {
                     if (Bukkit.getOnlinePlayers().isEmpty()) {
-                        it.reply("There are no players online.").queue()
+                        it.hook.sendMessage("There are no players online.").queue()
                         return@listener
                     }
-                    it.reply(
+                    it.hook.sendMessage(
                         "${Bukkit.getOnlinePlayers().count()} player(s) online:\n${
                             Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }
                         }"
