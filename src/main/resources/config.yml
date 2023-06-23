@@ -16,6 +16,9 @@ donorChannelId: <put the id of the channel here>
 webhook: <put the webhook here>
 staffWebhook: <put the webhook here>
 donorWebhook: <put the webhook here>
+listCommandName: list
+# Available placeholders: %onlineplayers%, %maxplayers%
+listCommandText: "%onlineplayers% player(s) online:"
 
 # Configure which roles can use color codes with Discord -> Minecraft
 # For example:

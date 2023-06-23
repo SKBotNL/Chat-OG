@@ -79,6 +79,14 @@ object Config {
         return config.get("donorWebhook").toString()
     }
 
+    fun getListCommandName(): String {
+        return config.get("listCommandName").toString()
+    }
+
+    fun getListCommandText(): String {
+        return config.get("listCommandText").toString()
+    }
+
     fun getColorCodeRoles(): MutableList<String> {
         return config.getStringList("colorCodeRoles")
     }

@@ -71,11 +71,11 @@ object DiscordBridge {
 
         jda?.listener<ReadyEvent> {
             sendMessageWithBot("The server has started <:stonks:899680228216029195>")
-            jda?.getGuildById(guildId)?.upsertCommand("list", "List all online players.")?.queue()
+            jda?.getGuildById(guildId)?.upsertCommand(Config.getListCommandName(), "List all online players.")?.queue()
         }
 
         jda?.listener<SlashCommandInteractionEvent> {
-            if (it.name == "list") {
+            if (it.name == Config.getListCommandName()) {
                 it.deferReply().queue()
                 try {
                     if (Bukkit.getOnlinePlayers().isEmpty()) {
@@ -83,7 +83,7 @@ object DiscordBridge {
                         return@listener
                     }
                     it.hook.sendMessage(
-                        "${Bukkit.getOnlinePlayers().count()} player(s) online:\n${
+                        "${Config.getListCommandText().replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString()).replace("%maxplayers%", Bukkit.getMaxPlayers().toString())}\n${
                             Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }
                         }"
                     ).queue()
