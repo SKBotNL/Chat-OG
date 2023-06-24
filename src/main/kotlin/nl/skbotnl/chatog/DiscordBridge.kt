@@ -70,7 +70,6 @@ object DiscordBridge {
         jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
 
         jda?.listener<ReadyEvent> {
-            sendMessageWithBot("The server has started <:stonks:899680228216029195>")
             jda?.getGuildById(guildId)?.upsertCommand(Config.getListCommandName(), "List all online players.")?.queue()
         }
 

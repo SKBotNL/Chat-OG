@@ -31,13 +31,21 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
+import org.bukkit.event.server.ServerLoadEvent
 import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 import java.util.*
 
+@OptIn(DelicateCoroutinesApi::class)
 class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
 
-    @OptIn(DelicateCoroutinesApi::class)
+    @EventHandler
+    fun onServerLoad(event: ServerLoadEvent) {
+        GlobalScope.launch {
+            DiscordBridge.sendMessageWithBot("The server has started <:stonks:899680228216029195>")
+        }
+    }
+
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         if (!Config.getDiscordEnabled()) {
@@ -67,7 +75,6 @@ class Events : Listener {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         if (!Config.getDiscordEnabled()) {
@@ -97,7 +104,6 @@ class Events : Listener {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onKick(event: PlayerKickEvent) {
         if (!Config.getDiscordEnabled()) {
@@ -129,7 +135,6 @@ class Events : Listener {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onAdvancement(event: PlayerAdvancementDoneEvent) {
         if (!Config.getDiscordEnabled()) {
@@ -167,7 +172,6 @@ class Events : Listener {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onBroadcast(event: BroadcastMessageEvent) {
         if (!Config.getDiscordEnabled()) {
@@ -189,7 +193,6 @@ class Events : Listener {
 
     private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onChat(event: AsyncChatEvent) {
         if (event.isCancelled) return
@@ -460,10 +463,16 @@ class Events : Listener {
         return
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
         if (!Config.getDiscordEnabled()) {
+            return
+        }
+
+        if (event.deathMessage() is TextComponent) {
+            GlobalScope.launch {
+                DiscordBridge.sendEmbed(removeColor((event.deathMessage() as TextComponent).content()), event.player.uniqueId, 0xFF0000)
+            }
             return
         }
 
