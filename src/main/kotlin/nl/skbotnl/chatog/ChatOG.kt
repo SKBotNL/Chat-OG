@@ -8,6 +8,7 @@ import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 class ChatOG : JavaPlugin() {
     companion object {
@@ -52,5 +53,25 @@ class ChatOG : JavaPlugin() {
                 DiscordBridge.jda!!.shutdownNow()
             }
         }
+    }
+
+    fun sendMessageWithBot(message: String) {
+        DiscordBridge.sendMessageWithBot(message)
+    }
+
+    suspend fun sendMessage(message: String, player: String, uuid: UUID?) {
+        DiscordBridge.sendMessage(message, player, uuid)
+    }
+
+    suspend fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
+        DiscordBridge.sendStaffMessage(message, player, uuid)
+    }
+
+    suspend fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
+        DiscordBridge.sendDonorMessage(message, player, uuid)
+    }
+
+    fun sendEmbed(message: String, uuid: UUID?, color: Int) {
+        DiscordBridge.sendEmbed(message, uuid, color)
     }
 }
