@@ -6,7 +6,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.ess3.api.events.VanishStatusChangeEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -19,9 +18,6 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
 import nl.skbotnl.chatog.Helper.convertColor
-import nl.skbotnl.chatog.Helper.getColor
-import nl.skbotnl.chatog.Helper.getColorSection
-import nl.skbotnl.chatog.Helper.getFirstColorSection
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
@@ -191,8 +187,6 @@ class Events : Listener {
         }
     }
 
-    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
-
     @EventHandler
     fun onChat(event: AsyncChatEvent) {
         if (event.isCancelled) return
@@ -217,107 +211,15 @@ class Events : Listener {
         }
         val colorChatString = convertColor(chatString)
 
-        var discordMessageString: String? = null
         if (DiscordBridge.jda != null) {
-            discordMessageString = oldTextComponent.content()
-            var guildEmojis: List<RichCustomEmoji>? = null
-            try {
-                guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
-            } catch (e: Exception) {
-                ChatOG.plugin.logger.warning("Can't get the guild's emojis, is guildId set?")
-            }
+            val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
 
-            if (guildEmojis != null) {
-                val regex = Regex(":(.*?):+")
-                regex.findAll(oldTextComponent.content()).iterator().forEach {
-                    guildEmojis.forEach { emoji ->
-                        if (emoji.name == it.groupValues[1]) {
-                            val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
-                            discordMessageString = discordMessageString!!.replace(it.value, replaceWith)
-                        }
-                    }
-                }
-            }
-        }
-
-        val messageComponents = mutableListOf<Component>()
-
-        oldTextComponent.content().split(" ").forEach { word ->
-            val urlIter = urlRegex.findAll(word).iterator()
-            val chatColor = getColor(ChatOG.chat.getPlayerSuffix(event.player))
-
-            if (urlIter.hasNext()) {
-                urlIter.forEach { link ->
-                    if (BlocklistManager.checkUrl(word)) {
-                        event.player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (player.hasPermission("group.moderator")) {
-                                player.sendMessage(
-                                    convertColor(
-                                        "[&aChat&f-&cOG&f]: ${event.player.name} has posted a disallowed link: ${
-                                            word.replace(
-                                                ".",
-                                                "[dot]"
-                                            )
-                                        }."
-                                    )
-                                )
-                            }
-                        }
-                        return
-                    }
-
-                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(34, 100, 255))
-                    linkComponent = linkComponent.hoverEvent(
-                        HoverEvent.hoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            Component.text(convertColor("&aClick to open link"))
-                        )
-                    )
-
-                    linkComponent = linkComponent.clickEvent(
-                        ClickEvent.clickEvent(
-                            ClickEvent.Action.OPEN_URL,
-                            link.groups[2]!!.value
-                        )
-                    )
-
-                    val beforeComponent = Component.text(
-                        convertColor(chatColor + (link.groups[1]?.value ?: ""))
-                    )
-                    val afterComponent = Component.text(
-                        convertColor(chatColor + (link.groups[4]?.value ?: ""))
-                    )
-
-                    val fullComponent =
-                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
-
-                    messageComponents += fullComponent
-                }
-                return@forEach
-            }
-            val wordText = if (event.player.hasPermission("chat-og.color")) {
-                if (messageComponents.isNotEmpty()) {
-                    val lastContent = (messageComponents.last() as TextComponent).content()
-                    if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
-                        convertColor(getColorSection(lastContent) + word)
-                    } else {
-                        convertColor(chatColor + word)
-                    }
-                } else {
-                    convertColor(chatColor + word)
-                }
-            } else {
-                convertColor(chatColor) + word
-            }
-            messageComponents += Component.text(wordText)
-        }
-
-        if (DiscordBridge.jda != null) {
             GlobalScope.launch {
-                DiscordBridge.sendMessage(discordMessageString!!, colorChatString, event.player.uniqueId)
+                DiscordBridge.sendMessage(discordMessageString, colorChatString, event.player.uniqueId)
             }
         }
+
+        val messageComponents = Helper.convertLinks(oldTextComponent.content(), event.player)
 
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
@@ -471,7 +373,11 @@ class Events : Listener {
 
         if (event.deathMessage() is TextComponent) {
             GlobalScope.launch {
-                DiscordBridge.sendEmbed(removeColor((event.deathMessage() as TextComponent).content()), event.player.uniqueId, 0xFF0000)
+                DiscordBridge.sendEmbed(
+                    removeColor((event.deathMessage() as TextComponent).content()),
+                    event.player.uniqueId,
+                    0xFF0000
+                )
             }
             return
         }

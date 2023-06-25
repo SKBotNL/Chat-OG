@@ -82,7 +82,11 @@ object DiscordBridge {
                         return@listener
                     }
                     it.hook.sendMessage(
-                        "${Config.getListCommandText().replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString()).replace("%maxplayers%", Bukkit.getMaxPlayers().toString())}\n${
+                        "${
+                            Config.getListCommandText()
+                                .replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString())
+                                .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
+                        }\n${
                             Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }
                         }"
                     ).queue()
@@ -277,34 +281,40 @@ object DiscordBridge {
             }
 
             var messageComponent: Component
-            if (it.channel.id == staffChannelId) {
-                val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
-                messageComponent = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    discordComponent,
-                    staffComponent,
-                    replyComponent,
-                    userComponent,
-                    contentComponent
-                )
-            } else if (it.channel.id == donorChannelId) {
-                val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
-                messageComponent = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    discordComponent,
-                    donorComponent,
-                    replyComponent,
-                    userComponent,
-                    contentComponent
-                )
-            } else {
-                messageComponent = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    discordComponent,
-                    replyComponent,
-                    userComponent,
-                    contentComponent
-                )
+            when (it.channel.id) {
+                staffChannelId -> {
+                    val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
+                    messageComponent = Component.join(
+                        JoinConfiguration.noSeparators(),
+                        discordComponent,
+                        staffComponent,
+                        replyComponent,
+                        userComponent,
+                        contentComponent
+                    )
+                }
+
+                donorChannelId -> {
+                    val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
+                    messageComponent = Component.join(
+                        JoinConfiguration.noSeparators(),
+                        discordComponent,
+                        donorComponent,
+                        replyComponent,
+                        userComponent,
+                        contentComponent
+                    )
+                }
+
+                else -> {
+                    messageComponent = Component.join(
+                        JoinConfiguration.noSeparators(),
+                        discordComponent,
+                        replyComponent,
+                        userComponent,
+                        contentComponent
+                    )
+                }
             }
 
             messageComponent = messageComponent.hoverEvent(
@@ -322,20 +332,26 @@ object DiscordBridge {
                 )
             )
 
-            if (it.channel.id == staffChannelId) {
-                for (p in Bukkit.getOnlinePlayers()) {
-                    if (p.hasPermission("chat-og.staff")) {
-                        p.sendMessage(messageComponent)
+            when (it.channel.id) {
+                staffChannelId -> {
+                    for (p in Bukkit.getOnlinePlayers()) {
+                        if (p.hasPermission("chat-og.staff")) {
+                            p.sendMessage(messageComponent)
+                        }
                     }
                 }
-            } else if (it.channel.id == donorChannelId) {
-                for (p in Bukkit.getOnlinePlayers()) {
-                    if (p.hasPermission("chat-og.donors")) {
-                        p.sendMessage(messageComponent)
+
+                donorChannelId -> {
+                    for (p in Bukkit.getOnlinePlayers()) {
+                        if (p.hasPermission("chat-og.donors")) {
+                            p.sendMessage(messageComponent)
+                        }
                     }
                 }
-            } else {
-                Bukkit.broadcast(messageComponent)
+
+                else -> {
+                    Bukkit.broadcast(messageComponent)
+                }
             }
 
             TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(

@@ -1,7 +1,16 @@
 package nl.skbotnl.chatog
 
 import dev.minn.jda.ktx.coroutines.await
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 import java.util.*
 
 object Helper {
@@ -103,5 +112,108 @@ object Helper {
         }
 
         return tempText
+    }
+
+    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
+    fun convertLinks(text: String, player: Player): MutableList<Component> {
+        val messageComponents = mutableListOf<Component>()
+
+        text.split(" ").forEach { word ->
+            val urlIter = urlRegex.findAll(word).iterator()
+            val chatColor = getColor(ChatOG.chat.getPlayerSuffix(player))
+
+            if (urlIter.hasNext()) {
+                urlIter.forEach { link ->
+                    if (BlocklistManager.checkUrl(word)) {
+                        player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
+                        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                            if (onlinePlayer.hasPermission("group.moderator")) {
+                                onlinePlayer.sendMessage(
+                                    convertColor(
+                                        "[&aChat&f-&cOG&f]: ${player.name} has posted a disallowed link: ${
+                                            word.replace(
+                                                ".",
+                                                "[dot]"
+                                            )
+                                        }."
+                                    )
+                                )
+                            }
+                        }
+                        return messageComponents
+                    }
+
+                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(34, 100, 255))
+                    linkComponent = linkComponent.hoverEvent(
+                        HoverEvent.hoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            Component.text(convertColor("&aClick to open link"))
+                        )
+                    )
+
+                    linkComponent = linkComponent.clickEvent(
+                        ClickEvent.clickEvent(
+                            ClickEvent.Action.OPEN_URL,
+                            link.groups[2]!!.value
+                        )
+                    )
+
+                    val beforeComponent = Component.text(
+                        convertColor(chatColor + (link.groups[1]?.value ?: ""))
+                    )
+                    val afterComponent = Component.text(
+                        convertColor(chatColor + (link.groups[4]?.value ?: ""))
+                    )
+
+                    val fullComponent =
+                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
+
+                    messageComponents += fullComponent
+                }
+                return@forEach
+            }
+            val wordText = if (player.hasPermission("chat-og.color")) {
+                if (messageComponents.isNotEmpty()) {
+                    val lastContent = (messageComponents.last() as TextComponent).content()
+                    if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
+                        convertColor(getColorSection(lastContent) + word)
+                    } else {
+                        convertColor(chatColor + word)
+                    }
+                } else {
+                    convertColor(chatColor + word)
+                }
+            } else {
+                convertColor(chatColor) + word
+            }
+            messageComponents += Component.text(wordText)
+        }
+
+        return messageComponents
+    }
+
+    fun convertEmojis(text: String): String {
+        var discordMessageString = text
+        var guildEmojis: List<RichCustomEmoji>? = null
+
+        try {
+            guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
+        } catch (e: Exception) {
+            ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
+        }
+
+        if (guildEmojis != null) {
+            val regex = Regex(":(.*?):+")
+            regex.findAll(text).iterator().forEach {
+                guildEmojis.forEach { emoji ->
+                    if (emoji.name == it.groupValues[1]) {
+                        val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                        discordMessageString = discordMessageString.replace(it.value, replaceWith)
+                    }
+                }
+            }
+        }
+
+        return discordMessageString
     }
 }
