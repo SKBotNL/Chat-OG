@@ -28,6 +28,7 @@ import net.kyori.adventure.text.format.TextColor
 import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.convertMentions
 import nl.skbotnl.chatog.Helper.removeColor
+import nl.skbotnl.chatog.Helper.stripGroupMentions
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import java.util.*
@@ -369,6 +370,7 @@ object DiscordBridge {
             ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
         }
 
+
         channel?.sendMessage(message)?.complete()
     }
 
@@ -380,7 +382,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(convertMentions(message))
+            .setContent(stripGroupMentions(convertMentions(message)))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
@@ -396,7 +398,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(convertMentions(message))
+            .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }
@@ -412,7 +414,7 @@ object DiscordBridge {
 
         val webhookMessage = WebhookMessageBuilder()
             .setUsername(removeColor(player))
-            .setContent(convertMentions(message))
+            .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
         }

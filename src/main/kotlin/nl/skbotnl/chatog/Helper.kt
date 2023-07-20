@@ -216,4 +216,11 @@ object Helper {
 
         return discordMessageString
     }
+
+    fun stripGroupMentions(text: String): String {
+        var tempText = text.replace("@everyone", "@\u200Eeveryone", false)
+        tempText = tempText.replace("@here", "@\u200Ehere", false)
+
+        return tempText
+    }
 }
