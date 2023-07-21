@@ -369,8 +369,7 @@ object DiscordBridge {
         if (channel == null) {
             ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
         }
-
-
+        
         channel?.sendMessage(message)?.complete()
     }
 

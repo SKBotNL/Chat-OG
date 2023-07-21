@@ -43,7 +43,7 @@ object Helper {
         return tempText
     }
 
-    fun getColorSection(text: String): String {
+    private fun getColorSection(text: String): String {
         val it = colorRegex.findAll(text).iterator()
 
         var last = ""
@@ -54,7 +54,7 @@ object Helper {
         return last
     }
 
-    fun getFirstColorSection(text: String): String {
+    private fun getFirstColorSection(text: String): String {
         val it = colorRegex.findAll(text).iterator()
 
         var first = ""
@@ -67,7 +67,7 @@ object Helper {
     }
 
     private val getColorRegex = Regex("(&)?&([0-9a-fk-orA-FK-OR])")
-    fun getColor(text: String): String {
+    private fun getColor(text: String): String {
         val it = getColorRegex.findAll(text).iterator()
 
         var last = ""
@@ -192,6 +192,8 @@ object Helper {
         return messageComponents
     }
 
+    private val emojiRegex = Regex(":(.*?):+")
+
     fun convertEmojis(text: String): String {
         var discordMessageString = text
         var guildEmojis: List<RichCustomEmoji>? = null
@@ -203,8 +205,8 @@ object Helper {
         }
 
         if (guildEmojis != null) {
-            val regex = Regex(":(.*?):+")
-            regex.findAll(text).iterator().forEach {
+
+            emojiRegex.findAll(text).iterator().forEach {
                 guildEmojis.forEach { emoji ->
                     if (emoji.name == it.groupValues[1]) {
                         val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
@@ -220,6 +222,8 @@ object Helper {
     fun stripGroupMentions(text: String): String {
         var tempText = text.replace("@everyone", "@\u200Eeveryone", false)
         tempText = tempText.replace("@here", "@\u200Ehere", false)
+
+        tempText = tempText.replace("(<@&)(\\d*>)".toRegex(), "$1\u200E$2")
 
         return tempText
     }
