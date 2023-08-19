@@ -123,9 +123,9 @@ object DiscordBridge {
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
             val userComponent: TextComponent = if (color == null) {
-                Component.text(member.effectiveName).color(NamedTextColor.GRAY)
+                Component.text("@${user.name}").color(NamedTextColor.GRAY)
             } else {
-                Component.text("[#${topRole.name}] ${member.effectiveName}").color(textColor)
+                Component.text("[#${topRole.name}] @${user.name}").color(textColor)
             }
 
             val configRoles = Config.getRoles()
@@ -277,7 +277,7 @@ object DiscordBridge {
                 val replyMessage = message.messageReference!!.message
                 if (replyMessage != null) {
                     replyComponent =
-                        Component.text("[Reply to: ${replyMessage.author.effectiveName}] ").color(NamedTextColor.GREEN)
+                        Component.text("[Reply to: @${replyMessage.author.name}] ").color(NamedTextColor.GREEN)
                 }
             }
 
