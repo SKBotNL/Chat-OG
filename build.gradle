@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'nl.skbotnl.chat-og'
-version = '1.5'
+version = '1.5.1'
 
 def apiVersion = "1.18.2"
 
@@ -54,18 +54,18 @@ dependencies {
     compileOnly "org.purpurmc.purpur:purpur-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     compileOnly "me.clip:placeholderapi:2.11.3"
-    compileOnly 'net.essentialsx:EssentialsX:2.20.0'
+    compileOnly 'net.essentialsx:EssentialsX:2.20.1'
     compileOnly files("libs/AnnouncerPlus-1.3.5.jar")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.13") {
         exclude module: 'opus-java'
     }
 
     implementation "com.github.minndevelopment:jda-ktx:9370cb13cc64646862e6f885959d67eb4b157e4a"
-    implementation "com.github.SKBotNL:discord-webhooks:0.8.3"
+    implementation "club.minnced:discord-webhooks:7c0808ea54e03ca86ebafaa7a3bcb52254faf591"
 
     implementation "com.google.code.gson:gson:2.10.1"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
 }
 
 shadowJar {

@@ -36,7 +36,7 @@ class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
 
     @EventHandler
-    fun onServerLoad(event: ServerLoadEvent) {
+    fun onServerLoad(@Suppress("UNUSED_PARAMETER") event: ServerLoadEvent) {
         GlobalScope.launch {
             DiscordBridge.sendMessageWithBot("The server has started <:stonks:899680228216029195>")
         }
