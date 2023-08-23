@@ -383,7 +383,7 @@ object DiscordBridge {
             .setUsername(removeColor(player))
             .setContent(stripGroupMentions(convertMentions(message)))
         if (uuid != null) {
-            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid?overlay")
         }
 
         webhook?.send(webhookMessage.build())
@@ -399,7 +399,7 @@ object DiscordBridge {
             .setUsername(removeColor(player))
             .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
-            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid?overlay")
         }
 
         staffWebhook?.send(webhookMessage.build())
@@ -415,7 +415,7 @@ object DiscordBridge {
             .setUsername(removeColor(player))
             .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
-            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid")
+            webhookMessage.setAvatarUrl("https://crafatar.com/avatars/$uuid?overlay")
         }
 
         donorWebhook?.send(webhookMessage.build())
@@ -429,7 +429,7 @@ object DiscordBridge {
 
         var iconUrl: String? = null
         if (uuid != null) {
-            iconUrl = "https://crafatar.com/avatars/$uuid"
+            iconUrl = "https://crafatar.com/avatars/$uuid?overlay"
         }
 
         val webhookMessage = WebhookEmbedBuilder()
