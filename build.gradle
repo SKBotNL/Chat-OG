@@ -2,6 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.9.0'
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "checkstyle"
+    id "maven-publish"
 }
 
 group = 'nl.skbotnl.chat-og'
@@ -15,6 +16,16 @@ checkstyle {
 }
 checkstyleMain {
     source ='src/main/kotlin'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'nl.skbotnl.chatog'
+            artifactId = 'Chat-OG'
+            version = version
+        }
+    }
 }
 
 processResources {
