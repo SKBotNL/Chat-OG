@@ -43,7 +43,8 @@ object DiscordBridge {
     var staffChannelId = Config.getStaffChannelId()
     var donorChannelId = Config.getDonorChannelId()
 
-    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
+    private val urlRegex =
+        Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
 
     fun main() {
         try {
@@ -287,7 +288,8 @@ object DiscordBridge {
                 val replyMessage = message.messageReference!!.message
                 if (replyMessage != null) {
                     replyComponent =
-                        Component.text("[Reply to: @${replyMessage.author.name}] ").color(NamedTextColor.GREEN)
+                        Component.text("[Reply to: ${if (!replyMessage.isWebhookMessage) "@" else ""}${replyMessage.author.name}] ")
+                            .color(NamedTextColor.GREEN)
                 }
             }
 
@@ -379,7 +381,7 @@ object DiscordBridge {
         if (channel == null) {
             ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
         }
-        
+
         channel?.sendMessage(message)?.complete()
     }
 

@@ -114,7 +114,9 @@ object Helper {
         return tempText
     }
 
-    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
+    private val urlRegex =
+        Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
+
     fun convertLinks(text: String, player: Player): MutableList<Component> {
         val messageComponents = mutableListOf<Component>()
 
