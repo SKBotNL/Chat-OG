@@ -27,20 +27,12 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
-import org.bukkit.event.server.ServerLoadEvent
 import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 import java.util.*
 
 @OptIn(DelicateCoroutinesApi::class)
 class Events : Listener {
     private var lastMessaged: MutableMap<UUID, UUID> = HashMap()
-
-    @EventHandler
-    fun onServerLoad(@Suppress("UNUSED_PARAMETER") event: ServerLoadEvent) {
-        GlobalScope.launch {
-            DiscordBridge.sendMessageWithBot("The server has started <:stonks:899680228216029195>")
-        }
-    }
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {

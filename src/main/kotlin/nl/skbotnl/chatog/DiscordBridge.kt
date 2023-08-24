@@ -43,7 +43,7 @@ object DiscordBridge {
     var staffChannelId = Config.getStaffChannelId()
     var donorChannelId = Config.getDonorChannelId()
 
-    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(.*)")
+    private val urlRegex = Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
 
     fun main() {
         try {
@@ -71,6 +71,7 @@ object DiscordBridge {
         jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
 
         jda?.listener<ReadyEvent> {
+            sendMessageWithBot("The server has started <:stonks:899680228216029195>")
             jda?.getGuildById(guildId)?.upsertCommand(Config.getListCommandName(), "List all online players.")?.queue()
         }
 
@@ -261,7 +262,16 @@ object DiscordBridge {
 
                 var messageText = word
                 if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
-                    messageText = convertColor(messageText)
+                    messageText = if (messageComponents.isNotEmpty()) {
+                        val lastContent = (messageComponents.last() as TextComponent).content()
+                        if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
+                            convertColor(Helper.getColorSection(lastContent) + word)
+                        } else {
+                            convertColor(word)
+                        }
+                    } else {
+                        convertColor(word)
+                    }
                 }
                 messageComponents += Component.text(messageText).color(messageColor)
             }
