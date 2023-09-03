@@ -121,12 +121,12 @@ object DiscordBridge {
 
             val roles = member.roles
             val roleIds = roles.map { role -> role.id }
-            val topRole = roles.maxBy { role -> role.positionRaw }
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
             val userComponent: TextComponent = if (color == null) {
                 Component.text("@${user.name}").color(NamedTextColor.GRAY)
             } else {
+                val topRole = roles.maxBy { role -> role.positionRaw }
                 Component.text("[#${topRole.name}] @${user.name}").color(textColor)
             }
 
