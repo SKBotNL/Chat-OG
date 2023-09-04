@@ -188,6 +188,9 @@ object DiscordBridge {
 
             val attachmentComponents = mutableListOf<Component>()
 
+            if (message.stickers.size != 0) attachmentComponents += Component.text("[Sticker: ${message.stickers[0].name}]")
+                .color(messageColor)
+
             if (message.attachments.isNotEmpty()) {
                 message.attachments.forEach { attachment ->
                     var linkComponent = Component.text(attachment.url).color(TextColor.color(34, 100, 255))
@@ -210,88 +213,80 @@ object DiscordBridge {
                 }
             }
 
-            for (word in message.contentDisplay.split(" ")) {
-                val urlIter = urlRegex.findAll(word).iterator()
-                if (urlIter.hasNext()) {
-                    for (url in urlIter) {
-                        if (BlocklistManager.checkUrl(word)) {
-                            for (player in Bukkit.getOnlinePlayers()) {
-                                if (player.hasPermission("group.moderator")) {
-                                    player.sendMessage(
-                                        convertColor(
-                                            "[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${
-                                                word.replace(
-                                                    ".",
-                                                    "[dot]"
-                                                )
-                                            }."
+            if (message.contentDisplay != "") {
+                for (word in message.contentDisplay.split(" ")) {
+                    val urlIter = urlRegex.findAll(word).iterator()
+                    if (urlIter.hasNext()) {
+                        for (url in urlIter) {
+                            if (BlocklistManager.checkUrl(word)) {
+                                for (player in Bukkit.getOnlinePlayers()) {
+                                    if (player.hasPermission("group.moderator")) {
+                                        player.sendMessage(
+                                            convertColor(
+                                                "[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${
+                                                    word.replace(
+                                                        ".",
+                                                        "[dot]"
+                                                    )
+                                                }."
+                                            )
                                         )
-                                    )
+                                    }
                                 }
+                                return@listener
                             }
-                            return@listener
+
+                            var linkComponent =
+                                Component.text(url.groups[2]!!.value).color(TextColor.color(34, 100, 255))
+                            linkComponent = linkComponent.hoverEvent(
+                                HoverEvent.hoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    Component.text(convertColor("&aClick to open link"))
+                                )
+                            )
+
+                            linkComponent = linkComponent.clickEvent(
+                                ClickEvent.clickEvent(
+                                    ClickEvent.Action.OPEN_URL,
+                                    url.groups[2]!!.value
+                                )
+                            )
+
+                            val beforeComponent = Component.text(url.groups[1]?.value ?: "").color(messageColor)
+                            val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
+
+                            val fullComponent = Component.join(
+                                JoinConfiguration.noSeparators(),
+                                beforeComponent,
+                                linkComponent,
+                                afterComponent
+                            )
+                            messageComponents += fullComponent
                         }
-
-                        var linkComponent = Component.text(url.groups[2]!!.value).color(TextColor.color(34, 100, 255))
-                        linkComponent = linkComponent.hoverEvent(
-                            HoverEvent.hoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.text(convertColor("&aClick to open link"))
-                            )
-                        )
-
-                        linkComponent = linkComponent.clickEvent(
-                            ClickEvent.clickEvent(
-                                ClickEvent.Action.OPEN_URL,
-                                url.groups[2]!!.value
-                            )
-                        )
-
-                        val beforeComponent = Component.text(url.groups[1]?.value ?: "").color(messageColor)
-                        val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
-
-                        val fullComponent = Component.join(
-                            JoinConfiguration.noSeparators(),
-                            beforeComponent,
-                            linkComponent,
-                            afterComponent
-                        )
-                        messageComponents += fullComponent
+                        continue
                     }
-                    continue
-                }
 
-                var messageText = word
-                if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
-                    messageText = if (messageComponents.isNotEmpty()) {
-                        val lastContent = (messageComponents.last() as TextComponent).content()
-                        if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
-                            convertColor(Helper.getColorSection(lastContent) + word)
+                    var messageText = word
+                    if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
+                        messageText = if (messageComponents.isNotEmpty()) {
+                            val lastContent = (messageComponents.last() as TextComponent).content()
+                            if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
+                                convertColor(Helper.getColorSection(lastContent) + word)
+                            } else {
+                                convertColor(word)
+                            }
                         } else {
                             convertColor(word)
                         }
-                    } else {
-                        convertColor(word)
                     }
+                    messageComponents += Component.text(messageText).color(messageColor)
                 }
-                messageComponents += Component.text(messageText).color(messageColor)
             }
 
-            if (message.stickers.size != 0) attachmentComponents += Component.text(" [Sticker: ${message.stickers[0].name}]")
-                .color(messageColor)
-
-            // I literally have no idea why this is needed
-            val contentComponent: Component = if (message.contentDisplay.isNotEmpty()) {
-                Component.join(
-                    JoinConfiguration.separator(Component.text(" ")),
-                    messageComponents + attachmentComponents
-                )
-            } else {
-                Component.join(
-                    JoinConfiguration.noSeparators(),
-                    messageComponents + attachmentComponents
-                )
-            }
+            val contentComponent = Component.join(
+                JoinConfiguration.separator(Component.text(" ")),
+                messageComponents + attachmentComponents
+            )
 
             var replyComponent = Component.text("")
 
