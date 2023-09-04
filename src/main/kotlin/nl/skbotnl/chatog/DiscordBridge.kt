@@ -277,10 +277,21 @@ object DiscordBridge {
                 messageComponents += Component.text(messageText).color(messageColor)
             }
 
-            val contentComponent = Component.join(
-                JoinConfiguration.separator(Component.text(" ")),
-                messageComponents + attachmentComponents
-            )
+            if (message.stickers.size != 0) attachmentComponents += Component.text(" [Sticker: ${message.stickers[0].name}]")
+                .color(messageColor)
+
+            // I literally have no idea why this is needed
+            val contentComponent: Component = if (message.contentDisplay.isNotEmpty()) {
+                Component.join(
+                    JoinConfiguration.separator(Component.text(" ")),
+                    messageComponents + attachmentComponents
+                )
+            } else {
+                Component.join(
+                    JoinConfiguration.noSeparators(),
+                    messageComponents + attachmentComponents
+                )
+            }
 
             var replyComponent = Component.text("")
 
