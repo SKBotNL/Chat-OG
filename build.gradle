@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.10'
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "checkstyle"
     id "maven-publish"
@@ -11,7 +11,7 @@ version = '1.5.6'
 def apiVersion = "1.18.2"
 
 checkstyle {
-    toolVersion '9.3'
+    toolVersion '10.3.3'
     configFile file("config/checkstyle/checkstyle.xml")
 }
 checkstyleMain {
@@ -20,10 +20,11 @@ checkstyleMain {
 
 publishing {
     publications {
+        //noinspection GroovyAssignabilityCheck
         maven(MavenPublication) {
-            groupId = 'nl.skbotnl.chatog'
-            artifactId = 'Chat-OG'
-            version = version
+            groupId = 'nl.skbotnl.chatog' as Publication
+            artifactId = 'Chat-OG' as Publication
+            version = version as Publication
         }
     }
 }
@@ -64,11 +65,11 @@ repositories {
 dependencies {
     compileOnly "org.purpurmc.purpur:purpur-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
-    compileOnly "me.clip:placeholderapi:2.11.3"
+    compileOnly "me.clip:placeholderapi:2.11.4"
     compileOnly 'net.essentialsx:EssentialsX:2.20.1'
     compileOnly files("libs/AnnouncerPlus-1.3.5.jar")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.13") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.15") {
         exclude module: 'opus-java'
     }
 
