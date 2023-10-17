@@ -1,14 +1,14 @@
 package nl.skbotnl.chatog
 
 import com.google.gson.Gson
-import nl.skbotnl.chatog.Helper.convertColor
+import net.kyori.adventure.text.Component
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 object BingTranslator {
-    data class Translated(val translatedText: String?, val translatedFrom: String?, val error: String?)
+    data class Translated(val translatedText: String?, val translatedFrom: String?, val error: Component?)
 
     data class DetectedLanguage(val language: String, val score: Double)
     data class Translation(val text: String, val to: String)
@@ -46,7 +46,7 @@ object BingTranslator {
             return Translated(
                 null,
                 null,
-                convertColor("&cSomething went wrong. &fError Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}")
+                ChatOG.mm.deserialize("<red>Something went wrong. <white>Error Code: ${errorResponse.error.code}, Error Message: ${errorResponse.error.message}")
             )
         }
 

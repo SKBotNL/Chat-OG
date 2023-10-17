@@ -3,9 +3,9 @@ package nl.skbotnl.chatog.commands
 import club.minnced.discord.webhook.WebhookClient
 import net.dv8tion.jda.api.entities.Activity
 import nl.skbotnl.chatog.BingTranslator
+import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.DiscordBridge
-import nl.skbotnl.chatog.Helper.convertColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -25,7 +25,7 @@ class ChatConfigReload : CommandExecutor {
         DiscordBridge.donorWebhook = WebhookClient.withUrl(Config.getDonorWebhook())
         DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
 
-        sender.sendMessage(convertColor("&aReloaded the config!"))
+        sender.sendMessage(ChatOG.mm.deserialize("<green>Reloaded the config!"))
         return true
     }
 }

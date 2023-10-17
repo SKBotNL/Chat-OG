@@ -4,6 +4,7 @@ import com.earth2me.essentials.Essentials
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
 import org.bukkit.Bukkit
@@ -14,6 +15,7 @@ class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
+        var mm = MiniMessage.miniMessage()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
     }
 

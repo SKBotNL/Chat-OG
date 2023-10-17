@@ -51,7 +51,7 @@ class TranslateMessage : CommandExecutor {
         val player: Player = sender
 
         if (Helper.getTranslateTimeout(player.uniqueId) != 0L) {
-            player.sendMessage(convertColor("&cYou're doing that too fast"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>You're doing that too fast"))
             return true
         }
 
@@ -60,7 +60,7 @@ class TranslateMessage : CommandExecutor {
         try {
             uuid = UUID.fromString(args[0])
         } catch (e: IllegalArgumentException) {
-            player.sendMessage(convertColor("&cThat is not a valid UUID"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>That is not a valid UUID"))
             return true
         }
 
@@ -73,14 +73,14 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (sentMessage == null) {
-            player.sendMessage(convertColor("&cCould not translate that message"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>Could not translate that message"))
             return true
         }
 
         val language = LanguageDatabase.getLanguage(player.uniqueId)
 
         if (language == "null") {
-            player.sendMessage(convertColor("&cPlease select the language to translate to first using /translatesettings"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>Please select the language to translate to first using /translatesettings"))
             return true
         }
 
@@ -92,7 +92,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (translated.translatedText == null) {
-            player.sendMessage(convertColor("&cCould not translate that message"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>Could not translate that message"))
             return true
         }
 

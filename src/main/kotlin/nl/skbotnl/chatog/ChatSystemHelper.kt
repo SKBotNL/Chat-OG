@@ -52,7 +52,7 @@ object ChatSystemHelper {
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                Component.text(Helper.convertColor("&aClick to translate this message"))
+                ChatOG.mm.deserialize("<green>Click to translate this message")
             )
         )
 
@@ -102,7 +102,7 @@ object ChatSystemHelper {
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                Component.text(Helper.convertColor("&aClick to translate this message"))
+                ChatOG.mm.deserialize("<green>Click to translate this message")
             )
         )
 

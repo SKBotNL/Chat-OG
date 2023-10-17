@@ -198,7 +198,7 @@ object DiscordBridge {
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            Component.text(convertColor("&aClick to open link"))
+                            ChatOG.mm.deserialize("<green>Click to open link")
                         )
                     )
 
@@ -222,8 +222,8 @@ object DiscordBridge {
                                 for (player in Bukkit.getOnlinePlayers()) {
                                     if (player.hasPermission("group.moderator")) {
                                         player.sendMessage(
-                                            convertColor(
-                                                "[&aChat&f-&cOG&f]: @${user.name} has posted a disallowed link: ${
+                                            ChatOG.mm.deserialize(
+                                                "[<green>Chat<white>-<red>OG<white>]: @${user.name} has posted a disallowed link: ${
                                                     word.replace(
                                                         ".",
                                                         "[dot]"
@@ -241,7 +241,7 @@ object DiscordBridge {
                             linkComponent = linkComponent.hoverEvent(
                                 HoverEvent.hoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
-                                    Component.text(convertColor("&aClick to open link"))
+                                    ChatOG.mm.deserialize("<green>Click to open link")
                                 )
                             )
 
@@ -339,7 +339,7 @@ object DiscordBridge {
             messageComponent = messageComponent.hoverEvent(
                 HoverEvent.hoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
-                    Component.text(convertColor("&aClick to translate this message"))
+                    ChatOG.mm.deserialize("<green>Click to translate this message")
                 )
             )
 

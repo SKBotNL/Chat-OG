@@ -1,6 +1,6 @@
 package nl.skbotnl.chatog.commands
 
-import nl.skbotnl.chatog.Helper.convertColor
+import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -151,12 +151,12 @@ class TranslateSettings : CommandExecutor {
         )
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(convertColor("&cInvalid language"))
+            sender.sendMessage(ChatOG.mm.deserialize("<red>Invalid language"))
             return true
         }
 
         LanguageDatabase.setLanguage(player.uniqueId, language)
-        player.sendMessage(convertColor("&aSet language to: $language"))
+        player.sendMessage(ChatOG.mm.deserialize("<red>Set language to: $language"))
 
         return true
     }

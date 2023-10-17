@@ -223,7 +223,7 @@ class Events : Listener {
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                Component.text(convertColor("&aClick to translate this message"))
+                ChatOG.mm.deserialize("<green>Click to translate this message")
             )
         )
 
@@ -252,7 +252,7 @@ class Events : Listener {
                 event.isCancelled = true
 
                 if (!event.player.hasPermission("chat-og.staff")) {
-                    event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: &cYou do not have permission to run this command."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: <red>You do not have permission to run this command."))
                     return
                 }
 
@@ -262,11 +262,11 @@ class Events : Listener {
                     if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
                         ChatSystemHelper.inChat[event.player.uniqueId] = ""
 
-                        event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: You are now talking in normal chat."))
+                        event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: You are now talking in normal chat."))
                         return
                     }
                     ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
-                    event.player.sendMessage(convertColor("[&aChat&f-&cOG&f]: You are now talking in staff chat."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: You are now talking in staff chat."))
                     return
                 }
 
@@ -283,11 +283,11 @@ class Events : Listener {
         }
 
         if (messageSplit.count() < 3 && !(checkSplit == "/r" || checkSplit == "/reply")) {
-            event.player.sendMessage(convertColor("&c${messageSplit[0]} <to> <message>"))
+            event.player.sendMessage(ChatOG.mm.deserialize("<red>${messageSplit[0]} <to> <message>"))
             return
         }
         if (messageSplit.count() < 2) {
-            event.player.sendMessage(convertColor("&c${messageSplit[0]} <message>"))
+            event.player.sendMessage(ChatOG.mm.deserialize("<red>${messageSplit[0]} <message>"))
             return
         }
 
@@ -298,7 +298,7 @@ class Events : Listener {
             message = messageSplit[1]
 
             if (!lastMessaged.containsKey(event.player.uniqueId)) {
-                event.player.sendMessage(convertColor("&cYou haven't messaged anyone yet"))
+                event.player.sendMessage(ChatOG.mm.deserialize("<red>You haven't messaged anyone yet"))
                 return
             }
 
@@ -310,7 +310,7 @@ class Events : Listener {
         }
 
         if (player == null) {
-            event.player.sendMessage(convertColor("&cThat player doesn't exist or isn't online"))
+            event.player.sendMessage(ChatOG.mm.deserialize("<red>That player doesn't exist or isn't online"))
             return
         }
 
@@ -318,7 +318,7 @@ class Events : Listener {
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                Component.text(convertColor("&aClick to translate this message"))
+                ChatOG.mm.deserialize("<green>Click to translate this message")
             )
         )
 
@@ -333,7 +333,7 @@ class Events : Listener {
         TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(
             message,
             event.player.name,
-            Component.text(convertColor("&6[PM]&4 ")),
+            ChatOG.mm.deserialize("<gold>[PM]<red> "),
             Component.text(" > ").color(NamedTextColor.GRAY)
         )
 
@@ -341,13 +341,11 @@ class Events : Listener {
             message = convertColor(message)
         }
 
-        var toSenderPrefix = "&6[&cme &6-> &4${player.name}&6]&f"
-        toSenderPrefix = convertColor(toSenderPrefix)
+        val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${player.name}<gold>]<white>"
         textComponent.content("$toSenderPrefix $message")
         event.player.sendMessage(textComponent)
 
-        var toPrefix = "&6[&4${event.player.name} &6-> &cme&6]&f"
-        toPrefix = convertColor(toPrefix)
+        val toPrefix = "<gold>[<dark_red>${event.player.name} <gold>-> <red>me<gold>]<white>"
         textComponent.content("$toPrefix $message")
         player.sendMessage(textComponent)
 

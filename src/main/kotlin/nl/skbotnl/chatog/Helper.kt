@@ -127,12 +127,12 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(convertColor("&cWARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(ChatOG.mm.deserialize("<red>WARNING: You are not allowed to post links like that here."))
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
-                                    convertColor(
-                                        "[&aChat&f-&cOG&f]: ${player.name} has posted a disallowed link: ${
+                                    ChatOG.mm.deserialize(
+                                        "[<green>Chat<white>-<red>OG<white>]: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
                                                 "[dot]"
@@ -149,7 +149,7 @@ object Helper {
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            Component.text(convertColor("&aClick to open link"))
+                            ChatOG.mm.deserialize("<green>Click to open link")
                         )
                     )
 
