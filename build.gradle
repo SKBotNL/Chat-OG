@@ -22,9 +22,9 @@ publishing {
     publications {
         //noinspection GroovyAssignabilityCheck
         maven(MavenPublication) {
-            groupId = 'nl.skbotnl.chatog' as Publication
-            artifactId = 'Chat-OG' as Publication
-            version = version as Publication
+            groupId = 'nl.skbotnl.chatog'
+            artifactId = 'Chat-OG'
+            version = version
         }
     }
 }
