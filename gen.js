@@ -18,13 +18,15 @@ async function main () {
       accu.subgroup = line.substr(12)
     } else if (line.startsWith('#')) {
     } else {
-      const meta = parseLine(line)
-      if (meta) {
-        accu.full.push(meta)
-        accu.compact.push(meta.char)
-      } else {
-        accu.comments = accu.comments.trim() + '\n\n'
-      }
+      if (!line.includes("skin tone")) {
+          const meta = parseLine(line)
+          if (meta) {
+            accu.full.push(meta)
+            accu.compact.push(meta.char)
+          } else {
+            accu.comments = accu.comments.trim() + '\n\n'
+          }
+       }
     }
     return accu
   }, { comments: '', full: [], compact: [] })
@@ -66,7 +68,7 @@ function parseLine (line) {
   }
 
   const [ , char, unformattedName ] = data[2].match(/^(\S+) E\d+\.\d+ (.+)$/)
-  let name = unformattedName.replaceAll('flag: ', 'flag_').replaceAll('&', 'and').replaceAll('.', '').replaceAll(' ', '_').toLowerCase()
+  let name = unformattedName.replaceAll(': ', '_').replaceAll(', ', '_').replaceAll('&', 'and').replaceAll('.', '').replaceAll(/[ ]?-[ ]?/g, '_').replaceAll('"', '').replaceAll(' ', '_').toLowerCase()
   return { char, name }
 }
 
