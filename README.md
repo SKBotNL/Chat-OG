@@ -7,4 +7,4 @@ Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 - Staff and donor chat
 ### Emoji Converter Credits
 - https://github.com/mathiasbynens/emoji-test-regex-pattern
-- https://github.com/amio/emoji.json/blob/HEAD/scripts/gen.js (using modified version, it's in the repository's root folder, also called`gen.js`)
+- https://github.com/amio/emoji.json/blob/HEAD/scripts/gen.js (this project is using a modified version, it's in the repository's root folder also called `gen.js`)
