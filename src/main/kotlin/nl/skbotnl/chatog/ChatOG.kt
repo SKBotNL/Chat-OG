@@ -27,6 +27,7 @@ class ChatOG : JavaPlugin() {
         LanguageDatabase.load()
         GlobalScope.launch {
             BlocklistManager.load()
+            EmojiConverter.load()
         }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)

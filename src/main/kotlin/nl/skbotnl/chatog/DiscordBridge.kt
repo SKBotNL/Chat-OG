@@ -214,7 +214,7 @@ object DiscordBridge {
             }
 
             if (message.contentDisplay != "") {
-                for (word in message.contentDisplay.split(" ")) {
+                for (word in EmojiConverter.replaceEmojisWithNames(message.contentDisplay).split(" ")) {
                     val urlIter = urlRegex.findAll(word).iterator()
                     if (urlIter.hasNext()) {
                         for (url in urlIter) {

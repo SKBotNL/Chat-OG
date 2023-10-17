@@ -92,8 +92,7 @@ object Helper {
         var tempText = text
         val members = guild.loadMembers().await()
 
-        val legacyIter = getLegacyUsername.findAll(text).iterator()
-        legacyIter.forEach { legacy ->
+        getLegacyUsername.findAll(text).iterator().forEach { legacy ->
             for (member in members) {
                 if (member.user.name.lowercase() == legacy.groupValues[1].lowercase() && member.user.discriminator == legacy.groupValues[2]) {
                     tempText = tempText.replace(legacy.value, member.asMention)
@@ -102,8 +101,7 @@ object Helper {
             }
         }
 
-        val handleIter = getHandle.findAll(tempText).iterator()
-        handleIter.forEach { handle ->
+        getHandle.findAll(tempText).iterator().forEach { handle ->
             for (member in members) {
                 if (member.user.discriminator == "0000" && member.user.name.lowercase() == handle.groupValues[1].lowercase()) {
                     tempText = tempText.replace(handle.value, member.asMention)
@@ -207,7 +205,6 @@ object Helper {
         }
 
         if (guildEmojis != null) {
-
             emojiRegex.findAll(text).iterator().forEach {
                 guildEmojis.forEach { emoji ->
                     if (emoji.name == it.groupValues[1]) {
