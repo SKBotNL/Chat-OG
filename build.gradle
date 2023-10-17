@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'nl.skbotnl.chat-og'
-version = '1.5.8'
+version = '1.5.9'
 
 def apiVersion = "1.18.2"
 
