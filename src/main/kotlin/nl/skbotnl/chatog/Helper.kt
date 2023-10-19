@@ -192,7 +192,7 @@ object Helper {
         return messageComponents
     }
 
-    private val emojiRegex = Regex(":(.*?):+")
+    private val emojiRegex = Regex(":(.*?):")
 
     fun convertEmojis(text: String): String {
         var discordMessageString = text
@@ -205,7 +205,7 @@ object Helper {
         }
 
         if (guildEmojis != null) {
-            emojiRegex.findAll(text).iterator().forEach {
+            emojiRegex.findAll(text).iterator().asSequence().distinctBy { it.value }.forEach {
                 guildEmojis.forEach { emoji ->
                     if (emoji.name == it.groupValues[1]) {
                         val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
