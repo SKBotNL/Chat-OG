@@ -25,8 +25,8 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
-import nl.skbotnl.chatog.Helper.convertColor
 import nl.skbotnl.chatog.Helper.convertMentions
+import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.Helper.stripGroupMentions
 import nl.skbotnl.chatog.commands.TranslateMessage
@@ -266,20 +266,20 @@ object DiscordBridge {
                         continue
                     }
 
-                    var messageText = word
+                    var messageText: Component = Component.text(word)
                     if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
                         messageText = if (messageComponents.isNotEmpty()) {
                             val lastContent = (messageComponents.last() as TextComponent).content()
                             if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
-                                convertColor(Helper.getColorSection(lastContent) + word)
+                                ChatOG.mm.deserialize(legacyToMm(Helper.getColorSection(lastContent) + word))
                             } else {
-                                convertColor(word)
+                                ChatOG.mm.deserialize(legacyToMm(word))
                             }
                         } else {
-                            convertColor(word)
+                            ChatOG.mm.deserialize(legacyToMm(word))
                         }
                     }
-                    messageComponents += Component.text(messageText).color(messageColor)
+                    messageComponents += messageText.color(messageColor)
                 }
             }
 
@@ -347,7 +347,7 @@ object DiscordBridge {
             messageComponent = messageComponent.clickEvent(
                 ClickEvent.clickEvent(
                     ClickEvent.Action.RUN_COMMAND,
-                    "/translatemessage $randomUUID true"
+                    "/translatemessage $randomUUID 2"
                 )
             )
 

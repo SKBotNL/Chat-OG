@@ -7,7 +7,7 @@ depend: [ PlaceholderAPI, Vault, AnnouncerPlus, Essentials ]
 commands:
   translatemessage:
     description: Internal command for translating messages
-    usage: /translatemessage <uuid> <iscustommessage>
+    usage: /translatemessage <uuid> <messagetype>
   translatesettings:
     description: Change which language you want the translator to translate to
     usage: /translatesettings <language>

@@ -17,7 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
-import nl.skbotnl.chatog.Helper.convertColor
+import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
@@ -44,19 +44,18 @@ class Events : Listener {
             return
         }
 
-        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(
+            chatString = PlaceholderAPI.setPlaceholders(
                 event.player,
-                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+                "&8[%parties_color_code%%parties_party%&8] $chatString"
             )
         }
-        colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
             DiscordBridge.sendEmbed(
-                "${removeColor(colorChatString)} has joined the game. ${
+                "${removeColor(chatString)} has joined the game. ${
                     Bukkit.getOnlinePlayers().count()
                 } player(s) online.", event.player.uniqueId, 0x00FF00
             )
@@ -73,19 +72,18 @@ class Events : Listener {
             return
         }
 
-        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(
+            chatString = PlaceholderAPI.setPlaceholders(
                 event.player,
-                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+                "&8[%parties_color_code%%parties_party%&8] $chatString"
             )
         }
-        colorChatString = convertColor(colorChatString)
 
         GlobalScope.launch {
             DiscordBridge.sendEmbed(
-                "${removeColor(colorChatString)} has left the game. ${
+                "${removeColor(chatString)} has left the game. ${
                     Bukkit.getOnlinePlayers().count() - 1
                 } player(s) online.", event.player.uniqueId, 0xFF0000
             )
@@ -102,21 +100,20 @@ class Events : Listener {
             return
         }
 
-        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(
+            chatString = PlaceholderAPI.setPlaceholders(
                 event.player,
-                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+                "&8[%parties_color_code%%parties_party%&8] $chatString"
             )
         }
-        colorChatString = convertColor(colorChatString)
 
         val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
 
         GlobalScope.launch {
             DiscordBridge.sendEmbed(
-                "${removeColor(colorChatString)} was kicked with reason: \"${reason}\". ${
+                "${removeColor(chatString)} was kicked with reason: \"${reason}\". ${
                     Bukkit.getOnlinePlayers().count() - 1
                 } player(s) online.", event.player.uniqueId, 0xFF0000
             )
@@ -129,15 +126,14 @@ class Events : Listener {
             return
         }
 
-        var colorChatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
+        var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)}${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%parties_party%") != "") {
-            colorChatString = PlaceholderAPI.setPlaceholders(
+            chatString = PlaceholderAPI.setPlaceholders(
                 event.player,
-                "&8[%parties_color_code%%parties_party%&8] $colorChatString"
+                "&8[%parties_color_code%%parties_party%&8] $chatString"
             )
         }
-        colorChatString = convertColor(colorChatString)
 
         val advancementTitleKey = event.advancement.display?.title() ?: return
         val advancementTitle = PlainTextComponentSerializer.plainText().serialize(advancementTitleKey)
@@ -153,7 +149,7 @@ class Events : Listener {
 
         GlobalScope.launch {
             DiscordBridge.sendEmbed(
-                "${removeColor(colorChatString)} $advancementMessage.",
+                "${removeColor(chatString)} $advancementMessage.",
                 event.player.uniqueId,
                 0xFFFF00
             )
@@ -201,13 +197,12 @@ class Events : Listener {
             chatString =
                 PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
-        val colorChatString = convertColor(chatString)
 
         if (DiscordBridge.jda != null) {
             val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
 
             GlobalScope.launch {
-                DiscordBridge.sendMessage(discordMessageString, colorChatString, event.player.uniqueId)
+                DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId)
             }
         }
 
@@ -216,10 +211,10 @@ class Events : Listener {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        chatString = convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(event.player)}")
+        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
 
         var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -231,7 +226,7 @@ class Events : Listener {
         textComponent = textComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID false"
+                "/translatemessage $randomUUID 1"
             )
         )
 
@@ -292,7 +287,7 @@ class Events : Listener {
         }
 
         val player: Player?
-        var message: String
+        val message: String
 
         if (checkSplit == "/r" || checkSplit == "/reply") {
             message = messageSplit[1]
@@ -314,40 +309,59 @@ class Events : Listener {
             return
         }
 
-        var textComponent = Component.text()
-        textComponent = textComponent.hoverEvent(
+        val randomUUID = UUID.randomUUID()
+
+        TranslateMessage.pmMessages[randomUUID] = TranslateMessage.SentPMMessage(
+            message,
+            event.player.uniqueId,
+            player.uniqueId
+        )
+
+        val colourMessage = if (event.player.hasPermission("chat-og.color")) {
+            ChatOG.mm.deserialize(legacyToMm(message))
+        } else {
+            Component.text(message)
+        }
+
+        val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${player.name}<gold>]<white>"
+        var toSenderTextComponent = Component.join(
+            JoinConfiguration.separator(Component.text(" ")),
+            ChatOG.mm.deserialize(toSenderPrefix),
+            colourMessage
+        )
+        toSenderTextComponent = toSenderTextComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 ChatOG.mm.deserialize("<green>Click to translate this message")
             )
         )
-
-        val randomUUID = UUID.randomUUID()
-        textComponent = textComponent.clickEvent(
+        toSenderTextComponent = toSenderTextComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID false"
+                "/translatemessage $randomUUID 3"
             )
         )
-
-        TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(
-            message,
-            event.player.name,
-            ChatOG.mm.deserialize("<gold>[PM]<red> "),
-            Component.text(" > ").color(NamedTextColor.GRAY)
-        )
-
-        if (event.player.hasPermission("chat-og.color")) {
-            message = convertColor(message)
-        }
-
-        val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${player.name}<gold>]<white>"
-        textComponent.content("$toSenderPrefix $message")
-        event.player.sendMessage(textComponent)
+        event.player.sendMessage(toSenderTextComponent)
 
         val toPrefix = "<gold>[<dark_red>${event.player.name} <gold>-> <red>me<gold>]<white>"
-        textComponent.content("$toPrefix $message")
-        player.sendMessage(textComponent)
+        var toTextComponent = Component.join(
+            JoinConfiguration.separator(Component.text(" ")),
+            ChatOG.mm.deserialize(toPrefix),
+            colourMessage
+        )
+        toTextComponent = toTextComponent.hoverEvent(
+            HoverEvent.hoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                ChatOG.mm.deserialize("<green>Click to translate this message")
+            )
+        )
+        toTextComponent = toTextComponent.clickEvent(
+            ClickEvent.clickEvent(
+                ClickEvent.Action.RUN_COMMAND,
+                "/translatemessage $randomUUID 3"
+            )
+        )
+        player.sendMessage(toTextComponent)
 
         lastMessaged[event.player.uniqueId] = player.uniqueId
         lastMessaged[player.uniqueId] = event.player.uniqueId
@@ -378,14 +392,14 @@ class Events : Listener {
             nameString =
                 PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $nameString")
         }
-        nameString = convertColor(nameString)
+        val nameComponent = ChatOG.mm.deserialize(legacyToMm(nameString))
 
         var oldDeathMessage = event.deathMessage() as TranslatableComponent
         oldDeathMessage = oldDeathMessage.color(TextColor.color(16755200))
         oldDeathMessage = oldDeathMessage.append(Component.text("."))
 
         val argList = oldDeathMessage.args().toMutableList()
-        argList[0] = Component.text(nameString)
+        argList[0] = nameComponent
         val deathMessage = oldDeathMessage.args(argList)
 
         event.deathMessage(deathMessage)

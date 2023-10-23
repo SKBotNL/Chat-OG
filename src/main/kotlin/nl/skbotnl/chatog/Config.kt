@@ -23,14 +23,6 @@ object Config {
         config.save(file)
     }
 
-    fun getApiKey(): String {
-        return config.get("apiKey").toString()
-    }
-
-    fun getSubRegion(): String {
-        return config.get("subscriptionRegion").toString()
-    }
-
     fun getDiscordEnabled(): Boolean {
         return config.get("discordEnabled").toString().toBoolean()
     }

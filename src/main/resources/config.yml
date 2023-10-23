@@ -1,7 +1,3 @@
-# ---Translator---
-apiKey: <put your apikey here>
-subscriptionRegion: <put the subscription region here>
-
 # ---Discord---
 # discordEnabled needs to be true for staffDiscordEnabled and donorDiscordEnabled to have any effect
 discordEnabled: false

@@ -9,7 +9,6 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -30,11 +29,15 @@ object Helper {
         return cooldown
     }
 
-    fun convertColor(text: String): String {
-        return ChatColor.translateAlternateColorCodes('&', text)
+    fun legacyToMm(text: String): String {
+        return text.replace("&4", "<dark_red>").replace("&c", "<red>").replace("&6", "<gold>").replace("&e", "<yellow>")
+            .replace("&2", "<dark_green>").replace("&a", "<green>").replace("&b", "<aqua>").replace("&3", "<dark_aqua>")
+            .replace("&1", "<dark_blue>").replace("&9", "<blue>").replace("&d", "<light_purple>")
+            .replace("&5", "<dark_purple>").replace("&f", "<white>").replace("&7", "<gray>")
+            .replace("&8", "<dark_gray>").replace("&0", "<black>")
     }
 
-    private val colorRegex = Regex("(§)?§([0-9a-fk-orA-FK-OR])")
+    private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
     fun removeColor(text: String): String {
         var tempText = text
         colorRegex.findAll(text).iterator().forEach {
@@ -158,12 +161,8 @@ object Helper {
                         )
                     )
 
-                    val beforeComponent = Component.text(
-                        convertColor(chatColor + (link.groups[1]?.value ?: ""))
-                    )
-                    val afterComponent = Component.text(
-                        convertColor(chatColor + (link.groups[4]?.value ?: ""))
-                    )
+                    val beforeComponent = ChatOG.mm.deserialize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
+                    val afterComponent = ChatOG.mm.deserialize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
 
                     val fullComponent =
                         Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
@@ -172,21 +171,25 @@ object Helper {
                 }
                 return@forEach
             }
-            val wordText = if (player.hasPermission("chat-og.color")) {
+            val wordComponent = if (player.hasPermission("chat-og.color")) {
                 if (messageComponents.isNotEmpty()) {
                     val lastContent = (messageComponents.last() as TextComponent).content()
                     if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
-                        convertColor(getColorSection(lastContent) + word)
+                        ChatOG.mm.deserialize(legacyToMm(getColorSection(lastContent) + word))
                     } else {
-                        convertColor(chatColor + word)
+                        ChatOG.mm.deserialize(legacyToMm(chatColor + word))
                     }
                 } else {
-                    convertColor(chatColor + word)
+                    ChatOG.mm.deserialize(legacyToMm(chatColor + word))
                 }
             } else {
-                convertColor(chatColor) + word
+                Component.join(
+                    JoinConfiguration.noSeparators(),
+                    ChatOG.mm.deserialize(legacyToMm(chatColor)),
+                    Component.text(word)
+                )
             }
-            messageComponents += Component.text(wordText)
+            messageComponents += wordComponent
         }
 
         return messageComponents

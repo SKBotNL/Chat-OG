@@ -2,7 +2,6 @@ package nl.skbotnl.chatog.commands
 
 import club.minnced.discord.webhook.WebhookClient
 import net.dv8tion.jda.api.entities.Activity
-import nl.skbotnl.chatog.BingTranslator
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.DiscordBridge
@@ -13,8 +12,6 @@ import org.bukkit.command.CommandSender
 class ChatConfigReload : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         Config.load()
-        BingTranslator.apiKey = Config.getApiKey()
-        BingTranslator.subscriptionRegion = Config.getSubRegion()
 
         DiscordBridge.channelId = Config.getChannelId()
         DiscordBridge.staffChannelId = Config.getStaffChannelId()

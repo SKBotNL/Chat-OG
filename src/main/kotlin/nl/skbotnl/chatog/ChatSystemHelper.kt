@@ -9,6 +9,8 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import nl.skbotnl.chatog.Helper.legacyToMm
+import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -30,13 +32,12 @@ object ChatSystemHelper {
             chatString = PlaceholderAPI.setPlaceholders(player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         chatString = "&cSTAFF | $chatString"
-        val colorChatString = Helper.convertColor(chatString)
 
         if (DiscordBridge.jda != null && Config.getStaffDiscordEnabled()) {
             val discordMessageString = Helper.convertEmojis(text)
 
             GlobalScope.launch {
-                DiscordBridge.sendStaffMessage(discordMessageString, colorChatString, player.uniqueId)
+                DiscordBridge.sendStaffMessage(discordMessageString, removeColor(chatString), player.uniqueId)
             }
         }
 
@@ -45,10 +46,10 @@ object ChatSystemHelper {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        chatString = Helper.convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(player)}")
+        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
         var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -60,7 +61,7 @@ object ChatSystemHelper {
         textComponent = textComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID false"
+                "/translatemessage $randomUUID 1"
             )
         )
 
@@ -80,13 +81,12 @@ object ChatSystemHelper {
             chatString = PlaceholderAPI.setPlaceholders(player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
         chatString = "&aDONOR | $chatString"
-        val colorChatString = Helper.convertColor(chatString)
 
         if (DiscordBridge.jda != null && Config.getDonorDiscordEnabled()) {
             val discordMessageString = Helper.convertEmojis(text)
 
             GlobalScope.launch {
-                DiscordBridge.sendDonorMessage(discordMessageString, colorChatString, player.uniqueId)
+                DiscordBridge.sendDonorMessage(discordMessageString, removeColor(chatString), player.uniqueId)
             }
         }
 
@@ -95,10 +95,10 @@ object ChatSystemHelper {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        chatString = Helper.convertColor("$colorChatString${ChatOG.chat.getPlayerSuffix(player)}")
+        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
         var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), Component.text(chatString), messageComponent)
+            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -110,7 +110,7 @@ object ChatSystemHelper {
         textComponent = textComponent.clickEvent(
             ClickEvent.clickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID false"
+                "/translatemessage $randomUUID 1"
             )
         )
 
