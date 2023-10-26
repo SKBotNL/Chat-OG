@@ -5,6 +5,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
 import org.bukkit.Bukkit
@@ -15,7 +17,18 @@ class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
-        var mm = MiniMessage.miniMessage()
+        var mm = MiniMessage.builder()
+            .tags(
+                TagResolver.builder()
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.decorations())
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.reset())
+                    .resolver(StandardTags.rainbow())
+                    .resolver(StandardTags.gradient())
+                    .build()
+            )
+            .build()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
     }
 

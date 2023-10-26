@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "nl.skbotnl.chat-og"
-version = "2.0.0"
+version = "2.0.1"
 
 val apiVersion = "1.18.2"
 
@@ -32,7 +32,6 @@ tasks.named<ProcessResources>("processResources") {
         "version" to version,
         "apiVersion" to apiVersion,
     )
-    //inputs.properties = props // Indicates to rerun if version changes.
 
     filesMatching("plugin.yml") { // Pass build number and API version to plugin"s YAML file.
         expand(props) // Automatically update .jar"s internal version numbers.
