@@ -34,7 +34,7 @@ object Helper {
             .replace("&2", "<dark_green>").replace("&a", "<green>").replace("&b", "<aqua>").replace("&3", "<dark_aqua>")
             .replace("&1", "<dark_blue>").replace("&9", "<blue>").replace("&d", "<light_purple>")
             .replace("&5", "<dark_purple>").replace("&f", "<white>").replace("&7", "<gray>")
-            .replace("&8", "<dark_gray>").replace("&0", "<black>")
+            .replace("&8", "<dark_gray>").replace("&0", "<black>").replace("&r", "<reset>")
     }
 
     private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")

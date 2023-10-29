@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "nl.skbotnl.chat-og"
-version = "2.0.1"
+version = "2.0.2"
 
 val apiVersion = "1.18.2"
 
