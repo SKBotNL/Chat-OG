@@ -30,11 +30,11 @@ object Helper {
     }
 
     fun legacyToMm(text: String): String {
-        return text.replace("&4", "<dark_red>").replace("&c", "<red>").replace("&6", "<gold>").replace("&e", "<yellow>")
-            .replace("&2", "<dark_green>").replace("&a", "<green>").replace("&b", "<aqua>").replace("&3", "<dark_aqua>")
-            .replace("&1", "<dark_blue>").replace("&9", "<blue>").replace("&d", "<light_purple>")
-            .replace("&5", "<dark_purple>").replace("&f", "<white>").replace("&7", "<gray>")
-            .replace("&8", "<dark_gray>").replace("&0", "<black>").replace("&r", "<reset>")
+        return text.replace("[§&]4".toRegex(), "<dark_red>").replace("[§&]c".toRegex(), "<red>").replace("[§&]6".toRegex(), "<gold>").replace("[§&]e".toRegex(), "<yellow>")
+            .replace("[§&]2".toRegex(), "<dark_green>").replace("[§&]a".toRegex(), "<green>").replace("[§&]b".toRegex(), "<aqua>").replace("[§&]3".toRegex(), "<dark_aqua>")
+            .replace("[§&]1".toRegex(), "<dark_blue>").replace("[§&]9".toRegex(), "<blue>").replace("[§&]d".toRegex(), "<light_purple>")
+            .replace("[§&]5".toRegex(), "<dark_purple>").replace("[§&]f".toRegex(), "<white>").replace("[§&]7".toRegex(), "<gray>")
+            .replace("[§&]8".toRegex(), "<dark_gray>").replace("[§&]0".toRegex(), "<black>").replace("[§&]r".toRegex(), "<reset>")
     }
 
     private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
