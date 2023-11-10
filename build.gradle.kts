@@ -6,14 +6,14 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.10"
+    id("org.jetbrains.kotlin.jvm") version "1.9.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("de.undercouch.download") version "5.5.0"
     id("maven-publish")
 }
 
 group = "nl.skbotnl.chat-og"
-version = "2.0.4"
+version = "2.0.5"
 
 val apiVersion = "1.18.2"
 
@@ -61,11 +61,11 @@ repositories {
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("me.clip:placeholderapi:2.11.4")
+    compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("net.essentialsx:EssentialsX:2.20.1")
     compileOnly(files("libs/AnnouncerPlus-1.3.6.jar"))
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.15") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.17") {
         exclude(module = "opus-java")
     }
 
