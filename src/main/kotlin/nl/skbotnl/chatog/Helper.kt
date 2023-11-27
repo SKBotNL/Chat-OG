@@ -81,9 +81,6 @@ object Helper {
         return last
     }
 
-    // 2 systems because Discord is still rolling out the new username system
-    // TODO: Remove legacy username system
-    private val getLegacyUsername = Regex("@(.*)#(\\d{4})")
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
     suspend fun convertMentions(text: String): String {
         val guild = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)
@@ -95,18 +92,9 @@ object Helper {
         var tempText = text
         val members = guild.loadMembers().await()
 
-        getLegacyUsername.findAll(text).iterator().forEach { legacy ->
-            for (member in members) {
-                if (member.user.name.lowercase() == legacy.groupValues[1].lowercase() && member.user.discriminator == legacy.groupValues[2]) {
-                    tempText = tempText.replace(legacy.value, member.asMention)
-                    return@forEach
-                }
-            }
-        }
-
         getHandle.findAll(tempText).iterator().forEach { handle ->
             for (member in members) {
-                if (member.user.discriminator == "0000" && member.user.name.lowercase() == handle.groupValues[1].lowercase()) {
+                if (member.user.name.lowercase() == handle.groupValues[1].lowercase()) {
                     tempText = tempText.replace(handle.value, member.asMention)
                 }
             }

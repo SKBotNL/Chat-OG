@@ -2,7 +2,7 @@ name: Chat-OG
 version: '${version}'
 main: nl.skbotnl.chatog.ChatOG
 author: SKBotNL
-api-version: 1.18
+api-version: '${apiVersion}'
 depend: [ PlaceholderAPI, Vault, AnnouncerPlus, Essentials ]
 commands:
   translatemessage:
