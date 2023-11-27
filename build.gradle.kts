@@ -15,7 +15,7 @@ plugins {
 group = "nl.skbotnl.chat-og"
 version = "2.1.1"
 
-val apiVersion = "1.19.4"
+val apiVersion = "1.19"
 
 publishing {
     publications {
