@@ -12,7 +12,7 @@ object ArgosTranslate {
 
     fun init() {
         if (ChatOG.plugin.getResource("python.zip") == null) {
-            ChatOG.plugin.logger.warning("Python not found, disabling the translator. If you don't want this, read the README")
+            ChatOG.plugin.logger.warning("Python not found, the translator will be disabled. If you don't want this, read the README")
             return
         }
 

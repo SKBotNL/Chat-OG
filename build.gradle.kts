@@ -131,7 +131,7 @@ tasks.shadowJar {
 tasks.shadowJar.configure {
     archiveClassifier.set("")
 
-    if (!file("$rootDir/build/python/python.zip").exists()) {
+    if (!file("$rootDir/build/python/python.zip").exists() && file("$rootDir/build/python/install/usr/local/").exists()) {
         val inputDirectory = File("$rootDir/build/python/install/usr/local/")
         val outputZipFile = File("$rootDir/build/python/python.zip")
         outputZipFile.createNewFile()
