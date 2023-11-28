@@ -12,7 +12,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "nl.skbotnl.chat-og"
+group = "nl.skbotnl.chatog"
 version = "2.1.1"
 
 val apiVersion = "1.19"
