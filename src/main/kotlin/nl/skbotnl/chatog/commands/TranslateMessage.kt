@@ -103,7 +103,6 @@ class TranslateMessage : CommandExecutor {
         player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: Translating message (this can take some time)..."))
         GlobalScope.launch {
             val translated = ArgosTranslate.translate(sentMessage.message, language)
-            println(translated.translatedText)
             translateCallback(translated, player, messageType, sentMessage, language)
         }
         return true
