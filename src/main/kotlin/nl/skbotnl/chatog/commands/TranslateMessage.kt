@@ -96,7 +96,7 @@ class TranslateMessage : CommandExecutor {
         val language = LanguageDatabase.getLanguage(player.uniqueId)
 
         if (language == "null") {
-            player.sendMessage(ChatOG.mm.deserialize("<red>Please select the language to translate to first using /translatesettings"))
+            player.sendMessage(ChatOG.mm.deserialize("<red>Please first select the language to translate to using /translatesettings"))
             return true
         }
 
