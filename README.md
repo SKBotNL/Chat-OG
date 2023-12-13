@@ -6,7 +6,7 @@ Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 - Discord bridge
 - Staff and donor chat
 ## Building
-If you want the translator ([argos-translator](https://github.com/argosopentech/argos-translate)) run `./gradlew buildPython` before building (make sure you have the development packages of zlib, openssl, lzma and libffi)\
+If you want the translator ([argos-translate](https://github.com/argosopentech/argos-translate)) run `./gradlew buildPython` before building (make sure you have the development packages of zlib, openssl, lzma and libffi)\
 Building: `./gradlew build`
 ### Emoji Converter Credits
 - https://github.com/mathiasbynens/emoji-test-regex-pattern
