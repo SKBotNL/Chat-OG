@@ -18,7 +18,7 @@ object ArgosTranslate {
 
         val pythonFolder = File(ChatOG.plugin.dataFolder, "python")
         if (!pythonFolder.exists()) {
-            ChatOG.plugin.logger.info("Setting up Python...")
+            ChatOG.plugin.logger.info("Setting up Python and argos-translate...")
             ChatOG.plugin.saveResource("python.zip", true)
             ZipFile(File(ChatOG.plugin.dataFolder, "python.zip")).use { zip ->
                 zip.entries().asSequence().forEach { entry ->
@@ -63,7 +63,7 @@ object ArgosTranslate {
             ProcessBuilder().command("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "update").start().waitFor()
             ProcessBuilder().command("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "install", "translate")
                 .start().waitFor()
-            ChatOG.plugin.logger.info("Done with setting up Python")
+            ChatOG.plugin.logger.info("Done with setting up Python and argos-translate")
         }
 
         initialised = true
