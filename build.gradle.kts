@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "nl.skbotnl.chatog"
-version = "2.1.2"
+version = "2.1.3"
 
 val apiVersion = "1.19"
 
@@ -69,8 +69,8 @@ dependencies {
         exclude(module = "opus-java")
     }
 
-    implementation("com.github.minndevelopment:jda-ktx:9370cb13cc64646862e6f885959d67eb4b157e4a")
-    implementation("club.minnced:discord-webhooks:7c0808ea54e03ca86ebafaa7a3bcb52254faf591")
+    implementation("club.minnced:jda-ktx:0.11.0-beta.20")
+    implementation("club.minnced:discord-webhooks:0.8.4")
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

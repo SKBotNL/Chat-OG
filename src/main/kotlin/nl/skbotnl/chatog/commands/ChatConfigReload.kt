@@ -22,7 +22,7 @@ class ChatConfigReload : CommandExecutor {
         DiscordBridge.donorWebhook = WebhookClient.withUrl(Config.getDonorWebhook())
         DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
 
-        sender.sendMessage(ChatOG.mm.deserialize("<green>Reloaded the config!"))
+        sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <green>Reloaded the config!"))
         return true
     }
 }

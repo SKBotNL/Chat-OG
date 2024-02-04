@@ -30,11 +30,16 @@ object Helper {
     }
 
     fun legacyToMm(text: String): String {
-        return text.replace("[§&]4".toRegex(), "<dark_red>").replace("[§&]c".toRegex(), "<red>").replace("[§&]6".toRegex(), "<gold>").replace("[§&]e".toRegex(), "<yellow>")
-            .replace("[§&]2".toRegex(), "<dark_green>").replace("[§&]a".toRegex(), "<green>").replace("[§&]b".toRegex(), "<aqua>").replace("[§&]3".toRegex(), "<dark_aqua>")
-            .replace("[§&]1".toRegex(), "<dark_blue>").replace("[§&]9".toRegex(), "<blue>").replace("[§&]d".toRegex(), "<light_purple>")
-            .replace("[§&]5".toRegex(), "<dark_purple>").replace("[§&]f".toRegex(), "<white>").replace("[§&]7".toRegex(), "<gray>")
-            .replace("[§&]8".toRegex(), "<dark_gray>").replace("[§&]0".toRegex(), "<black>").replace("[§&]r".toRegex(), "<reset>")
+        return text.replace("[§&]4".toRegex(), "<dark_red>").replace("[§&]c".toRegex(), "<red>")
+            .replace("[§&]6".toRegex(), "<gold>").replace("[§&]e".toRegex(), "<yellow>")
+            .replace("[§&]2".toRegex(), "<dark_green>").replace("[§&]a".toRegex(), "<green>")
+            .replace("[§&]b".toRegex(), "<aqua>").replace("[§&]3".toRegex(), "<dark_aqua>")
+            .replace("[§&]1".toRegex(), "<dark_blue>").replace("[§&]9".toRegex(), "<blue>")
+            .replace("[§&]d".toRegex(), "<light_purple>")
+            .replace("[§&]5".toRegex(), "<dark_purple>").replace("[§&]f".toRegex(), "<white>")
+            .replace("[§&]7".toRegex(), "<gray>")
+            .replace("[§&]8".toRegex(), "<dark_gray>").replace("[§&]0".toRegex(), "<black>")
+            .replace("[§&]r".toRegex(), "<reset>")
     }
 
     private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
@@ -116,12 +121,12 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(ChatOG.mm.deserialize("<red>WARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>WARNING: You are not allowed to post links like that here."))
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
                                     ChatOG.mm.deserialize(
-                                        "[<green>Chat<white>-<red>OG<white>]: ${player.name} has posted a disallowed link: ${
+                                        "<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
                                                 "[dot]"

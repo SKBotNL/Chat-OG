@@ -247,7 +247,7 @@ class Events : Listener {
                 event.isCancelled = true
 
                 if (!event.player.hasPermission("chat-og.staff")) {
-                    event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: <red>You do not have permission to run this command."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>You do not have permission to run this command."))
                     return
                 }
 
@@ -257,11 +257,11 @@ class Events : Listener {
                     if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
                         ChatSystemHelper.inChat[event.player.uniqueId] = ""
 
-                        event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: You are now talking in normal chat."))
+                        event.player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: You are now talking in normal chat."))
                         return
                     }
                     ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
-                    event.player.sendMessage(ChatOG.mm.deserialize("[<green>Chat<white>-<red>OG<white>]: You are now talking in staff chat."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: You are now talking in staff chat."))
                     return
                 }
 
@@ -293,7 +293,7 @@ class Events : Listener {
             message = messageSplit[1]
 
             if (!lastMessaged.containsKey(event.player.uniqueId)) {
-                event.player.sendMessage(ChatOG.mm.deserialize("<red>You haven't messaged anyone yet"))
+                event.player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>You haven't messaged anyone yet."))
                 return
             }
 
@@ -305,7 +305,7 @@ class Events : Listener {
         }
 
         if (player == null) {
-            event.player.sendMessage(ChatOG.mm.deserialize("<red>That player doesn't exist or isn't online"))
+            event.player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>That player doesn't exist or isn't online."))
             return
         }
 

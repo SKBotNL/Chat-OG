@@ -57,12 +57,12 @@ class TranslateSettings : CommandExecutor {
         )
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(ChatOG.mm.deserialize("<red>Invalid language"))
+            sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>Invalid language."))
             return true
         }
 
         LanguageDatabase.setLanguage(player.uniqueId, language)
-        player.sendMessage(ChatOG.mm.deserialize("<green>Set language to: <white>$language."))
+        player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <green>Set language to: <white>$language."))
 
         return true
     }
