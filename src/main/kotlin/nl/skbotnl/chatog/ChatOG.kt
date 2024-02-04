@@ -22,7 +22,6 @@ class ChatOG : JavaPlugin() {
                 TagResolver.builder()
                     .resolver(StandardTags.color())
                     .resolver(StandardTags.decorations())
-                    .resolver(StandardTags.color())
                     .resolver(StandardTags.reset())
                     .resolver(StandardTags.rainbow())
                     .resolver(StandardTags.gradient())
