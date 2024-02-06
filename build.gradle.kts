@@ -6,11 +6,11 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("de.undercouch.download") version "5.5.0"
+	id("de.undercouch.download") version "5.5.0"
     id("maven-publish")
-	id("eclipse")
+    id("eclipse")
 }
 
 group = "nl.skbotnl.chatog"
@@ -28,21 +28,9 @@ publishing {
     }
 }
 
-val fixKotlinContainer = true
-if (plugins.hasPlugin(EclipsePlugin::class)) {
-    println("Configuring Eclipse for project ${eclipse.project.name}")
-
-    eclipse.synchronizationTasks({ // Enclose the entire lambda expression
-        val kotlinNature = project.tasks.find { it.name.matches("^compile.*Kotlin\$".toRegex()) } != null
-        if (kotlinNature) {
-            if (fixKotlinContainer) {
-                println("Adding KOTLIN_CONTAINER for ${eclipse.project.name}")
-                eclipse.classpath.containers("org.jetbrains.kotlin.core.KOTLIN_CONTAINER")
-            }
-        }
-    })
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    jvmTargetValidationMode.set(org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode.WARNING)
 }
-
 
 tasks.named<ProcessResources>("processResources") {
     val props = mapOf(
@@ -60,6 +48,10 @@ repositories {
 
     maven { // Import Maven Repository.
         url = uri("https://repo.purpurmc.org/snapshots") // Get Purpur API from Purpur Maven Repository.
+    }
+	
+	maven {
+      url = uri("https://plugins.gradle.org/m2/")
     }
 
     maven {
@@ -81,14 +73,11 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("net.essentialsx:EssentialsX:2.20.1")
     compileOnly(files("libs/AnnouncerPlus-1.3.6.jar"))
-
     implementation("net.dv8tion:JDA:5.0.0-beta.20") {
         exclude(module = "opus-java")
     }
-
     implementation("club.minnced:jda-ktx:0.11.0-beta.20")
     implementation("club.minnced:discord-webhooks:0.8.4")
-
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
