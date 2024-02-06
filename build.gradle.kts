@@ -10,6 +10,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("de.undercouch.download") version "5.5.0"
     id("maven-publish")
+	id("eclipse")
 }
 
 group = "nl.skbotnl.chatog"
@@ -26,6 +27,22 @@ publishing {
         }
     }
 }
+
+val fixKotlinContainer = true
+if (plugins.hasPlugin(EclipsePlugin::class)) {
+    println("Configuring Eclipse for project ${eclipse.project.name}")
+
+    eclipse.synchronizationTasks({ // Enclose the entire lambda expression
+        val kotlinNature = project.tasks.find { it.name.matches("^compile.*Kotlin\$".toRegex()) } != null
+        if (kotlinNature) {
+            if (fixKotlinContainer) {
+                println("Adding KOTLIN_CONTAINER for ${eclipse.project.name}")
+                eclipse.classpath.containers("org.jetbrains.kotlin.core.KOTLIN_CONTAINER")
+            }
+        }
+    })
+}
+
 
 tasks.named<ProcessResources>("processResources") {
     val props = mapOf(
