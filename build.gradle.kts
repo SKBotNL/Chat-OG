@@ -6,10 +6,11 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
+    id("org.jetbrains.kotlin.jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("de.undercouch.download") version "5.5.0"
     id("maven-publish")
+    id("eclipse")
 }
 
 group = "nl.skbotnl.chatog"
@@ -68,10 +69,8 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.20") {
         exclude(module = "opus-java")
     }
-
     implementation("club.minnced:jda-ktx:0.11.0-beta.20")
     implementation("club.minnced:discord-webhooks:0.8.4")
-
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
@@ -165,6 +164,9 @@ tasks.jar.configure {
     archiveClassifier.set("part")
 }
 
-kotlin {
-    jvmToolchain(17)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.GRAAL_VM
+    }
 }
