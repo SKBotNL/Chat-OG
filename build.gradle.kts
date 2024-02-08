@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "nl.skbotnl.chatog"
-version = "2.1.3"
+version = "2.1.4"
 
 val apiVersion = "1.19"
 
