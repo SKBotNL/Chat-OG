@@ -3,6 +3,7 @@ package nl.skbotnl.chatog.commands
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatSystemHelper
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
+import nl.skbotnl.chatog.Config
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -15,18 +16,18 @@ class StaffChat : CommandExecutor {
             return true
         }
         if (!sender.hasPermission("chat-og.staff")) {
-            sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>You do not have permission to run this command."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>You do not have permission to run this command."))
             return true
         }
         if (args == null || args.isEmpty()) {
             if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.STAFFCHAT) {
                 ChatSystemHelper.inChat[sender.uniqueId] = ""
 
-                sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: You are now talking in normal chat."))
+                sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in normal chat."))
                 return true
             }
             ChatSystemHelper.inChat[sender.uniqueId] = ChatType.STAFFCHAT
-            sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: You are now talking in staff chat."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in staff chat."))
             return true
         }
 

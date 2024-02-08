@@ -223,7 +223,7 @@ object DiscordBridge {
                                     if (player.hasPermission("group.moderator")) {
                                         player.sendMessage(
                                             ChatOG.mm.deserialize(
-                                                "<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: @${user.name} has posted a disallowed link: ${
+                                                "${Config.getPrefix()}: @${user.name} has posted a disallowed link: ${
                                                     word.replace(
                                                         ".",
                                                         "[dot]"

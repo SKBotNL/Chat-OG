@@ -7,11 +7,8 @@ import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
-import nl.skbotnl.chatog.ArgosTranslate
-import nl.skbotnl.chatog.ChatOG
-import nl.skbotnl.chatog.Helper
+import nl.skbotnl.chatog.*
 import nl.skbotnl.chatog.Helper.legacyToMm
-import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -58,7 +55,7 @@ class TranslateMessage : CommandExecutor {
         val player: Player = sender
 
         if (Helper.getTranslateTimeout(player.uniqueId) != 0L) {
-            player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>You're doing that too fast."))
+            player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>You're doing that too fast."))
             return true
         }
 
@@ -67,7 +64,7 @@ class TranslateMessage : CommandExecutor {
         try {
             uuid = UUID.fromString(args[0])
         } catch (e: IllegalArgumentException) {
-            player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>That is not a valid UUID."))
+            player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>That is not a valid UUID."))
             return true
         }
 
@@ -75,7 +72,7 @@ class TranslateMessage : CommandExecutor {
         try {
             messageType = args[1].toInt()
         } catch (_: NumberFormatException) {
-            player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>Invalid message type."))
+            player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>Invalid message type."))
             return true
         }
 
@@ -89,7 +86,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (sentMessage == null) {
-            player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>Could not find that message."))
+            player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>Could not find that message."))
             return true
         }
 
@@ -105,7 +102,7 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: Translating message (this can take some time)..."))
+        player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: Translating message (this can take some time)..."))
         GlobalScope.launch {
             val translated = ArgosTranslate.translate(sentMessage.message, language)
             translateCallback(translated, player, messageType, sentMessage, language)
@@ -126,7 +123,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (translated.translatedText == null) {
-            player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>Could not translate that message."))
+            player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>Could not translate that message."))
             return
         }
 

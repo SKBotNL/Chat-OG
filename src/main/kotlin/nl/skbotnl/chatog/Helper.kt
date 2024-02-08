@@ -121,12 +121,12 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>WARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>WARNING: You are not allowed to post links like that here."))
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
                                     ChatOG.mm.deserialize(
-                                        "<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: ${player.name} has posted a disallowed link: ${
+                                        "${Config.getPrefix()}: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
                                                 "[dot]"

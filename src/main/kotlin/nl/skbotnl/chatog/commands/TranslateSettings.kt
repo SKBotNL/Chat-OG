@@ -1,6 +1,7 @@
 package nl.skbotnl.chatog.commands
 
 import nl.skbotnl.chatog.ChatOG
+import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -57,12 +58,12 @@ class TranslateSettings : CommandExecutor {
         )
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <red>Invalid language."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>Invalid language."))
             return true
         }
 
         LanguageDatabase.setLanguage(player.uniqueId, language)
-        player.sendMessage(ChatOG.mm.deserialize("<dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>: <green>Set language to: <white>$language."))
+        player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <green>Set language to: <white>$language."))
 
         return true
     }

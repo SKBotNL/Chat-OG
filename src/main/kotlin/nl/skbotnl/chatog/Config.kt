@@ -23,6 +23,10 @@ object Config {
         config.save(file)
     }
 
+    fun getPrefix(): String {
+        return config.get("prefix").toString()
+    }
+
     fun getDiscordEnabled(): Boolean {
         return config.get("discordEnabled").toString().toBoolean()
     }
