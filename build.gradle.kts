@@ -164,6 +164,10 @@ tasks.jar.configure {
     archiveClassifier.set("part")
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
