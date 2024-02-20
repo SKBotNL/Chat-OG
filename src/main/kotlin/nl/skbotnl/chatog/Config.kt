@@ -144,11 +144,6 @@ object Config {
 
         roles = config.getConfigurationSection("roles")?.getKeys(false) ?: setOf()
 
-//        val roleMessageColorSection = config.getConfigurationSection("roles")
-//        if (roleMessageColorSection == null) {
-//            roleMessageColor = mutableMapOf()
-//            return false
-//        }
         if (roles.isEmpty()) {
             roleMessageColor = mutableMapOf()
             return false
