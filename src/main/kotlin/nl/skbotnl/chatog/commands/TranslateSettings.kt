@@ -58,12 +58,12 @@ class TranslateSettings : CommandExecutor {
         )
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>Invalid language."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Invalid language."))
             return true
         }
 
         LanguageDatabase.setLanguage(player.uniqueId, language)
-        player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <green>Set language to: <white>$language."))
+        player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
 
         return true
     }

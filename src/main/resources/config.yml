@@ -1,6 +1,6 @@
 # ---General---
 # MiniMessage-formatted prefix (https://docs.advntr.dev/minimessage/format.html)
-prefix: <dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]<reset>
+prefix: <dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]
 
 # ---Discord---
 # discordEnabled needs to be true for staffDiscordEnabled and donorDiscordEnabled to have any effect
@@ -34,7 +34,7 @@ listCommandText: "%onlineplayers% player(s) online:"
 #
 # message_color can be one of these: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
 #
-# You can also use RGB as the color:
+# You can also use RGB for the color:
 #
 # roles:
 #     1234567891234567890:

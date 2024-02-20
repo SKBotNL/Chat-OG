@@ -36,7 +36,7 @@ class Events : Listener {
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
 
@@ -64,7 +64,7 @@ class Events : Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
 
@@ -92,7 +92,7 @@ class Events : Listener {
 
     @EventHandler
     fun onKick(event: PlayerKickEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
 
@@ -122,7 +122,7 @@ class Events : Listener {
 
     @EventHandler
     fun onAdvancement(event: PlayerAdvancementDoneEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
 
@@ -158,7 +158,7 @@ class Events : Listener {
 
     @EventHandler
     fun onBroadcast(event: BroadcastMessageEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
         if (event.message() !is TextComponent) {
@@ -247,7 +247,7 @@ class Events : Listener {
                 event.isCancelled = true
 
                 if (!event.player.hasPermission("chat-og.staff")) {
-                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>You do not have permission to run this command."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
                     return
                 }
 
@@ -257,11 +257,11 @@ class Events : Listener {
                     if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
                         ChatSystemHelper.inChat[event.player.uniqueId] = ""
 
-                        event.player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in normal chat."))
+                        event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in normal chat."))
                         return
                     }
                     ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
-                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in staff chat."))
+                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in staff chat."))
                     return
                 }
 
@@ -293,7 +293,7 @@ class Events : Listener {
             message = messageSplit[1]
 
             if (!lastMessaged.containsKey(event.player.uniqueId)) {
-                event.player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>You haven't messaged anyone yet."))
+                event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You haven't messaged anyone yet."))
                 return
             }
 
@@ -305,7 +305,7 @@ class Events : Listener {
         }
 
         if (player == null) {
-            event.player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>That player doesn't exist or isn't online."))
+            event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>That player doesn't exist or isn't online."))
             return
         }
 
@@ -371,7 +371,7 @@ class Events : Listener {
 
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
-        if (!Config.getDiscordEnabled()) {
+        if (!Config.discordEnabled) {
             return
         }
 

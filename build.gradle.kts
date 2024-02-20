@@ -34,16 +34,16 @@ tasks.named<ProcessResources>("processResources") {
         "apiVersion" to apiVersion,
     )
 
-    filesMatching("plugin.yml") { // Pass build number and API version to plugin"s YAML file.
-        expand(props) // Automatically update .jar"s internal version numbers.
+    filesMatching("plugin.yml") {
+        expand(props)
     }
 }
 
 repositories {
     mavenCentral()
 
-    maven { // Import Maven Repository.
-        url = uri("https://repo.purpurmc.org/snapshots") // Get Purpur API from Purpur Maven Repository.
+    maven {
+        url = uri("https://repo.purpurmc.org/snapshots")
     }
 
     maven {

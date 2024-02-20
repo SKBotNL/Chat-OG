@@ -38,46 +38,42 @@ object DiscordBridge {
     var webhook: WebhookClient? = null
     var staffWebhook: WebhookClient? = null
     var donorWebhook: WebhookClient? = null
-    var guildId = Config.getGuildId()
-    var channelId = Config.getChannelId()
-    var staffChannelId = Config.getStaffChannelId()
-    var donorChannelId = Config.getDonorChannelId()
 
     private val urlRegex =
         Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
 
     fun main() {
         try {
-            webhook = WebhookClient.withUrl(Config.getWebhook())
+            webhook = WebhookClient.withUrl(Config.webhook)
         } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
         }
         try {
-            staffWebhook = WebhookClient.withUrl(Config.getStaffWebhook())
+            staffWebhook = WebhookClient.withUrl(Config.staffWebhook)
         } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
         }
         try {
-            donorWebhook = WebhookClient.withUrl(Config.getDonorWebhook())
+            donorWebhook = WebhookClient.withUrl(Config.donorWebhook)
         } catch (e: IllegalArgumentException) {
             ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
         }
 
-        jda = light(Config.getBotToken(), enableCoroutines = true) {
+        jda = light(Config.botToken, enableCoroutines = true) {
             intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             cache += listOf(CacheFlag.EMOJI)
             setMemberCachePolicy(MemberCachePolicy.ALL)
         }
 
-        jda?.presence?.setPresence(Activity.playing(Config.getStatus()), false)
+        jda?.presence?.setPresence(Activity.playing(Config.status), false)
 
         jda?.listener<ReadyEvent> {
             sendMessageWithBot("The server has started <:stonks:899680228216029195>")
-            jda?.getGuildById(guildId)?.upsertCommand(Config.getListCommandName(), "List all online players.")?.queue()
+            jda?.getGuildById(Config.guildId)?.upsertCommand(Config.listCommandName, "List all online players.")?.queue()
         }
 
         jda?.listener<SlashCommandInteractionEvent> {
-            if (it.name == Config.getListCommandName()) {
+            if (it.name == Config.listCommandName) {
                 it.deferReply().queue()
                 try {
                     if (Bukkit.getOnlinePlayers().isEmpty()) {
@@ -86,7 +82,7 @@ object DiscordBridge {
                     }
                     it.hook.sendMessage(
                         "${
-                            Config.getListCommandText()
+                            Config.listCommandText
                                 .replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString())
                                 .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
                         }\n${
@@ -100,7 +96,7 @@ object DiscordBridge {
         }
 
         jda?.listener<MessageReceivedEvent> {
-            if (it.channel.id != channelId && (if (Config.getStaffDiscordEnabled()) it.channel.id != staffChannelId else true) && (if (Config.getDonorDiscordEnabled()) it.channel.id != donorChannelId else true)) {
+            if (it.channel.id != Config.channelId && (if (Config.staffDiscordEnabled) it.channel.id != Config.staffChannelId else true) && (if (Config.donorDiscordEnabled) it.channel.id != Config.donorChannelId else true)) {
                 return@listener
             }
 
@@ -122,66 +118,77 @@ object DiscordBridge {
             val roles = member.roles
             val roleIds = roles.map { role -> role.id }
 
+            val topRole = roles.maxBy { role -> role.positionRaw }
+
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
             val userComponent: TextComponent = if (color == null) {
                 Component.text("@${user.name}").color(NamedTextColor.GRAY)
             } else {
-                val topRole = roles.maxBy { role -> role.positionRaw }
                 Component.text("[#${topRole.name}] @${user.name}").color(textColor)
             }
 
-            val configRoles = Config.getRoles()
+            //val configRoles = Config.roles
 
-            var messageColor: TextColor? = null
-            if (configRoles == null) {
-                messageColor = NamedTextColor.GRAY
+            val messageColor = if (Config.roles.isEmpty()) {
+                NamedTextColor.GRAY
             } else {
-                for (roleId in configRoles) {
-                    if (!member.roles.contains(message.guild.getRoleById(roleId))) {
-                        continue
-                    }
+                val roleId = message.guild.getRoleById(Config.roles.filter { role -> topRole.id == message.guild.getRoleById(role)?.id }[0])?.id
+                if (roleId != null) {
+                    val roleColor = Config.roleMessageColor[roleId]
 
-                    val roleColor = Config.getRoleMessageColor(roleId)
-                    if (roleColor is List<*>) {
-                        messageColor = TextColor.color(
-                            roleColor.elementAt(0).toString().toInt(),
-                            roleColor.elementAt(1).toString().toInt(),
-                            roleColor.elementAt(2).toString().toInt()
-                        )
-                        continue
+                    if (roleColor is Config.RGBColor) {
+                        TextColor.color(roleColor.r, roleColor.g, roleColor.b)
+                    } else {
+                        roleColor as NamedTextColor
                     }
-                    if (roleColor !is String) {
-                        continue
-                    }
-                    if (roleColor == "null") {
-                        continue
-                    }
-
-                    messageColor = when (roleColor) {
-                        "BLACK" -> NamedTextColor.BLACK
-                        "DARK_BLUE" -> NamedTextColor.DARK_BLUE
-                        "DARK_GREEN" -> NamedTextColor.DARK_GREEN
-                        "DARK_AQUA" -> NamedTextColor.DARK_AQUA
-                        "DARK_RED" -> NamedTextColor.DARK_RED
-                        "DARK_PURPLE" -> NamedTextColor.DARK_PURPLE
-                        "GOLD" -> NamedTextColor.GOLD
-                        "GRAY" -> NamedTextColor.GRAY
-                        "DARK_GRAY" -> NamedTextColor.DARK_GRAY
-                        "BLUE" -> NamedTextColor.BLUE
-                        "GREEN" -> NamedTextColor.GREEN
-                        "AQUA" -> NamedTextColor.AQUA
-                        "RED" -> NamedTextColor.RED
-                        "LIGHT_PURPLE" -> NamedTextColor.LIGHT_PURPLE
-                        "YELLOW" -> NamedTextColor.YELLOW
-                        "WHITE" -> NamedTextColor.WHITE
-                        else -> {
-                            NamedTextColor.GRAY
-                        }
-                    }
-                }
-                if (messageColor == null) {
-                    messageColor = NamedTextColor.GRAY
-                }
+                } else NamedTextColor.GRAY
+//                if (Config.roleMessageColor[role.id])
+//                for (roleId in Config.roles) {
+//                    if (!member.roles.contains(message.guild.getRoleById(roleId))) {
+//                        continue
+//                    }
+//
+//                    val roleColor = Config.roleMessageColor[roleId]
+////                    if (roleColor is List<*>) {
+////                        messageColor = TextColor.color(
+////                            roleColor.elementAt(0).toString().toInt(),
+////                            roleColor.elementAt(1).toString().toInt(),
+////                            roleColor.elementAt(2).toString().toInt()
+////                        )
+////                        continue
+////                    }
+//                    if (roleColor !is String) {
+//                        continue
+//                    }
+//                    if (roleColor == "null") {
+//                        continue
+//                    }
+//
+//                    messageColor = when (roleColor) {
+//                        "BLACK" -> NamedTextColor.BLACK
+//                        "DARK_BLUE" -> NamedTextColor.DARK_BLUE
+//                        "DARK_GREEN" -> NamedTextColor.DARK_GREEN
+//                        "DARK_AQUA" -> NamedTextColor.DARK_AQUA
+//                        "DARK_RED" -> NamedTextColor.DARK_RED
+//                        "DARK_PURPLE" -> NamedTextColor.DARK_PURPLE
+//                        "GOLD" -> NamedTextColor.GOLD
+//                        "GRAY" -> NamedTextColor.GRAY
+//                        "DARK_GRAY" -> NamedTextColor.DARK_GRAY
+//                        "BLUE" -> NamedTextColor.BLUE
+//                        "GREEN" -> NamedTextColor.GREEN
+//                        "AQUA" -> NamedTextColor.AQUA
+//                        "RED" -> NamedTextColor.RED
+//                        "LIGHT_PURPLE" -> NamedTextColor.LIGHT_PURPLE
+//                        "YELLOW" -> NamedTextColor.YELLOW
+//                        "WHITE" -> NamedTextColor.WHITE
+//                        else -> {
+//                            NamedTextColor.GRAY
+//                        }
+//                    }
+//                }
+//                if (messageColor == null) {
+//                    messageColor = NamedTextColor.GRAY
+//                }
             }
 
             val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
@@ -223,7 +230,7 @@ object DiscordBridge {
                                     if (player.hasPermission("group.moderator")) {
                                         player.sendMessage(
                                             ChatOG.mm.deserialize(
-                                                "${Config.getPrefix()}: @${user.name} has posted a disallowed link: ${
+                                                "${Config.prefix}<reset>: @${user.name} has posted a disallowed link: ${
                                                     word.replace(
                                                         ".",
                                                         "[dot]"
@@ -267,7 +274,7 @@ object DiscordBridge {
                     }
 
                     var messageText: Component = Component.text(word)
-                    if (Config.getColorCodeRoles().any { colorCodeRole -> colorCodeRole in roleIds }) {
+                    if (Config.colorCodeRoles.any { colorCodeRole -> colorCodeRole in roleIds }) {
                         messageText = if (messageComponents.isNotEmpty()) {
                             val lastContent = (messageComponents.last() as TextComponent).content()
                             if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
@@ -301,7 +308,7 @@ object DiscordBridge {
 
             var messageComponent: Component
             when (it.channel.id) {
-                staffChannelId -> {
+                Config.staffChannelId -> {
                     val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
                     messageComponent = Component.join(
                         JoinConfiguration.noSeparators(),
@@ -313,7 +320,7 @@ object DiscordBridge {
                     )
                 }
 
-                donorChannelId -> {
+                Config.donorChannelId -> {
                     val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
                     messageComponent = Component.join(
                         JoinConfiguration.noSeparators(),
@@ -352,7 +359,7 @@ object DiscordBridge {
             )
 
             when (it.channel.id) {
-                staffChannelId -> {
+                Config.staffChannelId -> {
                     for (p in Bukkit.getOnlinePlayers()) {
                         if (p.hasPermission("chat-og.staff")) {
                             p.sendMessage(messageComponent)
@@ -360,7 +367,7 @@ object DiscordBridge {
                     }
                 }
 
-                donorChannelId -> {
+                Config.donorChannelId -> {
                     for (p in Bukkit.getOnlinePlayers()) {
                         if (p.hasPermission("chat-og.donors")) {
                             p.sendMessage(messageComponent)
@@ -383,7 +390,7 @@ object DiscordBridge {
     }
 
     fun sendMessageWithBot(message: String) {
-        val channel = jda?.getChannel<MessageChannel>(channelId)
+        val channel = jda?.getChannel<MessageChannel>(Config.channelId)
         if (channel == null) {
             ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
         }

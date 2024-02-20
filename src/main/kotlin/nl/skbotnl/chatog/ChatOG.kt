@@ -55,7 +55,7 @@ class ChatOG : JavaPlugin() {
         this.getCommand("dc")?.setExecutor(DonorChat())
         this.getCommand("d")?.setExecutor(DonorChat())
 
-        if (Config.getDiscordEnabled()) {
+        if (Config.discordEnabled) {
             GlobalScope.launch {
                 DiscordBridge.main()
             }
@@ -63,7 +63,7 @@ class ChatOG : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (Config.getDiscordEnabled()) {
+        if (Config.discordEnabled) {
             if (DiscordBridge.jda != null) {
                 DiscordBridge.sendMessageWithBot("The server has stopped <:not_stonks:939288625701617665>")
                 DiscordBridge.jda!!.shutdownNow()

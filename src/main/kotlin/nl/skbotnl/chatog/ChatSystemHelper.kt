@@ -33,7 +33,7 @@ object ChatSystemHelper {
         }
         chatString = "&cSTAFF | $chatString"
 
-        if (DiscordBridge.jda != null && Config.getStaffDiscordEnabled()) {
+        if (DiscordBridge.jda != null && Config.staffDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
             GlobalScope.launch {
@@ -82,7 +82,7 @@ object ChatSystemHelper {
         }
         chatString = "&aDONOR | $chatString"
 
-        if (DiscordBridge.jda != null && Config.getDonorDiscordEnabled()) {
+        if (DiscordBridge.jda != null && Config.donorDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
             GlobalScope.launch {

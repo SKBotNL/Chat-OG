@@ -16,18 +16,18 @@ class DonorChat : CommandExecutor {
             return true
         }
         if (!sender.hasPermission("chat-og.donors")) {
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>You do not have permission to run this command."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
             return true
         }
         if (args == null || args.isEmpty()) {
             if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.DONORCHAT) {
                 ChatSystemHelper.inChat[sender.uniqueId] = ""
 
-                sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in normal chat."))
+                sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in normal chat."))
                 return true
             }
             ChatSystemHelper.inChat[sender.uniqueId] = ChatType.DONORCHAT
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: You are now talking in donor chat."))
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in donor chat."))
             return true
         }
 

@@ -88,7 +88,7 @@ object Helper {
 
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
     suspend fun convertMentions(text: String): String {
-        val guild = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)
+        val guild = DiscordBridge.jda?.getGuildById(Config.guildId)
         if (guild == null) {
             ChatOG.plugin.logger.warning("Can't get the guild, is guildId set?")
             return text
@@ -121,12 +121,12 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(ChatOG.mm.deserialize("${Config.getPrefix()}: <red>WARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."))
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
                                     ChatOG.mm.deserialize(
-                                        "${Config.getPrefix()}: ${player.name} has posted a disallowed link: ${
+                                        "${Config.prefix}<reset>: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
                                                 "[dot]"
@@ -195,7 +195,7 @@ object Helper {
         var guildEmojis: List<RichCustomEmoji>? = null
 
         try {
-            guildEmojis = DiscordBridge.jda?.getGuildById(DiscordBridge.guildId)?.emojis
+            guildEmojis = DiscordBridge.jda?.getGuildById(Config.guildId)?.emojis
         } catch (e: Exception) {
             ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
         }

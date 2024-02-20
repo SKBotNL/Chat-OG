@@ -74,7 +74,7 @@ object ArgosTranslate {
             return Translated(
                 null,
                 null,
-                ChatOG.mm.deserialize("${Config.getPrefix()}: <red>The translator has not yet been initialised, please wait.")
+                ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>The translator has not yet been initialised, please wait.")
             )
         }
         val pb = ProcessBuilder().command(
