@@ -127,8 +127,6 @@ object DiscordBridge {
                 Component.text("[#${topRole.name}] @${user.name}").color(textColor)
             }
 
-            //val configRoles = Config.roles
-
             val messageColor = if (Config.roles.isEmpty()) {
                 NamedTextColor.GRAY
             } else {
@@ -142,53 +140,6 @@ object DiscordBridge {
                         roleColor as NamedTextColor
                     }
                 } else NamedTextColor.GRAY
-//                if (Config.roleMessageColor[role.id])
-//                for (roleId in Config.roles) {
-//                    if (!member.roles.contains(message.guild.getRoleById(roleId))) {
-//                        continue
-//                    }
-//
-//                    val roleColor = Config.roleMessageColor[roleId]
-////                    if (roleColor is List<*>) {
-////                        messageColor = TextColor.color(
-////                            roleColor.elementAt(0).toString().toInt(),
-////                            roleColor.elementAt(1).toString().toInt(),
-////                            roleColor.elementAt(2).toString().toInt()
-////                        )
-////                        continue
-////                    }
-//                    if (roleColor !is String) {
-//                        continue
-//                    }
-//                    if (roleColor == "null") {
-//                        continue
-//                    }
-//
-//                    messageColor = when (roleColor) {
-//                        "BLACK" -> NamedTextColor.BLACK
-//                        "DARK_BLUE" -> NamedTextColor.DARK_BLUE
-//                        "DARK_GREEN" -> NamedTextColor.DARK_GREEN
-//                        "DARK_AQUA" -> NamedTextColor.DARK_AQUA
-//                        "DARK_RED" -> NamedTextColor.DARK_RED
-//                        "DARK_PURPLE" -> NamedTextColor.DARK_PURPLE
-//                        "GOLD" -> NamedTextColor.GOLD
-//                        "GRAY" -> NamedTextColor.GRAY
-//                        "DARK_GRAY" -> NamedTextColor.DARK_GRAY
-//                        "BLUE" -> NamedTextColor.BLUE
-//                        "GREEN" -> NamedTextColor.GREEN
-//                        "AQUA" -> NamedTextColor.AQUA
-//                        "RED" -> NamedTextColor.RED
-//                        "LIGHT_PURPLE" -> NamedTextColor.LIGHT_PURPLE
-//                        "YELLOW" -> NamedTextColor.YELLOW
-//                        "WHITE" -> NamedTextColor.WHITE
-//                        else -> {
-//                            NamedTextColor.GRAY
-//                        }
-//                    }
-//                }
-//                if (messageColor == null) {
-//                    messageColor = NamedTextColor.GRAY
-//                }
             }
 
             val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
