@@ -65,7 +65,7 @@ class ChatOG : JavaPlugin() {
     override fun onDisable() {
         if (Config.discordEnabled) {
             if (DiscordBridge.jda != null) {
-                DiscordBridge.sendMessageWithBot("The server has stopped <:not_stonks:939288625701617665>")
+                DiscordBridge.sendMessageWithBot(Config.serverHasStoppedMessage)
                 DiscordBridge.jda!!.shutdownNow()
             }
         }

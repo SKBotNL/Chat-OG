@@ -11,6 +11,8 @@ object Config {
     var staffDiscordEnabled by Delegates.notNull<Boolean>()
     var donorDiscordEnabled by Delegates.notNull<Boolean>()
     lateinit var status: String
+    lateinit var serverHasStartedMessage: String
+    lateinit var serverHasStoppedMessage: String
     lateinit var botToken: String
     lateinit var channelId: String
     lateinit var staffChannelId: String
@@ -67,6 +69,20 @@ object Config {
             status = config.get("status") as String
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"status\" as a string")
+            return true
+        }
+
+        try {
+            serverHasStartedMessage = config.get("serverHasStartedMessage") as String
+        } catch (_: Exception) {
+            ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStartedMessage\" as a string")
+            return true
+        }
+
+        try {
+            serverHasStoppedMessage = config.get("serverHasStoppedMessage") as String
+        } catch (_: Exception) {
+            ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStoppedMessage\" as a string")
             return true
         }
 
