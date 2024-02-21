@@ -1,5 +1,8 @@
 package nl.skbotnl.chatog.commands
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.LanguageDatabase
@@ -9,6 +12,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class TranslateSettings : CommandExecutor {
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             return false
@@ -20,41 +24,51 @@ class TranslateSettings : CommandExecutor {
             return false
         }
 
-        val player: Player = sender
-
         val language = args[0]
 
         val languagesList = listOf(
             "ar",
             "az",
+            "bg",
+            "bn",
             "ca",
-            "zh",
             "cs",
             "da",
-            "nl",
-            "en",
-            "eo",
-            "fi",
-            "fr",
             "de",
             "el",
+            "eo",
+            "es",
+            "et",
+            "fa",
+            "fi",
+            "fr",
+            "ga",
             "he",
             "hi",
             "hu",
             "id",
-            "ga",
             "it",
             "ja",
             "ko",
-            "fa",
+            "lt",
+            "lv",
+            "ms",
+            "nb",
+            "nl",
             "pl",
             "pt",
+            "ro",
             "ru",
             "sk",
-            "es",
+            "sl",
+            "sq",
             "sv",
+            "th",
+            "tl",
             "tr",
-            "uk"
+            "uk",
+            "zh",
+            "zt"
         )
 
         if (languagesList.indexOf(language) == -1) {
@@ -62,8 +76,10 @@ class TranslateSettings : CommandExecutor {
             return true
         }
 
-        LanguageDatabase.setLanguage(player.uniqueId, language)
-        player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
+        GlobalScope.launch {
+            LanguageDatabase.setPlayerLanguage(sender.uniqueId, language)
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
+        }
 
         return true
     }

@@ -69,7 +69,8 @@ object DiscordBridge {
 
         jda?.listener<ReadyEvent> {
             sendMessageWithBot(Config.serverHasStartedMessage)
-            jda?.getGuildById(Config.guildId)?.upsertCommand(Config.listCommandName, "List all online players.")?.queue()
+            jda?.getGuildById(Config.guildId)?.upsertCommand(Config.listCommandName, "List all online players.")
+                ?.queue()
         }
 
         jda?.listener<SlashCommandInteractionEvent> {
@@ -130,7 +131,8 @@ object DiscordBridge {
             val messageColor = if (Config.roles.isEmpty()) {
                 NamedTextColor.GRAY
             } else {
-                val roleId = message.guild.getRoleById(Config.roles.filter { role -> topRole.id == message.guild.getRoleById(role)?.id }[0])?.id
+                val roleId =
+                    message.guild.getRoleById(Config.roles.filter { role -> topRole.id == message.guild.getRoleById(role)?.id }[0])?.id
                 if (roleId != null) {
                     val roleColor = Config.roleMessageColor[roleId]
 

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Activity
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.DiscordBridge
+import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -17,6 +18,8 @@ class ChatConfigReload : CommandExecutor {
             Bukkit.getPluginManager().disablePlugin(ChatOG.plugin)
             return true
         }
+
+        LanguageDatabase.init()
 
         DiscordBridge.webhook = WebhookClient.withUrl(Config.webhook)
         DiscordBridge.staffWebhook = WebhookClient.withUrl(Config.staffWebhook)

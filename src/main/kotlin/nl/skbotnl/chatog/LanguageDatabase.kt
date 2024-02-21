@@ -1,35 +1,22 @@
 package nl.skbotnl.chatog
 
-import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
+import io.github.crackthecodeabhi.kreds.connection.Endpoint
+import io.github.crackthecodeabhi.kreds.connection.KredsClient
+import io.github.crackthecodeabhi.kreds.connection.newClient
 import java.util.*
 
 object LanguageDatabase {
-    private lateinit var config: FileConfiguration
-    private lateinit var file: File
+    private lateinit var client: KredsClient
 
-    fun load() {
-        file = File(ChatOG.plugin.dataFolder, "languagesdatabase.yml")
-        if (!file.exists()) {
-            file.createNewFile()
-        }
-
-        config = YamlConfiguration.loadConfiguration(file)
-
-        this.save()
+    fun init() {
+        client = newClient(Endpoint.from(Config.redisUrl))
     }
 
-    private fun save() {
-        config.save(file)
+    suspend fun getPlayerLanguage(uuid: UUID): String {
+        return client.get("chatog:language$uuid") ?: "null"
     }
 
-    fun setLanguage(uuid: UUID, language: String) {
-        config.set(uuid.toString(), language)
-        this.save()
-    }
-
-    fun getLanguage(uuid: UUID): String {
-        return config.get(uuid.toString()).toString()
+    suspend fun setPlayerLanguage(uuid: UUID, language: String) {
+        client.set("chatog:language$uuid", language)
     }
 }

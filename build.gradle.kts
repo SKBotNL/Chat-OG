@@ -72,7 +72,8 @@ dependencies {
     implementation("club.minnced:jda-ktx:0.11.0-beta.20")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("io.github.crackthecodeabhi:kreds:0.9.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
 val downloadPython by tasks.creating(Download::class) {

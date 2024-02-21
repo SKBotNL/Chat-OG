@@ -2,6 +2,9 @@
 # MiniMessage-formatted prefix (https://docs.advntr.dev/minimessage/format.html)
 prefix: <dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]
 
+# ---Redis---
+redisUrl: 127.0.0.1:6379
+
 # ---Discord---
 # discordEnabled needs to be true for staffDiscordEnabled and donorDiscordEnabled to have any effect
 discordEnabled: false

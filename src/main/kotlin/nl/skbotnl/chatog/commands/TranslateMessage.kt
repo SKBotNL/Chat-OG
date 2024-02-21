@@ -90,23 +90,22 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val language = LanguageDatabase.getLanguage(player.uniqueId)
-
-        if (language == "null") {
-            player.sendMessage(
-                ChatOG.mm.deserialize(
-                    "<red>" +
-                            ""
-                )
-            )
-            return true
-        }
-
-        player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
         GlobalScope.launch {
+            val language = LanguageDatabase.getPlayerLanguage(player.uniqueId)
+
+            if (language == "null") {
+                player.sendMessage(
+                    ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Something went wrong will trying to get your language.")
+                )
+                return@launch
+            }
+
+            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
+
             val translated = ArgosTranslate.translate(sentMessage.message, language)
             translateCallback(translated, player, messageType, sentMessage, language)
         }
+
         return true
     }
 

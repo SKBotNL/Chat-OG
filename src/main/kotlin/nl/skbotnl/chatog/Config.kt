@@ -7,6 +7,7 @@ import kotlin.properties.Delegates
 
 object Config {
     lateinit var prefix: String
+    lateinit var redisUrl: String
     var discordEnabled by Delegates.notNull<Boolean>()
     var staffDiscordEnabled by Delegates.notNull<Boolean>()
     var donorDiscordEnabled by Delegates.notNull<Boolean>()
@@ -41,6 +42,13 @@ object Config {
             prefix = config.get("prefix") as String
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"prefix\" as a string")
+            return true
+        }
+
+        try {
+            redisUrl = config.get("redisUrl") as String
+        } catch (_: Exception) {
+            ChatOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
             return true
         }
 
@@ -204,7 +212,7 @@ object Config {
                     return@forEach
                 }
 
-                messageColorList.forEach colorForEach@ { colorInList ->
+                messageColorList.forEach colorForEach@{ colorInList ->
                     try {
                         colorInList.toUByte()
                     } catch (_: Exception) {

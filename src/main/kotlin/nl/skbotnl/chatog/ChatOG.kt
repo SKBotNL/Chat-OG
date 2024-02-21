@@ -36,7 +36,7 @@ class ChatOG : JavaPlugin() {
         plugin = this
 
         Config.load()
-        LanguageDatabase.load()
+        LanguageDatabase.init()
         GlobalScope.launch {
             BlocklistManager.load()
             EmojiConverter.load()
