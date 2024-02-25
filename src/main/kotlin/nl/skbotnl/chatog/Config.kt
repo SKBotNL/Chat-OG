@@ -204,7 +204,7 @@ object Config {
                     ChatOG.plugin.logger.severe("The message color for \"$it\" (\"${messageColorList[0]}\") is invalid.")
                     return@forEach
                 }
-                //roleMessageColor[it] = messageColors[messageColorList[0].uppercase()]!!
+
                 messageColors[messageColorList[0].uppercase()]!!
             } else {
                 if (messageColorList.size != 3) {
