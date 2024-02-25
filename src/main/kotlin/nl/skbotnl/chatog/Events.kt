@@ -39,7 +39,7 @@ class Events : Listener {
         if (!Config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished || event.joinMessage() !is TextComponent) {
+        if (ChatOG.essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
             return
         }
 
