@@ -198,12 +198,10 @@ class Events : Listener {
                 PlaceholderAPI.setPlaceholders(event.player, "&8[%parties_color_code%%parties_party%&8] $chatString")
         }
 
-        if (DiscordBridge.jda != null) {
-            val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
+        val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
 
-            GlobalScope.launch {
-                DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId)
-            }
+        GlobalScope.launch {
+            DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId)
         }
 
         val messageComponents = Helper.convertLinks(oldTextComponent.content(), event.player)
