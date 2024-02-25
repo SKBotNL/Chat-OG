@@ -262,7 +262,7 @@ object DiscordBridge {
             var messageComponent = when (it.channel.id) {
                 Config.staffChannelId -> {
                     val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
-                    messageComponent = Component.join(
+                    Component.join(
                         JoinConfiguration.noSeparators(),
                         discordComponent,
                         staffComponent,
@@ -274,7 +274,7 @@ object DiscordBridge {
 
                 Config.donorChannelId -> {
                     val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
-                    messageComponent = Component.join(
+                    Component.join(
                         JoinConfiguration.noSeparators(),
                         discordComponent,
                         donorComponent,
@@ -285,7 +285,7 @@ object DiscordBridge {
                 }
 
                 else -> {
-                    messageComponent = Component.join(
+                    Component.join(
                         JoinConfiguration.noSeparators(),
                         discordComponent,
                         replyComponent,
