@@ -39,8 +39,7 @@ class Events : Listener {
         if (!Config.discordEnabled) {
             return
         }
-
-        if (ChatOG.essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
+        if (ChatOG.essentials.getUser(event.player).isVanished || event.joinMessage() !is TextComponent) {
             return
         }
 
@@ -67,7 +66,6 @@ class Events : Listener {
         if (!Config.discordEnabled) {
             return
         }
-
         if (ChatOG.essentials.getUser(event.player).isVanished) {
             return
         }
@@ -95,7 +93,6 @@ class Events : Listener {
         if (!Config.discordEnabled) {
             return
         }
-
         if (ChatOG.essentials.getUser(event.player).isVanished) {
             return
         }
@@ -123,6 +120,9 @@ class Events : Listener {
     @EventHandler
     fun onAdvancement(event: PlayerAdvancementDoneEvent) {
         if (!Config.discordEnabled) {
+            return
+        }
+        if (ChatOG.essentials.getUser(event.player).isVanished) {
             return
         }
 
@@ -370,6 +370,9 @@ class Events : Listener {
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
         if (!Config.discordEnabled) {
+            return
+        }
+        if (ChatOG.essentials.getUser(event.player).isVanished) {
             return
         }
 
