@@ -3,14 +3,13 @@ package nl.skbotnl.chatog
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
-import kotlin.properties.Delegates
 
 object Config {
     lateinit var prefix: String
     lateinit var redisUrl: String
-    var discordEnabled by Delegates.notNull<Boolean>()
-    var staffDiscordEnabled by Delegates.notNull<Boolean>()
-    var donorDiscordEnabled by Delegates.notNull<Boolean>()
+    var discordEnabled = false
+    var staffDiscordEnabled = false
+    var donorDiscordEnabled = false
     lateinit var status: String
     lateinit var serverHasStartedMessage: String
     lateinit var serverHasStoppedMessage: String
@@ -102,30 +101,30 @@ object Config {
         }
 
         try {
-            channelId = config.get("channelId") as String
+            guildId = (config.get("guildId") as Long).toString()
+        } catch (_: Exception) {
+            ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a string")
+            return true
+        }
+
+        try {
+            channelId = (config.get("channelId") as Long).toString()
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a string")
             return true
         }
 
         try {
-            staffChannelId = config.get("staffChannelId") as String
+            staffChannelId = (config.get("staffChannelId") as Long).toString()
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a string")
             return true
         }
 
         try {
-            donorChannelId = config.get("donorChannelId") as String
+            donorChannelId = (config.get("donorChannelId") as Long).toString()
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"donorChannelId\" as a string")
-            return true
-        }
-
-        try {
-            guildId = config.get("guildId") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a string")
             return true
         }
 

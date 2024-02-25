@@ -35,7 +35,11 @@ class ChatOG : JavaPlugin() {
     override fun onEnable() {
         plugin = this
 
-        Config.load()
+        if (Config.load()) {
+            Bukkit.getPluginManager().disablePlugin(this)
+            return
+        }
+
         LanguageDatabase.init()
         GlobalScope.launch {
             BlocklistManager.load()
