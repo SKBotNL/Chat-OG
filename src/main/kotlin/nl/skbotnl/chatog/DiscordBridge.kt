@@ -46,17 +46,17 @@ object DiscordBridge {
         try {
             webhook = WebhookClient.withUrl(Config.webhook)
         } catch (e: IllegalArgumentException) {
-            ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
+            ChatOG.plugin.logger.warning("Config option \"webhook\" is invalid")
         }
         try {
             staffWebhook = WebhookClient.withUrl(Config.staffWebhook)
         } catch (e: IllegalArgumentException) {
-            ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
+            ChatOG.plugin.logger.warning("Config option \"staffWebhook\" is invalid")
         }
         try {
             donorWebhook = WebhookClient.withUrl(Config.donorWebhook)
         } catch (e: IllegalArgumentException) {
-            ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
+            ChatOG.plugin.logger.warning("Config option \"donorWebhook\" is invalid")
         }
 
         jda = light(Config.botToken, enableCoroutines = true) {
