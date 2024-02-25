@@ -259,8 +259,7 @@ object DiscordBridge {
                 }
             }
 
-            var messageComponent: Component
-            when (it.channel.id) {
+            var messageComponent = when (it.channel.id) {
                 Config.staffChannelId -> {
                     val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
                     messageComponent = Component.join(
