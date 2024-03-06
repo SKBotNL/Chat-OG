@@ -103,28 +103,28 @@ object Config {
         try {
             guildId = (config.get("guildId") as Long).toString()
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a string")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a long")
             return true
         }
 
         try {
             channelId = (config.get("channelId") as Long).toString()
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a string")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a long")
             return true
         }
 
         try {
             staffChannelId = (config.get("staffChannelId") as Long).toString()
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a string")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a long")
             return true
         }
 
         try {
             donorChannelId = (config.get("donorChannelId") as Long).toString()
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"donorChannelId\" as a string")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"donorChannelId\" as a long")
             return true
         }
 
