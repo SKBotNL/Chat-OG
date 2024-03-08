@@ -13,10 +13,10 @@ object LanguageDatabase {
     }
 
     suspend fun getPlayerLanguage(uuid: UUID): String {
-        return client.get("chatog:language$uuid") ?: "null"
+        return client.get("chatog:language:$uuid") ?: "null"
     }
 
     suspend fun setPlayerLanguage(uuid: UUID, language: String) {
-        client.set("chatog:language$uuid", language)
+        client.set("chatog:language:$uuid", language)
     }
 }
