@@ -1,5 +1,6 @@
 # Chat-OG
-Chat plugin for [TrueOG](https://github.com/true-og/true-og)
+Chat plugin for [TrueOG](https://github.com/true-og/true-og)\
+**Libffi is needed for the argostranslate Python package. Otherwise, the package will not install**
 ## Features
 - Adds prefix, union and suffix to chat messages
 - Formats chat messages with MiniMessage if the player sending them has the `chat-og.color` permission
