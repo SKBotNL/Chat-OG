@@ -6,7 +6,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.22"
+    id("org.jetbrains.kotlin.jvm") version "1.9.23"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("de.undercouch.download") version "5.5.0"
     id("maven-publish")
