@@ -170,6 +170,12 @@ tasks.jar.configure {
     archiveClassifier.set("part")
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-parameters")
+    options.encoding = "UTF-8" 
+	options.forkOptions.executable = File(options.forkOptions.javaHome, "bin/javac").path
+}
+
 kotlin {
     jvmToolchain(17)
 }
