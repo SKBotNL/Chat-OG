@@ -76,6 +76,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
 val downloadPython by tasks.creating(Download::class) {
     src("https://github.com/python/cpython/archive/refs/heads/3.11.zip")
     dest(layout.buildDirectory.file("python.zip"))
