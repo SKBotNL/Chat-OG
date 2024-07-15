@@ -69,7 +69,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.24") {
         exclude(module = "opus-java")
     }
-    implementation("club.minnced:jda-ktx:0.11.0-beta.20")
+    implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("io.github.crackthecodeabhi:kreds:0.9.1")
