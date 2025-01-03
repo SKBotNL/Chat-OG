@@ -162,7 +162,7 @@ tasks.register("buildPython") {
     dependsOn("installPython")
 }
 
-tasks.jar {
+tasks.build {
     dependsOn("shadowJar")
 }
 
