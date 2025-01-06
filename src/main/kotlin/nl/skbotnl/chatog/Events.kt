@@ -186,8 +186,8 @@ class Events : Listener {
             ChatSystemHelper.sendMessageInStaffChat(event.player, oldTextComponent.content())
             return
         }
-        if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.DONORCHAT) {
-            ChatSystemHelper.sendMessageInDonorChat(event.player, oldTextComponent.content())
+        if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.PREMIUMCHAT) {
+            ChatSystemHelper.sendMessageInPremiumChat(event.player, oldTextComponent.content())
             return
         }
 

@@ -37,7 +37,7 @@ object DiscordBridge {
     var jda: JDA? = null
     var webhook: WebhookClient? = null
     var staffWebhook: WebhookClient? = null
-    var donorWebhook: WebhookClient? = null
+    var premiumWebhook: WebhookClient? = null
 
     private val urlRegex =
         Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
@@ -54,9 +54,9 @@ object DiscordBridge {
             ChatOG.plugin.logger.warning("Config option \"staffWebhook\" is invalid")
         }
         try {
-            donorWebhook = WebhookClient.withUrl(Config.donorWebhook)
+            premiumWebhook = WebhookClient.withUrl(Config.premiumWebhook)
         } catch (e: IllegalArgumentException) {
-            ChatOG.plugin.logger.warning("Config option \"donorWebhook\" is invalid")
+            ChatOG.plugin.logger.warning("Config option \"premiumWebhook\" is invalid")
         }
 
         jda = light(Config.botToken, enableCoroutines = true) {
@@ -97,7 +97,7 @@ object DiscordBridge {
         }
 
         jda?.listener<MessageReceivedEvent> {
-            if (it.channel.id != Config.channelId && (if (Config.staffDiscordEnabled) it.channel.id != Config.staffChannelId else true) && (if (Config.donorDiscordEnabled) it.channel.id != Config.donorChannelId else true)) {
+            if (it.channel.id != Config.channelId && (if (Config.staffDiscordEnabled) it.channel.id != Config.staffChannelId else true) && (if (Config.premiumDiscordEnabled) it.channel.id != Config.premiumChannelId else true)) {
                 return@listener
             }
 
@@ -272,12 +272,12 @@ object DiscordBridge {
                     )
                 }
 
-                Config.donorChannelId -> {
-                    val donorComponent = Component.text("DONOR | ").color(NamedTextColor.GREEN)
+                Config.premiumChannelId -> {
+                    val premiumComponent = Component.text("PREMIUM | ").color(NamedTextColor.GREEN)
                     Component.join(
                         JoinConfiguration.noSeparators(),
                         discordComponent,
-                        donorComponent,
+                        premiumComponent,
                         replyComponent,
                         userComponent,
                         contentComponent
@@ -319,9 +319,9 @@ object DiscordBridge {
                     }
                 }
 
-                Config.donorChannelId -> {
+                Config.premiumChannelId -> {
                     for (p in Bukkit.getOnlinePlayers()) {
-                        if (p.hasPermission("chat-og.donors")) {
+                        if (p.hasPermission("chat-og.premium")) {
                             p.sendMessage(messageComponent)
                         }
                     }
@@ -382,9 +382,9 @@ object DiscordBridge {
         staffWebhook?.send(webhookMessage.build())
     }
 
-    suspend fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
-        if (donorWebhook == null) {
-            ChatOG.plugin.logger.warning("donorWebhook has not been set or is invalid")
+    suspend fun sendPremiumMessage(message: String, player: String, uuid: UUID?) {
+        if (premiumWebhook == null) {
+            ChatOG.plugin.logger.warning("premiumWebhook has not been set or is invalid")
             return
         }
 
@@ -395,7 +395,7 @@ object DiscordBridge {
             webhookMessage.setAvatarUrl("https://minotar.net/helm/$uuid.png")
         }
 
-        donorWebhook?.send(webhookMessage.build())
+        premiumWebhook?.send(webhookMessage.build())
     }
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int) {

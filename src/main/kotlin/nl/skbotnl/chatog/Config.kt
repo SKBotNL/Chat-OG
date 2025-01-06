@@ -9,18 +9,18 @@ object Config {
     lateinit var redisUrl: String
     var discordEnabled = false
     var staffDiscordEnabled = false
-    var donorDiscordEnabled = false
+    var premiumDiscordEnabled = false
     lateinit var status: String
     lateinit var serverHasStartedMessage: String
     lateinit var serverHasStoppedMessage: String
     lateinit var botToken: String
     lateinit var channelId: String
     lateinit var staffChannelId: String
-    lateinit var donorChannelId: String
+    lateinit var premiumChannelId: String
     lateinit var guildId: String
     lateinit var webhook: String
     lateinit var staffWebhook: String
-    lateinit var donorWebhook: String
+    lateinit var premiumWebhook: String
     lateinit var listCommandName: String
     lateinit var listCommandText: String
     lateinit var colorCodeRoles: List<String>
@@ -66,9 +66,9 @@ object Config {
         }
 
         try {
-            donorDiscordEnabled = config.get("donorDiscordEnabled") as Boolean
+            premiumDiscordEnabled = config.get("premiumDiscordEnabled") as Boolean
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"donorDiscordEnabled\" as a boolean")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"premiumDiscordEnabled\" as a boolean")
             return true
         }
 
@@ -122,9 +122,9 @@ object Config {
         }
 
         try {
-            donorChannelId = (config.get("donorChannelId") as Long).toString()
+            premiumChannelId = (config.get("premiumChannelId") as Long).toString()
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"donorChannelId\" as a long")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"premiumChannelId\" as a long")
             return true
         }
 
@@ -143,9 +143,9 @@ object Config {
         }
 
         try {
-            donorWebhook = config.get("donorWebhook") as String
+            premiumWebhook = config.get("premiumWebhook") as String
         } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"donorWebhook\" as a string")
+            ChatOG.plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
             return true
         }
 

@@ -20,7 +20,7 @@ import java.util.*
 object ChatSystemHelper {
     object ChatType {
         const val STAFFCHAT = "staffchat"
-        const val DONORCHAT = "donorchat"
+        const val PREMIUMCHAT = "premiumchat"
     }
 
     var inChat: MutableMap<UUID, String> = HashMap()
@@ -74,19 +74,19 @@ object ChatSystemHelper {
         }
     }
 
-    fun sendMessageInDonorChat(player: Player, text: String) {
+    fun sendMessageInPremiumChat(player: Player, text: String) {
         var chatString = "${ChatOG.chat.getPlayerPrefix(player)}${player.name}"
 
         if (PlaceholderAPI.setPlaceholders(player, "%simpleclans_clan_color_tag%") != "") {
             chatString = PlaceholderAPI.setPlaceholders(player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
-        chatString = "&aDONOR | $chatString"
+        chatString = "&aPREMIUM | $chatString"
 
-        if (Config.donorDiscordEnabled) {
+        if (Config.premiumDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
             GlobalScope.launch {
-                DiscordBridge.sendDonorMessage(discordMessageString, removeColor(chatString), player.uniqueId)
+                DiscordBridge.sendPremiumMessage(discordMessageString, removeColor(chatString), player.uniqueId)
             }
         }
 
@@ -117,7 +117,7 @@ object ChatSystemHelper {
         TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
 
         for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("chat-og.donors")) {
+            if (p.hasPermission("chat-og.premium")) {
                 p.sendMessage(textComponent)
             }
         }

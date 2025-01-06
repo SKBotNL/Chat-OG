@@ -52,8 +52,8 @@ class ChatOG : JavaPlugin() {
 
         @JvmStatic
         @Suppress("unused")
-        fun sendDonorMessage(message: String, player: String, uuid: UUID?) {
-            GlobalScope.launch { DiscordBridge.sendDonorMessage(message, player, uuid) }
+        fun sendPremiumMessage(message: String, player: String, uuid: UUID?) {
+            GlobalScope.launch { DiscordBridge.sendPremiumMessage(message, player, uuid) }
         }
 
         @JvmStatic
@@ -88,8 +88,7 @@ class ChatOG : JavaPlugin() {
         this.getCommand("translatesettings")?.tabCompleter = TranslateSettingsTabCompleter()
         this.getCommand("chatconfigreload")?.setExecutor(ChatConfigReload())
         this.getCommand("sc")?.setExecutor(StaffChat())
-        this.getCommand("dc")?.setExecutor(DonorChat())
-        this.getCommand("d")?.setExecutor(DonorChat())
+        this.getCommand("p")?.setExecutor(PremiumChat())
 
         if (Config.discordEnabled) {
             GlobalScope.launch {
