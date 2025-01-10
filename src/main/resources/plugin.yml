@@ -20,9 +20,6 @@ commands:
   s:
     description: Toggle or talk in staff chat
     usage: /s OR /s <message here>
-  dc:
-    description: Toggle or talk in donor chat
-    usage: /dc OR /dc <message here>
-  d:
-    description: Toggle or talk in donor chat
-    usage: /d OR /d <message here>
+  p:
+    description: Toggle or talk in premium chat
+    usage: /p OR /p <message here>

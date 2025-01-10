@@ -6,10 +6,10 @@ prefix: <dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]
 redisUrl: 127.0.0.1:6379
 
 # ---Discord---
-# discordEnabled needs to be true for staffDiscordEnabled and donorDiscordEnabled to have any effect
+# discordEnabled needs to be true for staffDiscordEnabled and premiumDiscordEnabled to have any effect
 discordEnabled: false
 staffDiscordEnabled: false
-donorDiscordEnabled: false
+premiumDiscordEnabled: false
 status: Minecraft
 serverHasStartedMessage: The server has started
 serverHasStoppedMessage: The server has stopped
@@ -17,10 +17,10 @@ botToken: <put the bot token here>
 guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
 staffChannelId: <put the id of the channel here>
-donorChannelId: <put the id of the channel here>
+premiumChannelId: <put the id of the channel here>
 webhook: <put the webhook here>
 staffWebhook: <put the webhook here>
-donorWebhook: <put the webhook here>
+premiumWebhook: <put the webhook here>
 listCommandName: list
 # Available placeholders: %onlineplayers%, %maxplayers%
 listCommandText: "%onlineplayers% player(s) online:"

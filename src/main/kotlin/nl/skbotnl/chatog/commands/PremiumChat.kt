@@ -9,29 +9,29 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DonorChat : CommandExecutor {
+class PremiumChat : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("You can only execute this command as a player")
+            sender.sendMessage("You can only execute this command as a player.")
             return true
         }
-        if (!sender.hasPermission("chat-og.donors")) {
+        if (!sender.hasPermission("chat-og.premium")) {
             sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
             return true
         }
         if (args == null || args.isEmpty()) {
-            if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.DONORCHAT) {
+            if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.PREMIUMCHAT) {
                 ChatSystemHelper.inChat[sender.uniqueId] = ""
 
                 sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in normal chat."))
                 return true
             }
-            ChatSystemHelper.inChat[sender.uniqueId] = ChatType.DONORCHAT
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in donor chat."))
+            ChatSystemHelper.inChat[sender.uniqueId] = ChatType.PREMIUMCHAT
+            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in premium chat."))
             return true
         }
 
-        ChatSystemHelper.sendMessageInDonorChat(sender, args.joinToString(separator = " "))
+        ChatSystemHelper.sendMessageInPremiumChat(sender, args.joinToString(separator = " "))
 
         return true
     }

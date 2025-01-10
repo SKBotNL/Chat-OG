@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "nl.skbotnl.chatog"
-version = "2.1.4"
+version = "2.1.5"
 
 val apiVersion = "1.19"
 
@@ -33,7 +33,6 @@ tasks.named<ProcessResources>("processResources") {
         "version" to version,
         "apiVersion" to apiVersion,
     )
-
     filesMatching("plugin.yml") {
         expand(props)
     }
@@ -41,19 +40,15 @@ tasks.named<ProcessResources>("processResources") {
 
 repositories {
     mavenCentral()
-
     maven {
         url = uri("https://repo.purpurmc.org/snapshots")
     }
-
     maven {
         url = uri("https://jitpack.io")
     }
-
     maven {
         url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
-
     maven {
         url = uri("https://repo.essentialsx.net/releases/")
     }
@@ -65,7 +60,6 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.essentialsx:EssentialsX:2.20.1")
     compileOnly(files("libs/AnnouncerPlus-1.3.6.jar"))
-
     implementation("net.dv8tion:JDA:5.2.2") {
         exclude(module = "opus-java")
     }
@@ -81,14 +75,14 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
-val downloadPython by tasks.creating(Download::class) {
+val downloadPython by tasks.registering(Download::class) {
     src("https://github.com/python/cpython/archive/refs/heads/3.11.zip")
     dest(layout.buildDirectory.file("python.zip"))
 }
 
-val unzipPython by tasks.creating(Copy::class) {
+val unzipPython by tasks.registering(Copy::class) {
     dependsOn(downloadPython)
-    from(zipTree(downloadPython.dest)) {
+    from(zipTree(downloadPython.get().dest)) {
         include("cpython*/**")
         eachFile {
             relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
@@ -98,75 +92,83 @@ val unzipPython by tasks.creating(Copy::class) {
     into(layout.buildDirectory.dir("python"))
 }
 
-val configurePython by tasks.creating(Exec::class) {
+val configurePython by tasks.registering(Exec::class) {
     dependsOn(unzipPython)
-    Files.createDirectories(file("$rootDir/build/python/build").toPath())
-    workingDir("./build/python")
+    doFirst {
+        Files.createDirectories(file("$rootDir/build/python/build").toPath())
+    }
+    workingDir("$rootDir/build/python")
     commandLine("./configure")
-    args(
-        "--enable-optimizations"
-    )
+    args("--enable-optimizations")
 }
 
-val makePython by tasks.creating(Exec::class) {
+val makePython by tasks.registering(Exec::class) {
     dependsOn(configurePython)
     workingDir("$rootDir/build/python")
     commandLine("sh")
-    args(
-        "-c",
-        "make -j$(nproc)"
-    )
+    args("-c", "make -j$(nproc)")
 }
 
-tasks.register<Exec>("installPython") {
+val installPython by tasks.registering(Exec::class) {
     dependsOn(makePython)
     workingDir("$rootDir/build/python")
     commandLine("make")
-    environment("DESTDIR" to "$rootDir/build/python/install")
-    args(
-        "install"
-    )
+    environment("DESTDIR", "$rootDir/build/python/install")
+    args("install")
+}
+
+val pythonZipFile = file("$rootDir/build/python/python.zip")
+
+val createPythonZip by tasks.registering {
+    group = "Chat-OG"
+    dependsOn(installPython)
+    outputs.file(pythonZipFile)
     doLast {
-        file("$rootDir/build/python/install/usr/local/share").deleteRecursively()
-        file("$rootDir/build/python/install/usr/local/lib/pkgconfig").deleteRecursively()
-        file("$rootDir/build/python.zip").delete()
-    }
-}
-
-tasks.shadowJar {
-    minimize()
-}
-
-tasks.shadowJar.configure {
-    archiveClassifier.set("")
-
-    if (!file("$rootDir/build/python/python.zip").exists() && file("$rootDir/build/python/install/usr/local/").exists()) {
-        val inputDirectory = File("$rootDir/build/python/install/usr/local/")
-        val outputZipFile = File("$rootDir/build/python/python.zip")
-        outputZipFile.createNewFile()
-        ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
-            inputDirectory.walkTopDown().forEach { file ->
-                val zipFileName = file.absolutePath.removePrefix(inputDirectory.absolutePath).removePrefix("/")
-                val entry = ZipEntry("$zipFileName${(if (file.isDirectory) "/" else "")}")
-                zos.putNextEntry(entry)
-                if (file.isFile) {
-                    file.inputStream().use { fis -> fis.copyTo(zos) }
+        val inputDirectory = file("$rootDir/build/python/install/usr/local/")
+        if (!pythonZipFile.exists() && inputDirectory.exists()) {
+            println("Creating python.zip from $inputDirectory")
+            pythonZipFile.parentFile.mkdirs()
+            if (!pythonZipFile.exists()) {
+                pythonZipFile.createNewFile()
+            }
+            ZipOutputStream(BufferedOutputStream(FileOutputStream(pythonZipFile))).use { zos ->
+                inputDirectory.walkTopDown().forEach { file ->
+                    val zipFileName = file.absolutePath
+                        .removePrefix(inputDirectory.absolutePath)
+                        .removePrefix("/")
+                    val entry = ZipEntry(zipFileName + if (file.isDirectory) "/" else "")
+                    zos.putNextEntry(entry)
+                    if (file.isFile) {
+                        file.inputStream().use { fis -> fis.copyTo(zos) }
+                    }
                 }
             }
         }
     }
+}
 
-    if (file("$rootDir/build/python/python.zip").exists()) {
-        from("$rootDir/build/python/python.zip")
+val buildPython by tasks.registering {
+    group = "Chat-OG"
+    dependsOn(createPythonZip)
+}
+
+tasks.shadowJar {
+    dependsOn(buildPython)
+    minimize()
+    archiveClassifier.set("")
+    from(pythonZipFile) {
+        into("/")
     }
 }
 
-tasks.register("buildPython") {
-    group = "Chat-OG"
-    dependsOn("installPython")
+tasks.named("clean").configure {
+    onlyIf {
+        System.getenv("SELF_MAVEN_LOCAL_REPO") == null
+    }
 }
 
 tasks.build {
+    dependsOn(buildPython)
     dependsOn("shadowJar")
 }
 
@@ -176,8 +178,8 @@ tasks.jar.configure {
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-parameters")
-    options.encoding = "UTF-8" 
-	options.forkOptions.executable = File(options.forkOptions.javaHome, "bin/javac").path
+    options.encoding = "UTF-8"
+    options.forkOptions.executable = File(options.forkOptions.javaHome, "bin/javac").path
 }
 
 kotlin {
