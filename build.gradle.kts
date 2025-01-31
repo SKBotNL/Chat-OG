@@ -65,7 +65,7 @@ dependencies {
     }
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.12.1")
     implementation("io.github.crackthecodeabhi:kreds:0.9.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
 }
