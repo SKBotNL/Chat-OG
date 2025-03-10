@@ -328,7 +328,9 @@ object DiscordBridge {
                 }
 
                 else -> {
-                    Bukkit.broadcast(messageComponent)
+                    for (p in Bukkit.getOnlinePlayers()) {
+                        p.sendMessage(messageComponent)
+                    }
                 }
             }
 
