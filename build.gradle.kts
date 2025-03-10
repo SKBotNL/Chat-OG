@@ -149,6 +149,9 @@ val createPythonZip by tasks.registering {
 }
 
 val buildPython by tasks.registering {
+    if (file("$rootDir/build/python/python.zip").exists()) {
+        return@registering
+    }
     group = "Chat-OG"
     dependsOn(createPythonZip)
 }
