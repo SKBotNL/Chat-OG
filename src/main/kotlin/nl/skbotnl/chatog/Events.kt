@@ -16,6 +16,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
 import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor

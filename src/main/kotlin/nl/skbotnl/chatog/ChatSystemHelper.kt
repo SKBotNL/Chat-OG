@@ -9,6 +9,7 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage

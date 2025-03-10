@@ -3,7 +3,7 @@ version: '${version}'
 main: nl.skbotnl.chatog.ChatOG
 author: SKBotNL
 api-version: '${apiVersion}'
-depend: [ PlaceholderAPI, Vault, AnnouncerPlus-OG, Essentials ]
+depend: [ PlaceholderAPI, Vault, AnnouncerPlus, Utilities-OG, Essentials ]
 commands:
   translatemessage:
     description: Internal command for translating messages

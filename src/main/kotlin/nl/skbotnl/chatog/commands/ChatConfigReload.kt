@@ -2,6 +2,7 @@ package nl.skbotnl.chatog.commands
 
 import club.minnced.discord.webhook.WebhookClient
 import net.dv8tion.jda.api.entities.Activity
+import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.DiscordBridge
