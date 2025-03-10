@@ -1,7 +1,7 @@
 # Chat-OG
 Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 > [!WARNING]  
-> If you have a Chat-OG binary with argostranslate: libffi, openssl, lzma, and zlib are needed for the argostranslate Python package to function
+> libffi, openssl, lzma, and zlib are needed for the argostranslate Python package to function
 
 ## Features
 - Adds prefix, union and suffix to chat messages
