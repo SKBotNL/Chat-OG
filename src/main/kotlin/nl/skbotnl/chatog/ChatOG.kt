@@ -18,17 +18,6 @@ class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
-        var mm = MiniMessage.builder()
-            .tags(
-                TagResolver.builder()
-                    .resolver(StandardTags.color())
-                    .resolver(StandardTags.decorations())
-                    .resolver(StandardTags.reset())
-                    .resolver(StandardTags.rainbow())
-                    .resolver(StandardTags.gradient())
-                    .build()
-            )
-            .build()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
 
         // API
