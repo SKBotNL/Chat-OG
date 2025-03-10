@@ -72,100 +72,107 @@ object Config {
             return true
         }
 
-        try {
-            status = config.get("status") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"status\" as a string")
-            return true
+        if (discordEnabled) {
+            try {
+                status = config.get("status") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"status\" as a string")
+                return true
+            }
+
+            try {
+                serverHasStartedMessage = config.get("serverHasStartedMessage") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStartedMessage\" as a string")
+                return true
+            }
+
+            try {
+                serverHasStoppedMessage = config.get("serverHasStoppedMessage") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStoppedMessage\" as a string")
+                return true
+            }
+
+            try {
+                botToken = config.get("botToken") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"botToken\" as a string")
+                return true
+            }
+
+            try {
+                guildId = (config.get("guildId") as Long).toString()
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a long")
+                return true
+            }
+
+            try {
+                channelId = (config.get("channelId") as Long).toString()
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a long")
+                return true
+            }
+
+            if (staffDiscordEnabled) {
+                try {
+                    staffChannelId = (config.get("staffChannelId") as Long).toString()
+                } catch (_: Exception) {
+                    ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a long")
+                    return true
+                }
+
+                try {
+                    staffWebhook = config.get("staffWebhook") as String
+                } catch (_: Exception) {
+                    ChatOG.plugin.logger.severe("Failed to parse config option \"staffWebhook\" as a string")
+                    return true
+                }
+            }
+
+            if (premiumDiscordEnabled) {
+                try {
+                    premiumChannelId = (config.get("premiumChannelId") as Long).toString()
+                } catch (_: Exception) {
+                    ChatOG.plugin.logger.severe("Failed to parse config option \"premiumChannelId\" as a long")
+                    return true
+                }
+
+                try {
+                    premiumWebhook = config.get("premiumWebhook") as String
+                } catch (_: Exception) {
+                    ChatOG.plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
+                    return true
+                }
+            }
+
+
+            try {
+                webhook = config.get("webhook") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"webhook\" as a string")
+                return true
+            }
+
+            try {
+                listCommandName = config.get("listCommandName") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandName\" as a string")
+                return true
+            }
+
+            try {
+                listCommandText = config.get("listCommandText") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandText\" as a string")
+                return true
+            }
+
+            colorCodeRoles = config.getStringList("colorCodeRoles")
+
+            roles = config.getConfigurationSection("roles")?.getKeys(false) ?: setOf()
         }
-
-        try {
-            serverHasStartedMessage = config.get("serverHasStartedMessage") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStartedMessage\" as a string")
-            return true
-        }
-
-        try {
-            serverHasStoppedMessage = config.get("serverHasStoppedMessage") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStoppedMessage\" as a string")
-            return true
-        }
-
-        try {
-            botToken = config.get("botToken") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"botToken\" as a string")
-            return true
-        }
-
-        try {
-            guildId = (config.get("guildId") as Long).toString()
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a long")
-            return true
-        }
-
-        try {
-            channelId = (config.get("channelId") as Long).toString()
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a long")
-            return true
-        }
-
-        try {
-            staffChannelId = (config.get("staffChannelId") as Long).toString()
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a long")
-            return true
-        }
-
-        try {
-            premiumChannelId = (config.get("premiumChannelId") as Long).toString()
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"premiumChannelId\" as a long")
-            return true
-        }
-
-        try {
-            webhook = config.get("webhook") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"webhook\" as a string")
-            return true
-        }
-
-        try {
-            staffWebhook = config.get("staffWebhook") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"staffWebhook\" as a string")
-            return true
-        }
-
-        try {
-            premiumWebhook = config.get("premiumWebhook") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
-            return true
-        }
-
-        try {
-            listCommandName = config.get("listCommandName") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandName\" as a string")
-            return true
-        }
-
-        try {
-            listCommandText = config.get("listCommandText") as String
-        } catch (_: Exception) {
-            ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandText\" as a string")
-            return true
-        }
-
-        colorCodeRoles = config.getStringList("colorCodeRoles")
-
-        roles = config.getConfigurationSection("roles")?.getKeys(false) ?: setOf()
 
         if (roles.isEmpty()) {
             roleMessageColor = mutableMapOf()
