@@ -3,3 +3,10 @@ plugins {
 }
 
 rootProject.name = "Chat-OG"
+
+exec {
+    workingDir(rootDir)
+    commandLine("sh", "bootstrap.sh")
+}
+
+include("libs:Utilities-OG")

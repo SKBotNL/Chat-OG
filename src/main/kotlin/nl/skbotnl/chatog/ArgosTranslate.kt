@@ -1,6 +1,7 @@
 package nl.skbotnl.chatog
 
 import net.kyori.adventure.text.Component
+import net.trueog.utilitiesog.UtilitiesOG
 import java.io.File
 import java.nio.file.Files
 import java.util.zip.ZipFile
@@ -74,7 +75,7 @@ object ArgosTranslate {
             return Translated(
                 null,
                 null,
-                ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>The translator has not yet been initialised, please wait.")
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>The translator has not yet been initialised, please wait.")
             )
         }
         val pb = ProcessBuilder().command(

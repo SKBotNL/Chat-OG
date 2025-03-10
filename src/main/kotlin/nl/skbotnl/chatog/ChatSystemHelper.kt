@@ -9,6 +9,7 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
@@ -46,14 +47,14 @@ object ChatSystemHelper {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
+        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
         var textComponent =
             Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ChatOG.mm.deserialize("<green>Click to translate this message")
+                UtilitiesOG.trueogColorize("<green>Click to translate this message")
             )
         )
 
@@ -95,14 +96,14 @@ object ChatSystemHelper {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
+        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
         var textComponent =
             Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ChatOG.mm.deserialize("<green>Click to translate this message")
+                UtilitiesOG.trueogColorize("<green>Click to translate this message")
             )
         )
 

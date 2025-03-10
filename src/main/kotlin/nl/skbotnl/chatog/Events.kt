@@ -16,6 +16,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
 import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
@@ -209,14 +210,14 @@ class Events : Listener {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        val chatComponent = ChatOG.mm.deserialize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
+        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
 
         var textComponent =
             Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent = textComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ChatOG.mm.deserialize("<green>Click to translate this message")
+                UtilitiesOG.trueogColorize("<green>Click to translate this message")
             )
         )
 
@@ -245,7 +246,7 @@ class Events : Listener {
                 event.isCancelled = true
 
                 if (!event.player.hasPermission("chat-og.staff")) {
-                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
+                    event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
                     return
                 }
 
@@ -255,11 +256,11 @@ class Events : Listener {
                     if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
                         ChatSystemHelper.inChat[event.player.uniqueId] = ""
 
-                        event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in normal chat."))
+                        event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat."))
                         return
                     }
                     ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
-                    event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: You are now talking in staff chat."))
+                    event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in staff chat."))
                     return
                 }
 
@@ -276,11 +277,11 @@ class Events : Listener {
         }
 
         if (messageSplit.count() < 3 && !(checkSplit == "/r" || checkSplit == "/reply")) {
-            event.player.sendMessage(ChatOG.mm.deserialize("<red>${messageSplit[0]} <to> <message>"))
+            event.player.sendMessage(UtilitiesOG.trueogColorize("<red>${messageSplit[0]} <to> <message>"))
             return
         }
         if (messageSplit.count() < 2) {
-            event.player.sendMessage(ChatOG.mm.deserialize("<red>${messageSplit[0]} <message>"))
+            event.player.sendMessage(UtilitiesOG.trueogColorize("<red>${messageSplit[0]} <message>"))
             return
         }
 
@@ -291,7 +292,7 @@ class Events : Listener {
             message = messageSplit[1]
 
             if (!lastMessaged.containsKey(event.player.uniqueId)) {
-                event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You haven't messaged anyone yet."))
+                event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You haven't messaged anyone yet."))
                 return
             }
 
@@ -303,7 +304,7 @@ class Events : Listener {
         }
 
         if (player == null) {
-            event.player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>That player doesn't exist or isn't online."))
+            event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That player doesn't exist or isn't online."))
             return
         }
 
@@ -316,7 +317,7 @@ class Events : Listener {
         )
 
         val colourMessage = if (event.player.hasPermission("chat-og.color")) {
-            ChatOG.mm.deserialize(legacyToMm(message))
+            UtilitiesOG.trueogColorize(legacyToMm(message))
         } else {
             Component.text(message)
         }
@@ -324,13 +325,13 @@ class Events : Listener {
         val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${player.name}<gold>]<white>"
         var toSenderTextComponent = Component.join(
             JoinConfiguration.separator(Component.text(" ")),
-            ChatOG.mm.deserialize(toSenderPrefix),
+            UtilitiesOG.trueogColorize(toSenderPrefix),
             colourMessage
         )
         toSenderTextComponent = toSenderTextComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ChatOG.mm.deserialize("<green>Click to translate this message")
+                UtilitiesOG.trueogColorize("<green>Click to translate this message")
             )
         )
         toSenderTextComponent = toSenderTextComponent.clickEvent(
@@ -344,13 +345,13 @@ class Events : Listener {
         val toPrefix = "<gold>[<dark_red>${event.player.name} <gold>-> <red>me<gold>]<white>"
         var toTextComponent = Component.join(
             JoinConfiguration.separator(Component.text(" ")),
-            ChatOG.mm.deserialize(toPrefix),
+            UtilitiesOG.trueogColorize(toPrefix),
             colourMessage
         )
         toTextComponent = toTextComponent.hoverEvent(
             HoverEvent.hoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ChatOG.mm.deserialize("<green>Click to translate this message")
+                UtilitiesOG.trueogColorize("<green>Click to translate this message")
             )
         )
         toTextComponent = toTextComponent.clickEvent(
@@ -393,7 +394,7 @@ class Events : Listener {
             nameString =
                 PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $nameString")
         }
-        val nameComponent = ChatOG.mm.deserialize(legacyToMm(nameString))
+        val nameComponent = UtilitiesOG.trueogColorize(legacyToMm(nameString))
 
         var oldDeathMessage = event.deathMessage() as TranslatableComponent
         oldDeathMessage = oldDeathMessage.color(TextColor.color(16755200))
