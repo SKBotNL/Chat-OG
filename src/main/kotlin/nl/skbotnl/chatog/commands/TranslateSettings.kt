@@ -72,13 +72,13 @@ class TranslateSettings : CommandExecutor {
         )
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Invalid language."))
+            sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Invalid language."))
             return true
         }
 
         GlobalScope.launch {
             LanguageDatabase.setPlayerLanguage(sender.uniqueId, language)
-            sender.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
+            sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
         }
 
         return true

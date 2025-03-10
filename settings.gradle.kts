@@ -3,3 +3,5 @@ plugins {
 }
 
 rootProject.name = "Chat-OG"
+
+include("libs:Utilities-OG")

@@ -121,11 +121,11 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."))
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
-                                    ChatOG.mm.deserialize(
+                                    UtilitiesOG.trueogColorize(
                                         "${Config.prefix}<reset>: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
@@ -143,7 +143,7 @@ object Helper {
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            ChatOG.mm.deserialize("<green>Click to open link")
+                            UtilitiesOG.trueogColorize("<green>Click to open link")
                         )
                     )
 
@@ -154,8 +154,8 @@ object Helper {
                         )
                     )
 
-                    val beforeComponent = ChatOG.mm.deserialize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
-                    val afterComponent = ChatOG.mm.deserialize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
+                    val beforeComponent = UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
+                    val afterComponent = UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
 
                     val fullComponent =
                         Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
@@ -168,17 +168,17 @@ object Helper {
                 if (messageComponents.isNotEmpty()) {
                     val lastContent = (messageComponents.last() as TextComponent).content()
                     if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
-                        ChatOG.mm.deserialize(legacyToMm(getColorSection(lastContent) + word))
+                        UtilitiesOG.trueogColorize(legacyToMm(getColorSection(lastContent) + word))
                     } else {
-                        ChatOG.mm.deserialize(legacyToMm(chatColor + word))
+                        UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
                     }
                 } else {
-                    ChatOG.mm.deserialize(legacyToMm(chatColor + word))
+                    UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
                 }
             } else {
                 Component.join(
                     JoinConfiguration.noSeparators(),
-                    ChatOG.mm.deserialize(legacyToMm(chatColor)),
+                    UtilitiesOG.trueogColorize(legacyToMm(chatColor)),
                     Component.text(word)
                 )
             }

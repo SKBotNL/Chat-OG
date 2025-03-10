@@ -6,15 +6,15 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("org.jetbrains.kotlin.jvm") version "2.0.21"
+    id("com.gradleup.shadow") version "8.3.5" // Import shadow API.
     id("de.undercouch.download") version "5.6.0"
     id("maven-publish")
     id("eclipse")
 }
 
 group = "nl.skbotnl.chatog"
-version = "2.1.5"
+version = "2.1.6"
 
 val apiVersion = "1.19"
 
@@ -63,6 +63,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.2.2") {
         exclude(module = "opus-java")
     }
+    implementation(project(":libs:Utilities-OG"))
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.11.0")

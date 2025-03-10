@@ -55,7 +55,7 @@ class TranslateMessage : CommandExecutor {
         val player: Player = sender
 
         if (Helper.getTranslateTimeout(player.uniqueId) != 0L) {
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>You're doing that too fast."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You're doing that too fast."))
             return true
         }
 
@@ -64,7 +64,7 @@ class TranslateMessage : CommandExecutor {
         try {
             uuid = UUID.fromString(args[0])
         } catch (e: IllegalArgumentException) {
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>That is not a valid UUID."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That is not a valid UUID."))
             return true
         }
 
@@ -72,7 +72,7 @@ class TranslateMessage : CommandExecutor {
         try {
             messageType = args[1].toInt()
         } catch (_: NumberFormatException) {
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Invalid message type."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Invalid message type."))
             return true
         }
 
@@ -86,7 +86,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (sentMessage == null) {
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Could not find that message."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not find that message."))
             return true
         }
 
@@ -95,12 +95,12 @@ class TranslateMessage : CommandExecutor {
 
             if (language == "null") {
                 player.sendMessage(
-                    ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Something went wrong will trying to get your language.")
+                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong will trying to get your language.")
                 )
                 return@launch
             }
 
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
 
             val translated = ArgosTranslate.translate(sentMessage.message, language)
             translateCallback(translated, player, messageType, sentMessage, language)
@@ -122,7 +122,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (translated.translatedText == null) {
-            player.sendMessage(ChatOG.mm.deserialize("${Config.prefix}<reset>: <red>Could not translate that message."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not translate that message."))
             return
         }
 
@@ -142,7 +142,7 @@ class TranslateMessage : CommandExecutor {
                     )
                 }
                 val playerComponent =
-                    ChatOG.mm.deserialize(legacyToMm("<light_purple>[${translated.translatedFrom} -> $language (Can be inaccurate)] $playerString"))
+                    UtilitiesOG.trueogColorize(legacyToMm("<light_purple>[${translated.translatedFrom} -> $language (Can be inaccurate)] $playerString"))
 
                 // Don't convert color in translated messages
                 translateMessage = Component.join(
@@ -177,9 +177,9 @@ class TranslateMessage : CommandExecutor {
                         .color(NamedTextColor.LIGHT_PURPLE)
 
                 val pmComponent = if (player.uniqueId == sentPMMessage.sender) {
-                    ChatOG.mm.deserialize("<gold>[<red>me <gold>-> <dark_red>${Bukkit.getPlayer(sentPMMessage.receiver)!!.name}<gold>]<white> ")
+                    UtilitiesOG.trueogColorize("<gold>[<red>me <gold>-> <dark_red>${Bukkit.getPlayer(sentPMMessage.receiver)!!.name}<gold>]<white> ")
                 } else {
-                    ChatOG.mm.deserialize("<gold>[<dark_red>${Bukkit.getPlayer(sentPMMessage.sender)!!.name} <gold>-> <red>me<gold>]<white> ")
+                    UtilitiesOG.trueogColorize("<gold>[<dark_red>${Bukkit.getPlayer(sentPMMessage.sender)!!.name} <gold>-> <red>me<gold>]<white> ")
                 }
 
                 translateMessage = Component.join(

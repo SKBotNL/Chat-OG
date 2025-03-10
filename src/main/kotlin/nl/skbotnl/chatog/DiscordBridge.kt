@@ -158,7 +158,7 @@ object DiscordBridge {
                     linkComponent = linkComponent.hoverEvent(
                         HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            ChatOG.mm.deserialize("<green>Click to open link")
+                            UtilitiesOG.trueogColorize("<green>Click to open link")
                         )
                     )
 
@@ -182,7 +182,7 @@ object DiscordBridge {
                                 for (player in Bukkit.getOnlinePlayers()) {
                                     if (player.hasPermission("group.moderator")) {
                                         player.sendMessage(
-                                            ChatOG.mm.deserialize(
+                                            UtilitiesOG.trueogColorize(
                                                 "${Config.prefix}<reset>: @${user.name} has posted a disallowed link: ${
                                                     word.replace(
                                                         ".",
@@ -201,7 +201,7 @@ object DiscordBridge {
                             linkComponent = linkComponent.hoverEvent(
                                 HoverEvent.hoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
-                                    ChatOG.mm.deserialize("<green>Click to open link")
+                                    UtilitiesOG.trueogColorize("<green>Click to open link")
                                 )
                             )
 
@@ -231,12 +231,12 @@ object DiscordBridge {
                         messageText = if (messageComponents.isNotEmpty()) {
                             val lastContent = (messageComponents.last() as TextComponent).content()
                             if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
-                                ChatOG.mm.deserialize(legacyToMm(Helper.getColorSection(lastContent) + word))
+                                UtilitiesOG.trueogColorize(legacyToMm(Helper.getColorSection(lastContent) + word))
                             } else {
-                                ChatOG.mm.deserialize(legacyToMm(word))
+                                UtilitiesOG.trueogColorize(legacyToMm(word))
                             }
                         } else {
-                            ChatOG.mm.deserialize(legacyToMm(word))
+                            UtilitiesOG.trueogColorize(legacyToMm(word))
                         }
                     }
                     messageComponents += messageText.color(messageColor)
@@ -298,7 +298,7 @@ object DiscordBridge {
             messageComponent = messageComponent.hoverEvent(
                 HoverEvent.hoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
-                    ChatOG.mm.deserialize("<green>Click to translate this message")
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message")
                 )
             )
 
