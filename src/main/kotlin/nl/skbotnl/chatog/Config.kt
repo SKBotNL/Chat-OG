@@ -10,22 +10,22 @@ object Config {
     var discordEnabled = false
     var staffDiscordEnabled = false
     var premiumDiscordEnabled = false
-    lateinit var status: String
-    lateinit var serverHasStartedMessage: String
-    lateinit var serverHasStoppedMessage: String
-    lateinit var botToken: String
-    lateinit var channelId: String
-    lateinit var staffChannelId: String
-    lateinit var premiumChannelId: String
-    lateinit var guildId: String
-    lateinit var webhook: String
-    lateinit var staffWebhook: String
-    lateinit var premiumWebhook: String
-    lateinit var listCommandName: String
-    lateinit var listCommandText: String
-    lateinit var colorCodeRoles: List<String>
-    lateinit var roles: Set<String>
-    lateinit var roleMessageColor: MutableMap<String, Any>
+    var status: String = ""
+    var serverHasStartedMessage: String = ""
+    var serverHasStoppedMessage: String = ""
+    var botToken: String = ""
+    var channelId: String = ""
+    var staffChannelId: String = ""
+    var premiumChannelId: String = ""
+    var guildId: String = ""
+    var webhook: String = ""
+    var staffWebhook: String = ""
+    var premiumWebhook: String = ""
+    var listCommandName: String = ""
+    var listCommandText: String = ""
+    var colorCodeRoles: List<String> = listOf()
+    var roles: Set<String> = setOf()
+    var roleMessageColor: MutableMap<String, Any> = mutableMapOf()
 
     data class RGBColor(val r: Int, val g: Int, val b: Int)
 
