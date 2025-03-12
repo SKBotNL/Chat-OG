@@ -61,9 +61,18 @@ object ArgosTranslate {
                 "lingua-language-detector"
             ).start().waitFor()
             ChatOG.plugin.logger.info("Installing translation packages (this can take a while)...")
-            ProcessBuilder().command("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "update").start().waitFor()
-            ProcessBuilder().command("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "install", "translate")
-                .start().waitFor()
+
+            File("${ChatOG.plugin.dataFolder}/argostranslate-packages").mkdir()
+
+            ProcessBuilder("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "update").apply {
+                environment()["ARGOS_PACKAGES_DIR"] = "${ChatOG.plugin.dataFolder}/argostranslate-packages"
+            }.start().waitFor()
+
+
+            ProcessBuilder("${ChatOG.plugin.dataFolder}/python/venv/bin/argospm", "install", "translate").apply {
+                environment()["ARGOS_PACKAGES_DIR"] = "${ChatOG.plugin.dataFolder}/argostranslate-packages"
+            }.start().waitFor()
+
             ChatOG.plugin.logger.info("Done with setting up Python and argos-translate")
         }
 
