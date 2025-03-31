@@ -33,6 +33,9 @@ object Config {
 
     data class RGBColor(val r: Int, val g: Int, val b: Int)
 
+    /**
+     * @return True if failed
+     */
     fun load(): Boolean {
         val file = File(ChatOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
