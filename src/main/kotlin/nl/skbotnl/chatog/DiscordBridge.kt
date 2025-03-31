@@ -345,6 +345,8 @@ object DiscordBridge {
     }
 
     fun sendMessageWithBot(message: String) {
+        if (!Config.discordEnabled) return
+
         val channel = jda?.getChannel<MessageChannel>(Config.channelId)
         if (channel == null) {
             ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
@@ -354,6 +356,8 @@ object DiscordBridge {
     }
 
     suspend fun sendMessage(message: String, player: String, uuid: UUID?) {
+        if (!Config.discordEnabled) return
+
         if (webhook == null) {
             ChatOG.plugin.logger.warning("webhook has not been set or is invalid")
             return
@@ -370,6 +374,8 @@ object DiscordBridge {
     }
 
     suspend fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
+        if (!Config.discordEnabled || !Config.staffDiscordEnabled) return
+
         if (staffWebhook == null) {
             ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
             return
@@ -386,6 +392,8 @@ object DiscordBridge {
     }
 
     suspend fun sendPremiumMessage(message: String, player: String, uuid: UUID?) {
+        if (!Config.discordEnabled || !Config.premiumDiscordEnabled) return
+
         if (premiumWebhook == null) {
             ChatOG.plugin.logger.warning("premiumWebhook has not been set or is invalid")
             return
@@ -402,6 +410,8 @@ object DiscordBridge {
     }
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int) {
+        if (!Config.discordEnabled) return
+
         if (webhook == null) {
             ChatOG.plugin.logger.warning("Webhook has not been set or is invalid")
             return

@@ -22,10 +22,16 @@ class ChatConfigReload : CommandExecutor {
 
         LanguageDatabase.init()
 
-        DiscordBridge.webhook = WebhookClient.withUrl(Config.webhook)
-        DiscordBridge.staffWebhook = WebhookClient.withUrl(Config.staffWebhook)
-        DiscordBridge.premiumWebhook = WebhookClient.withUrl(Config.premiumWebhook)
-        DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.status), false)
+        if (Config.discordEnabled) {
+            DiscordBridge.webhook = WebhookClient.withUrl(Config.webhook)
+            if (Config.staffDiscordEnabled) {
+                DiscordBridge.staffWebhook = WebhookClient.withUrl(Config.staffWebhook)
+            }
+            if (Config.premiumDiscordEnabled) {
+                DiscordBridge.premiumWebhook = WebhookClient.withUrl(Config.premiumWebhook)
+            }
+            DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.status), false)
+        }
 
         sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Successfully reloaded the config."))
         return true
