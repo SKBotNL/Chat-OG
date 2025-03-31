@@ -1,14 +1,15 @@
 # Chat-OG
 Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 > [!WARNING]  
-> libffi, openssl, lzma, and zlib are needed for the argostranslate Python package to function
+> Argos-Translate, which is enabled by default, requires libffi, openssl, lzma, and zlib.\
+> This is not needed if you use the OpenAI(-compatible) API backend.
 
 ## Features
-- Adds prefix, union and suffix to chat messages
-- Formats chat messages with MiniMessage if the player sending them has the `chat-og.color` permission
-- Translates chat messages using [argos-translate](https://github.com/argosopentech/argos-translate)
+- Adds prefix, union and suffix to chat messages.
+- Formats chat messages with MiniMessage if the player sending them has the `chat-og.color` permission.
+- Translates chat messages using [argos-translate](https://github.com/argosopentech/argos-translate) or any OpenAI(-compatible) API.
 - Discord bridge with custom and animated emoji support.
-- Staff chat and Premium chat.
+- Staff and premium chat.
 
 ## Building
 ```./gradlew build```
