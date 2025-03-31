@@ -8,12 +8,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
-import nl.skbotnl.chatog.Config
-import nl.skbotnl.chatog.Helper
+import nl.skbotnl.chatog.*
 import nl.skbotnl.chatog.Helper.legacyToMm
-import nl.skbotnl.chatog.LanguageDatabase
-import nl.skbotnl.chatog.translator.Translator
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -95,6 +91,13 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
+        if (ChatOG.translator == null) {
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>The translator is disabled.")
+            )
+            return true
+        }
+
         GlobalScope.launch {
             val language = LanguageDatabase.getPlayerLanguage(player.uniqueId)
 
@@ -107,7 +110,7 @@ class TranslateMessage : CommandExecutor {
 
             player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
 
-            val translated = ChatOG.translator.translate(sentMessage.message, language)
+            val translated = ChatOG.translator!!.translate(sentMessage.message, language)
             translateCallback(translated, player, messageType, sentMessage, language)
         }
 
@@ -115,7 +118,7 @@ class TranslateMessage : CommandExecutor {
     }
 
     private fun translateCallback(
-        translated: Translator.Translated,
+        translated: OpenAI.Translated,
         player: Player,
         messageType: Int,
         sentMessage: ISentMessage?,

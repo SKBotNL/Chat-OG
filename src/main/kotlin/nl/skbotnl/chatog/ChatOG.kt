@@ -6,9 +6,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
-import nl.skbotnl.chatog.translator.ArgosTranslate
-import nl.skbotnl.chatog.translator.OpenAI
-import nl.skbotnl.chatog.translator.Translator
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -18,7 +15,7 @@ class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
-        lateinit var translator: Translator
+        var translator: OpenAI? = null
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
 
         // API
@@ -61,19 +58,14 @@ class ChatOG : JavaPlugin() {
             Bukkit.getPluginManager().disablePlugin(this)
             return
         }
-
         translator = if (Config.openAIEnabled) {
             OpenAI()
-        } else {
-            ArgosTranslate()
-        }
+        } else null
+
         LanguageDatabase.init()
         GlobalScope.launch {
             BlocklistManager.load()
             EmojiConverter.load()
-            if (!Config.openAIEnabled) {
-                translator.init()
-            }
         }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)

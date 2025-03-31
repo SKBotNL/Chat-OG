@@ -7,7 +7,6 @@ redisUrl: 127.0.0.1:6379
 
 # ---OpenAI---
 # Any OpenAI-like (OpenAI, ollama, llama.cpp) API will work here
-# openAIEnabled will implicitly disable Argos-Translate
 openAIEnabled: false
 # Will be used as: <baseurl>/v1/...
 baseUrl: http://127.0.0.1:8080

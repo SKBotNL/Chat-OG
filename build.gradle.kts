@@ -1,10 +1,3 @@
-import de.undercouch.gradle.tasks.download.Download
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
-import java.nio.file.Files
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.21"
     id("com.gradleup.shadow") version "8.3.5" // Import shadow API.
@@ -77,93 +70,9 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
-val downloadPython by tasks.registering(Download::class) {
-    src("https://github.com/python/cpython/archive/refs/heads/3.11.zip")
-    dest(layout.buildDirectory.file("python.zip"))
-}
-
-val unzipPython by tasks.registering(Copy::class) {
-    dependsOn(downloadPython)
-    from(zipTree(downloadPython.get().dest)) {
-        include("cpython*/**")
-        eachFile {
-            relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
-        }
-        includeEmptyDirs = false
-    }
-    into(layout.buildDirectory.dir("python"))
-}
-
-val configurePython by tasks.registering(Exec::class) {
-    dependsOn(unzipPython)
-    doFirst {
-        Files.createDirectories(file("$rootDir/build/python/build").toPath())
-    }
-    workingDir("$rootDir/build/python")
-    commandLine("./configure")
-    args("--enable-optimizations")
-}
-
-val makePython by tasks.registering(Exec::class) {
-    dependsOn(configurePython)
-    workingDir("$rootDir/build/python")
-    commandLine("sh")
-    args("-c", "make -j$(nproc)")
-}
-
-val installPython by tasks.registering(Exec::class) {
-    dependsOn(makePython)
-    workingDir("$rootDir/build/python")
-    commandLine("make")
-    environment("DESTDIR", "$rootDir/build/python/install")
-    args("install")
-}
-
-val pythonZipFile = file("$rootDir/build/python/python.zip")
-
-val createPythonZip by tasks.registering {
-    group = "Chat-OG"
-    dependsOn(installPython)
-    outputs.file(pythonZipFile)
-    doLast {
-        val inputDirectory = file("$rootDir/build/python/install/usr/local/")
-        if (!pythonZipFile.exists() && inputDirectory.exists()) {
-            println("Creating python.zip from $inputDirectory")
-            pythonZipFile.parentFile.mkdirs()
-            if (!pythonZipFile.exists()) {
-                pythonZipFile.createNewFile()
-            }
-            ZipOutputStream(BufferedOutputStream(FileOutputStream(pythonZipFile))).use { zos ->
-                inputDirectory.walkTopDown().forEach { file ->
-                    val zipFileName = file.absolutePath
-                        .removePrefix(inputDirectory.absolutePath)
-                        .removePrefix("/")
-                    val entry = ZipEntry(zipFileName + if (file.isDirectory) "/" else "")
-                    zos.putNextEntry(entry)
-                    if (file.isFile) {
-                        file.inputStream().use { fis -> fis.copyTo(zos) }
-                    }
-                }
-            }
-        }
-    }
-}
-
-val buildPython by tasks.registering {
-    if (file("$rootDir/build/python/python.zip").exists()) {
-        return@registering
-    }
-    group = "Chat-OG"
-    dependsOn(createPythonZip)
-}
-
 tasks.shadowJar {
-    dependsOn(buildPython)
     minimize()
     archiveClassifier.set("")
-    from(pythonZipFile) {
-        into("/")
-    }
 }
 
 tasks.named("clean").configure {
@@ -173,7 +82,6 @@ tasks.named("clean").configure {
 }
 
 tasks.build {
-    dependsOn(buildPython)
     dependsOn("shadowJar")
 }
 

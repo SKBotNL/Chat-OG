@@ -1,16 +1,17 @@
-package nl.skbotnl.chatog.translator
+package nl.skbotnl.chatog
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import net.kyori.adventure.text.Component
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
-import nl.skbotnl.chatog.Config
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class OpenAI : Translator {
+class OpenAI {
+    data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
+
     private var httpClient: OkHttpClient = OkHttpClient()
     private var gson: Gson = Gson()
 
@@ -32,11 +33,7 @@ class OpenAI : Translator {
         @SerializedName("message") val message: Message
     )
 
-    override fun init() {
-        return
-    }
-
-    override fun translate(text: String, language: String): Translator.Translated {
+    fun translate(text: String, language: String): Translated {
         val openAICompletion = CompletionReq(
             model = Config.openAIModel,
             messages = listOf(
@@ -58,11 +55,11 @@ class OpenAI : Translator {
             httpClient.newCall(request).execute().use { response ->
                 val completionResp = gson.fromJson(response.body!!.string(), CompletionResp::class.java)
                 val respSplit = completionResp.choices[0].message.content.split(" | ", limit = 2)
-                return Translator.Translated(respSplit[0], respSplit[1], null)
+                return Translated(respSplit[0], respSplit[1], null)
             }
         } catch (e: Exception) {
             ChatOG.plugin.logger.severe(e.toString())
-            return Translator.Translated(
+            return Translated(
                 null,
                 null,
                 UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while translating your message.")
