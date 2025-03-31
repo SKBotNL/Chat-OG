@@ -101,9 +101,9 @@ class TranslateMessage : CommandExecutor {
         GlobalScope.launch {
             val language = LanguageDatabase.getPlayerLanguage(player.uniqueId)
 
-            if (language == "null") {
+            if (language == null) {
                 player.sendMessage(
-                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong will trying to get your language.")
+                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language.")
                 )
                 return@launch
             }

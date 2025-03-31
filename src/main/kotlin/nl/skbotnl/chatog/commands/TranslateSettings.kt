@@ -80,7 +80,11 @@ class TranslateSettings : CommandExecutor {
         }
 
         GlobalScope.launch {
-            LanguageDatabase.setPlayerLanguage(sender.uniqueId, language)
+            val failed = LanguageDatabase.setPlayerLanguage(sender.uniqueId, language)
+            if (failed) {
+                sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Failed to set your preferred language. Try again later."))
+                return@launch
+            }
             sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
         }
 
