@@ -8,7 +8,7 @@ Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 - Adds prefix, union and suffix to chat messages.
 - Formats chat messages with MiniMessage if the player sending them has the `chat-og.color` permission.
 - Translates chat messages using [argos-translate](https://github.com/argosopentech/argos-translate) or any OpenAI(-compatible) API.
-- Discord bridge with custom and animated emoji support.
+- Discord bridge with custom and animated emoji (Minecraft to Discord only) support.
 - Staff and premium chat.
 
 ## Building
