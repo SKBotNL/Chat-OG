@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.logging.Level
 
 class OpenAI {
     data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
@@ -58,7 +59,7 @@ class OpenAI {
                 return Translated(respSplit[0], respSplit[1], null)
             }
         } catch (e: Exception) {
-            ChatOG.plugin.logger.severe(e.toString())
+            ChatOG.plugin.logger.log(Level.SEVERE, "Exception:", e)
             return Translated(
                 null,
                 null,
