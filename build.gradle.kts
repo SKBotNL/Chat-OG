@@ -52,7 +52,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.essentialsx:EssentialsX:2.21.0")
-    compileOnly(files("libs/AnnouncerPlus-1.3.6.jar"))
+    compileOnly(files("libs/AnnouncerPlus-1.4.1.jar"))
     implementation("net.dv8tion:JDA:5.3.1") {
         exclude(module = "opus-java")
     }
