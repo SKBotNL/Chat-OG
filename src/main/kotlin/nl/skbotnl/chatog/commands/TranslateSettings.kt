@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.command.Command

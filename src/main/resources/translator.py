@@ -1,6 +1,6 @@
-from lingua import Language, LanguageDetectorBuilder
 import argostranslate.translate
 import sys
+from lingua import Language, LanguageDetectorBuilder
 
 text = sys.argv[1]
 to_code = sys.argv[2]
@@ -38,7 +38,12 @@ lingua_to_argos = {
     Language.UKRAINIAN: "uk"
 }
 
-languages = [Language.ARABIC, Language.AZERBAIJANI, Language.CATALAN, Language.CHINESE, Language.CZECH, Language.DANISH, Language.DUTCH, Language.ENGLISH, Language.ESPERANTO, Language.FINNISH, Language.FRENCH, Language.GERMAN, Language.GREEK, Language.HEBREW, Language.HINDI, Language.HUNGARIAN, Language.INDONESIAN, Language.IRISH, Language.ITALIAN, Language.JAPANESE, Language.KOREAN, Language.PERSIAN, Language.POLISH, Language.PORTUGUESE, Language.RUSSIAN, Language.SLOVAK, Language.SPANISH, Language.SWEDISH, Language.TURKISH, Language.UKRAINIAN]
+languages = [Language.ARABIC, Language.AZERBAIJANI, Language.CATALAN, Language.CHINESE, Language.CZECH, Language.DANISH,
+             Language.DUTCH, Language.ENGLISH, Language.ESPERANTO, Language.FINNISH, Language.FRENCH, Language.GERMAN,
+             Language.GREEK, Language.HEBREW, Language.HINDI, Language.HUNGARIAN, Language.INDONESIAN, Language.IRISH,
+             Language.ITALIAN, Language.JAPANESE, Language.KOREAN, Language.PERSIAN, Language.POLISH,
+             Language.PORTUGUESE, Language.RUSSIAN, Language.SLOVAK, Language.SPANISH, Language.SWEDISH,
+             Language.TURKISH, Language.UKRAINIAN]
 detector = LanguageDetectorBuilder.from_languages(*languages).build()
 language = detector.detect_language_of(text)
 

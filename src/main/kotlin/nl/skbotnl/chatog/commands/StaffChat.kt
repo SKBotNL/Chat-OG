@@ -1,7 +1,6 @@
 package nl.skbotnl.chatog.commands
 
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatSystemHelper
 import nl.skbotnl.chatog.ChatSystemHelper.ChatType
 import nl.skbotnl.chatog.Config

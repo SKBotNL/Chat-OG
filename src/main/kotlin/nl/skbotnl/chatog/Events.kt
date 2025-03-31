@@ -210,7 +210,8 @@ class Events : Listener {
         val messageComponent =
             Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
 
-        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
+        val chatComponent =
+            UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
 
         var textComponent =
             Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)

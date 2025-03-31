@@ -155,8 +155,10 @@ object Helper {
                         )
                     )
 
-                    val beforeComponent = UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
-                    val afterComponent = UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
+                    val beforeComponent =
+                        UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
+                    val afterComponent =
+                        UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
 
                     val fullComponent =
                         Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
