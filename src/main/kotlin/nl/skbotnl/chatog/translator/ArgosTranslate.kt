@@ -1,17 +1,17 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.translator
 
-import net.kyori.adventure.text.Component
 import net.trueog.utilitiesog.UtilitiesOG
+import nl.skbotnl.chatog.ChatOG
+import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.translator.Translator.Translated
 import java.io.File
 import java.nio.file.Files
 import java.util.zip.ZipFile
 
-object ArgosTranslate {
+class ArgosTranslate : Translator {
     private var initialised = false
 
-    data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
-
-    fun init() {
+    override fun init() {
         if (ChatOG.plugin.getResource("python.zip") == null) {
             ChatOG.plugin.logger.warning("Python not found, the translator will be disabled. If you don't want this, read the README")
             return
@@ -19,7 +19,7 @@ object ArgosTranslate {
 
         val pythonFolder = File(ChatOG.plugin.dataFolder, "python")
         if (!pythonFolder.exists()) {
-            ChatOG.plugin.logger.info("Setting up Python and argos-translate...")
+            ChatOG.plugin.logger.info("Setting up Python for argos-translate...")
             ChatOG.plugin.saveResource("python.zip", true)
             ZipFile(File(ChatOG.plugin.dataFolder, "python.zip")).use { zip ->
                 zip.entries().asSequence().forEach { entry ->
@@ -53,6 +53,15 @@ object ArgosTranslate {
                 "venv",
                 "${ChatOG.plugin.dataFolder}/python/venv"
             ).start().waitFor()
+
+            ChatOG.plugin.logger.info("Upgrading pip...")
+            ProcessBuilder().command(
+                "${ChatOG.plugin.dataFolder}/python/venv/bin/pip",
+                "install",
+                "--upgrade",
+                "pip"
+            ).start().waitFor()
+
             ChatOG.plugin.logger.info("Installing pip packages (this can take some time)...")
             ProcessBuilder().command(
                 "${ChatOG.plugin.dataFolder}/python/venv/bin/pip",
@@ -74,12 +83,31 @@ object ArgosTranslate {
             }.start().waitFor()
 
             ChatOG.plugin.logger.info("Done with setting up Python and argos-translate")
+        } else {
+            ChatOG.plugin.logger.info("Upgrading pip...")
+            ProcessBuilder().command(
+                "${ChatOG.plugin.dataFolder}/python/venv/bin/pip",
+                "install",
+                "--upgrade",
+                "pip"
+            ).start().waitFor()
+
+            ChatOG.plugin.logger.info("Upgrading argostranslate and the language detector...")
+            ProcessBuilder().command(
+                "${ChatOG.plugin.dataFolder}/python/venv/bin/pip",
+                "install",
+                "--upgrade",
+                "argostranslate",
+                "lingua-language-detector"
+            ).start().waitFor()
+
+            ChatOG.plugin.logger.info("Everything is up-to-date!")
         }
 
         initialised = true
     }
 
-    fun translate(text: String, language: String): Translated {
+    override fun translate(text: String, language: String): Translated {
         if (!initialised) {
             return Translated(
                 null,
@@ -92,7 +120,10 @@ object ArgosTranslate {
             "${ChatOG.plugin.dataFolder}/python/translator.py",
             text,
             language
-        ).start()
+        ).apply {
+            environment()["ARGOS_PACKAGES_DIR"] = "${ChatOG.plugin.dataFolder}/argostranslate-packages"
+        }.start()
+
         val outputText = pb.inputStream.bufferedReader().readText().dropLast(1)
         val split = outputText.split(" ", limit = 2)
         return Translated(split[0], split[1], null)

@@ -13,20 +13,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class TranslateSettings : CommandExecutor {
-    @OptIn(DelicateCoroutinesApi::class)
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
-        if (sender !is Player) {
-            return false
-        }
-        if (args == null) {
-            return false
-        }
-        if (args.isEmpty()) {
-            return false
-        }
-
-        val language = args[0]
-
+    companion object {
         val languagesList = listOf(
             "ar",
             "az",
@@ -37,6 +24,7 @@ class TranslateSettings : CommandExecutor {
             "da",
             "de",
             "el",
+            "en",
             "eo",
             "es",
             "et",
@@ -71,6 +59,21 @@ class TranslateSettings : CommandExecutor {
             "zh",
             "zt"
         )
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
+        if (sender !is Player) {
+            return false
+        }
+        if (args == null) {
+            return false
+        }
+        if (args.isEmpty()) {
+            return false
+        }
+
+        val language = args[0]
 
         if (languagesList.indexOf(language) == -1) {
             sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Invalid language."))

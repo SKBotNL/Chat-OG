@@ -7,6 +7,10 @@ import java.io.File
 object Config {
     lateinit var prefix: String
     lateinit var redisUrl: String
+    var openAIEnabled = false
+    var openAIBaseUrl: String = ""
+    var openAIApiKey: String = ""
+    var openAIModel: String = ""
     var discordEnabled = false
     var staffDiscordEnabled = false
     var premiumDiscordEnabled = false
@@ -49,6 +53,35 @@ object Config {
         } catch (_: Exception) {
             ChatOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
             return true
+        }
+
+        try {
+            openAIEnabled = config.get("openAIEnabled") as Boolean
+        } catch (_: Exception) {
+            ChatOG.plugin.logger.severe("Failed to parse config option \"openAIEnabled\" as a boolean")
+            return true
+        }
+
+        if (openAIEnabled) {
+            try {
+                openAIBaseUrl = config.get("baseUrl") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"baseUrl\" as a boolean")
+                return true
+            }
+
+            try {
+                openAIApiKey = config.get("apiKey") as String
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"apiKey\" as a boolean")
+                return true
+            }
+
+            openAIModel = try {
+                config.get("model") as String
+            } catch (_: Exception) {
+                ""
+            }
         }
 
         try {

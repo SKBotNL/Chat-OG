@@ -5,6 +5,16 @@ prefix: <dark_gray>[<green>Chat<white>-<dark_red>OG<dark_gray>]
 # ---Redis---
 redisUrl: 127.0.0.1:6379
 
+# ---OpenAI---
+# Any OpenAI-like (OpenAI, ollama, llama.cpp) API will work here
+# openAIEnabled will implicitly disable Argos-Translate
+openAIEnabled: false
+# Will be used as: <baseurl>/v1/...
+baseUrl: http://127.0.0.1:8080
+apiKey: verySecretKey
+# The name of the model. This isn't always required, for example with the llama-server "example" from llama.cpp
+model: ""
+
 # ---Discord---
 # discordEnabled needs to be true for staffDiscordEnabled and premiumDiscordEnabled to have any effect
 discordEnabled: false

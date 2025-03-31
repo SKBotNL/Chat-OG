@@ -4,11 +4,11 @@ import com.earth2me.essentials.Essentials
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
+import nl.skbotnl.chatog.translator.ArgosTranslate
+import nl.skbotnl.chatog.translator.OpenAI
+import nl.skbotnl.chatog.translator.Translator
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -18,6 +18,7 @@ class ChatOG : JavaPlugin() {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
+        lateinit var translator: Translator
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
 
         // API
@@ -61,11 +62,18 @@ class ChatOG : JavaPlugin() {
             return
         }
 
+        translator = if (Config.openAIEnabled) {
+            OpenAI()
+        } else {
+            ArgosTranslate()
+        }
         LanguageDatabase.init()
         GlobalScope.launch {
             BlocklistManager.load()
             EmojiConverter.load()
-            ArgosTranslate.init()
+            if (!Config.openAIEnabled) {
+                translator.init()
+            }
         }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)

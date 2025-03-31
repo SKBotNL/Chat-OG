@@ -10,6 +10,8 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import nl.skbotnl.chatog.*
 import nl.skbotnl.chatog.Helper.legacyToMm
+import nl.skbotnl.chatog.translator.ArgosTranslate
+import nl.skbotnl.chatog.translator.Translator
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -103,7 +105,7 @@ class TranslateMessage : CommandExecutor {
 
             player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
 
-            val translated = ArgosTranslate.translate(sentMessage.message, language)
+            val translated = ChatOG.translator.translate(sentMessage.message, language)
             translateCallback(translated, player, messageType, sentMessage, language)
         }
 
@@ -111,7 +113,7 @@ class TranslateMessage : CommandExecutor {
     }
 
     private fun translateCallback(
-        translated: ArgosTranslate.Translated,
+        translated: Translator.Translated,
         player: Player,
         messageType: Int,
         sentMessage: ISentMessage?,
