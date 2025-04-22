@@ -29,7 +29,7 @@ object BlocklistManager {
     private fun refresh() {
         URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt").toURL().openStream().use { input ->
             input.bufferedReader().use { bufferedReader ->
-                bufferedReader.lines().skip(15).forEach {
+                bufferedReader.lines().skip(11).forEach {
                     blockList += it
                 }
             }

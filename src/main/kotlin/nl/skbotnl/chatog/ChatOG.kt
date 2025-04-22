@@ -63,8 +63,8 @@ class ChatOG : JavaPlugin() {
         } else null
 
         LanguageDatabase.init()
+        BlocklistManager.load()
         GlobalScope.launch {
-            BlocklistManager.load()
             EmojiConverter.load()
         }
 
