@@ -69,14 +69,14 @@ object Config {
             try {
                 openAIBaseUrl = config.get("baseUrl") as String
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"baseUrl\" as a boolean")
+                ChatOG.plugin.logger.severe("Failed to parse config option \"baseUrl\" as a string")
                 return true
             }
 
             try {
                 openAIApiKey = config.get("apiKey") as String
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"apiKey\" as a boolean")
+                ChatOG.plugin.logger.severe("Failed to parse config option \"apiKey\" as a string")
                 return true
             }
 
