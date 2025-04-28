@@ -53,7 +53,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.essentialsx:EssentialsX:2.21.0")
     compileOnly(files("libs/AnnouncerPlus-1.4.1.jar"))
-    implementation("net.dv8tion:JDA:5.4.0") {
+    implementation("net.dv8tion:JDA:5.5.0") {
         exclude(module = "opus-java")
     }
     implementation(project(":libs:Utilities-OG"))
