@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.0.21"
+    id("org.jetbrains.kotlin.jvm") version "2.1.21"
     id("com.gradleup.shadow") version "8.3.5" // Import shadow API.
     id("de.undercouch.download") version "5.6.0"
     id("maven-publish")
