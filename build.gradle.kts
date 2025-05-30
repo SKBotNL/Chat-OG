@@ -1,35 +1,27 @@
+import java.io.BufferedReader
+
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.1.21"
-    id("com.gradleup.shadow") version "8.3.5" // Import shadow API.
-    id("de.undercouch.download") version "5.6.0"
-    id("maven-publish")
-    id("eclipse")
+    kotlin("jvm") version "2.1.21"
+    id("com.gradleup.shadow") version "8.3.5"
+    eclipse
 }
 
-group = "nl.skbotnl.chatog"
-version = "2.1.6"
+val commitHash = Runtime
+    .getRuntime()
+    .exec(arrayOf("git", "rev-parse", "--short=10", "HEAD"))
+    .let { process ->
+        process.waitFor()
+        val output = process.inputStream.use {
+            it.bufferedReader().use(BufferedReader::readText)
+        }
+        process.destroy()
+        output.trim()
+    }
 
 val apiVersion = "1.19"
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenPublication") {
-            groupId = "nl.skbotnl.chatog"
-            artifactId = "Chat-OG"
-            version = version
-        }
-    }
-}
-
-tasks.named<ProcessResources>("processResources") {
-    val props = mapOf(
-        "version" to version,
-        "apiVersion" to apiVersion,
-    )
-    filesMatching("plugin.yml") {
-        expand(props)
-    }
-}
+group = "nl.skbotnl.chatog"
+version = "$apiVersion-$commitHash"
 
 repositories {
     mavenCentral()
@@ -53,6 +45,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.essentialsx:EssentialsX:2.21.0")
     compileOnly(files("libs/AnnouncerPlus-1.4.1.jar"))
+
     implementation("net.dv8tion:JDA:5.5.1") {
         exclude(module = "opus-java")
     }
@@ -65,38 +58,42 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 }
 
-tasks.withType<AbstractArchiveTask>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-
-tasks.shadowJar {
-    minimize()
-    archiveClassifier.set("")
-}
-
-tasks.named("clean").configure {
-    onlyIf {
-        System.getenv("SELF_MAVEN_LOCAL_REPO") == null
-    }
+val targetJavaVersion = 17
+kotlin {
+    jvmToolchain(targetJavaVersion)
 }
 
 tasks.build {
     dependsOn("shadowJar")
 }
 
-tasks.jar.configure {
+tasks.jar {
     archiveClassifier.set("part")
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-parameters")
-    options.encoding = "UTF-8"
-    options.forkOptions.executable = File(options.forkOptions.javaHome, "bin/javac").path
+tasks.shadowJar {
+    archiveClassifier.set("")
+    minimize()
 }
 
-kotlin {
-    jvmToolchain(17)
+tasks.named<ProcessResources>("processResources") {
+    val props = mapOf(
+        "version" to version,
+        "apiVersion" to apiVersion,
+    )
+    inputs.properties(props)
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
+
+    from("LICENSE") {
+        into("/")
+    }
+}
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
 }
 
 java {
