@@ -99,7 +99,7 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
         vendor = JvmVendorSpec.GRAAL_VM
     }
 }
