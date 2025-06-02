@@ -1,9 +1,10 @@
 import java.io.BufferedReader
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    id("com.gradleup.shadow") version "8.3.6"
-    eclipse
+    id("com.gradleup.shadow") version "8.3.6" // Import shadow API.
+    java // Tell gradle this is a java project.
+    eclipse // Import eclipse plugin for IDE integration.
+    kotlin("jvm") version "2.1.21" // Import kotlin jvm plugin for kotlin/java integration.
 }
 
 val commitHash = Runtime
@@ -25,6 +26,7 @@ version = "$apiVersion-$commitHash"
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
     maven {
         url = uri("https://repo.purpurmc.org/snapshots")
     }
@@ -58,13 +60,17 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 }
 
-val targetJavaVersion = 17
+java {
+    // Declare java version.
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 kotlin {
-    jvmToolchain(targetJavaVersion)
+    jvmToolchain(17)
 }
 
 tasks.build {
-    dependsOn("shadowJar")
+    dependsOn(tasks.shadowJar)
 }
 
 tasks.jar {
@@ -72,7 +78,8 @@ tasks.jar {
 }
 
 tasks.shadowJar {
-    archiveClassifier.set("")
+    archiveClassifier.set("") // Use empty string instead of null.
+    exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     minimize()
 }
 
@@ -86,7 +93,6 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("plugin.yml") {
         expand(props)
     }
-
     from("LICENSE") {
         into("/")
     }
@@ -99,7 +105,7 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        languageVersion = JavaLanguageVersion.of(17)
         vendor = JvmVendorSpec.GRAAL_VM
     }
 }
