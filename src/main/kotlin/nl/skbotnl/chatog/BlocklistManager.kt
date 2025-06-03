@@ -1,7 +1,6 @@
 package nl.skbotnl.chatog
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -18,7 +17,7 @@ object BlocklistManager {
 
         ChatOG.plugin.logger.info("Loaded the blocklists!")
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             while (true) {
                 delay(TimeUnit.DAYS.toMillis(1))
                 refresh()
@@ -27,13 +26,14 @@ object BlocklistManager {
     }
 
     private fun refresh() {
-        URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt").toURL().openStream().use { input ->
-            input.bufferedReader().use { bufferedReader ->
-                bufferedReader.lines().skip(11).forEach {
-                    blockList += it
+        URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt").toURL().openStream()
+            .use { input ->
+                input.bufferedReader().use { bufferedReader ->
+                    bufferedReader.lines().skip(11).forEach {
+                        blockList += it
+                    }
                 }
             }
-        }
     }
 
     private val urlRegex = Regex("^(https?|ftp|file)://([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*?[^/]*)")
@@ -47,7 +47,7 @@ object BlocklistManager {
         }
 
         blockList.forEach {
-            if (it == baseUrl!!) {
+            if (it == baseUrl) {
                 return true
             }
         }

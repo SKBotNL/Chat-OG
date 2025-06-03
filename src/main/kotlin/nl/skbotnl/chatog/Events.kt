@@ -3,7 +3,6 @@ package nl.skbotnl.chatog
 import io.papermc.paper.advancement.AdvancementDisplay.Frame.*
 import io.papermc.paper.event.player.AsyncChatEvent
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.ess3.api.events.VanishStatusChangeEvent
@@ -53,7 +52,7 @@ class Events : Listener {
             )
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} has joined the game. ${
                     Bukkit.getOnlinePlayers().count()
@@ -80,7 +79,7 @@ class Events : Listener {
             )
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} has left the game. ${
                     Bukkit.getOnlinePlayers().count() - 1
@@ -109,7 +108,7 @@ class Events : Listener {
 
         val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} was kicked with reason: \"${reason}\". ${
                     Bukkit.getOnlinePlayers().count() - 1
@@ -148,7 +147,7 @@ class Events : Listener {
             }
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} $advancementMessage.",
                 event.player.uniqueId,
@@ -171,7 +170,7 @@ class Events : Listener {
             return
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendMessage(content, "[Server] Broadcast", null)
         }
     }
@@ -201,7 +200,7 @@ class Events : Listener {
 
         val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId)
         }
 
@@ -379,7 +378,7 @@ class Events : Listener {
         }
 
         if (event.deathMessage() is TextComponent) {
-            GlobalScope.launch {
+            ChatOG.scope.launch {
                 DiscordBridge.sendEmbed(
                     removeColor((event.deathMessage() as TextComponent).content()),
                     event.player.uniqueId,
@@ -409,7 +408,7 @@ class Events : Listener {
 
         val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(deathMessage)
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             DiscordBridge.sendEmbed(removeColor(translatedDeathMessage), event.player.uniqueId, 0xFF0000)
         }
     }

@@ -1,7 +1,6 @@
 package nl.skbotnl.chatog
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
@@ -37,7 +36,7 @@ object ChatSystemHelper {
         if (Config.staffDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
-            GlobalScope.launch {
+            ChatOG.scope.launch {
                 DiscordBridge.sendStaffMessage(discordMessageString, removeColor(chatString), player.uniqueId)
             }
         }
@@ -86,7 +85,7 @@ object ChatSystemHelper {
         if (Config.premiumDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
-            GlobalScope.launch {
+            ChatOG.scope.launch {
                 DiscordBridge.sendPremiumMessage(discordMessageString, removeColor(chatString), player.uniqueId)
             }
         }

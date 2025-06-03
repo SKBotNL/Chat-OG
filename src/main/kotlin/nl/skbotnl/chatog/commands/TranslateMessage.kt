@@ -1,7 +1,6 @@
 package nl.skbotnl.chatog.commands
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
@@ -64,7 +63,7 @@ class TranslateMessage : CommandExecutor {
 
         try {
             uuid = UUID.fromString(args[0])
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That is not a valid UUID."))
             return true
         }
@@ -98,7 +97,7 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             val language = LanguageDatabase.getPlayerLanguage(player.uniqueId)
 
             if (language == null) {
