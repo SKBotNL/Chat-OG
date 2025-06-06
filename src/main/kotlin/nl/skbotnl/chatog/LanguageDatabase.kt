@@ -29,8 +29,7 @@ object LanguageDatabase {
         try {
             client.set("chatog:language:$uuid", language)
             return false
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             ChatOG.plugin.logger.log(Level.SEVERE, "Exception:", e)
         }
         return true

@@ -1,9 +1,7 @@
 package nl.skbotnl.chatog
 
 import com.earth2me.essentials.Essentials
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
 import org.bukkit.Bukkit
@@ -13,6 +11,8 @@ import java.util.*
 class ChatOG : JavaPlugin() {
     @OptIn(DelicateCoroutinesApi::class)
     companion object {
+        val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
         var translator: OpenAI? = null
@@ -22,31 +22,31 @@ class ChatOG : JavaPlugin() {
         @JvmStatic
         @Suppress("unused")
         fun sendMessageWithBot(message: String) {
-            GlobalScope.launch { DiscordBridge.sendMessageWithBot(message) }
+            scope.launch { DiscordBridge.sendMessageWithBot(message) }
         }
 
         @JvmStatic
         @Suppress("unused")
         fun sendMessage(message: String, player: String, uuid: UUID?) {
-            GlobalScope.launch { DiscordBridge.sendMessage(message, player, uuid) }
+            scope.launch { DiscordBridge.sendMessage(message, player, uuid) }
         }
 
         @JvmStatic
         @Suppress("unused")
         fun sendStaffMessage(message: String, player: String, uuid: UUID?) {
-            GlobalScope.launch { DiscordBridge.sendStaffMessage(message, player, uuid) }
+            scope.launch { DiscordBridge.sendStaffMessage(message, player, uuid) }
         }
 
         @JvmStatic
         @Suppress("unused")
         fun sendPremiumMessage(message: String, player: String, uuid: UUID?) {
-            GlobalScope.launch { DiscordBridge.sendPremiumMessage(message, player, uuid) }
+            scope.launch { DiscordBridge.sendPremiumMessage(message, player, uuid) }
         }
 
         @JvmStatic
         @Suppress("unused")
         fun sendEmbed(message: String, uuid: UUID?, color: Int) {
-            GlobalScope.launch { DiscordBridge.sendEmbed(message, uuid, color) }
+            scope.launch { DiscordBridge.sendEmbed(message, uuid, color) }
         }
     }
 
@@ -64,7 +64,7 @@ class ChatOG : JavaPlugin() {
 
         LanguageDatabase.init()
         BlocklistManager.load()
-        GlobalScope.launch {
+        scope.launch {
             EmojiConverter.load()
         }
 
@@ -80,7 +80,7 @@ class ChatOG : JavaPlugin() {
         this.getCommand("p")?.setExecutor(PremiumChat())
 
         if (Config.discordEnabled) {
-            GlobalScope.launch {
+            scope.launch {
                 DiscordBridge.main()
             }
         }
@@ -92,6 +92,12 @@ class ChatOG : JavaPlugin() {
                 DiscordBridge.sendMessageWithBot(Config.serverHasStoppedMessage)
                 DiscordBridge.jda!!.shutdownNow()
             }
+        }
+
+        scope.cancel()
+
+        runBlocking {
+            scope.coroutineContext[Job]?.join()
         }
     }
 }

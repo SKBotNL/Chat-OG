@@ -1,9 +1,9 @@
 package nl.skbotnl.chatog.commands
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.trueog.utilitiesog.UtilitiesOG
+import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.LanguageDatabase
 import org.bukkit.command.Command
@@ -79,7 +79,7 @@ class TranslateSettings : CommandExecutor {
             return true
         }
 
-        GlobalScope.launch {
+        ChatOG.scope.launch {
             val failed = LanguageDatabase.setPlayerLanguage(sender.uniqueId, language)
             if (failed) {
                 sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Failed to set your preferred language. Try again later."))
