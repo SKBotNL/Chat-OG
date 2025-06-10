@@ -53,7 +53,7 @@ dependencies {
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.13.1")
-    implementation("io.github.crackthecodeabhi:kreds:0.9.1")
+    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
@@ -61,6 +61,7 @@ dependencies {
 configurations.all {
     exclude(group = "com.google.crypto.tink", module = "tink")
     exclude(group = "net.java", module = "opus-java")
+    exclude(group = "io.projectreactor")
 }
 
 java {

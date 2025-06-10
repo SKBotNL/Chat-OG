@@ -1,37 +1,37 @@
 package nl.skbotnl.chatog
 
-import io.github.crackthecodeabhi.kreds.connection.Endpoint
-import io.github.crackthecodeabhi.kreds.connection.KredsClient
-import io.github.crackthecodeabhi.kreds.connection.newClient
+import io.lettuce.core.RedisClient
+import io.lettuce.core.RedisConnectionException
 import java.util.*
-import java.util.logging.Level
 
-object LanguageDatabase {
-    private lateinit var client: KredsClient
-
-    fun init() {
-        client = newClient(Endpoint.from(Config.redisUrl))
-    }
-
-    suspend fun getPlayerLanguage(uuid: UUID): String? {
-        try {
-            return client.get("chatog:language:$uuid")
-        } catch (e: Exception) {
-            ChatOG.plugin.logger.log(Level.SEVERE, "Exception:", e)
-        }
-        return null
-    }
+class LanguageDatabase {
+    private val redisClient: RedisClient = RedisClient.create(Config.redisUrl)
 
     /**
      * @return True if failed
      */
-    suspend fun setPlayerLanguage(uuid: UUID, language: String): Boolean {
+    fun testConnection(): Boolean {
         try {
-            client.set("chatog:language:$uuid", language)
+            val connection = redisClient.connect()
+            connection.close()
             return false
-        } catch (e: Exception) {
-            ChatOG.plugin.logger.log(Level.SEVERE, "Exception:", e)
+        } catch (_: RedisConnectionException) {
+            return true
         }
-        return true
+    }
+
+    fun getPlayerLanguage(uuid: UUID): String? {
+        val connection = redisClient.connect()
+        val commands = connection.sync()
+        val value = commands.get("chatog:language:$uuid")
+        connection.close()
+        return value
+    }
+
+    fun setPlayerLanguage(uuid: UUID, language: String) {
+        val connection = redisClient.connect()
+        val commands = connection.sync()
+        commands.set("chatog:language:$uuid", language)
+        connection.close()
     }
 }

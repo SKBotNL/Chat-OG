@@ -15,6 +15,7 @@ class ChatOG : JavaPlugin() {
 
         lateinit var plugin: JavaPlugin
         lateinit var chat: Chat
+        lateinit var languageDatabase: LanguageDatabase
         var translator: OpenAI? = null
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
 
@@ -62,7 +63,13 @@ class ChatOG : JavaPlugin() {
             OpenAI()
         } else null
 
-        LanguageDatabase.init()
+        languageDatabase = LanguageDatabase()
+        if (languageDatabase.testConnection()) {
+            logger.severe("Could not connect to Redis")
+            Bukkit.getPluginManager().disablePlugin(this)
+            return
+        }
+
         BlocklistManager.load()
         scope.launch {
             EmojiConverter.load()
