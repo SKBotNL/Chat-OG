@@ -1,13 +1,14 @@
 package nl.skbotnl.chatog.commands
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.*
+import nl.skbotnl.chatog.ChatOG
+import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.Helper
 import nl.skbotnl.chatog.Helper.legacyToMm
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -97,40 +98,27 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        ChatOG.scope.launch {
-            val language = LanguageDatabase.getPlayerLanguage(player.uniqueId)
+        val language = ChatOG.languageDatabase.getPlayerLanguage(player.uniqueId)
 
-            if (language == null) {
-                player.sendMessage(
-                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language.")
-                )
-                return@launch
-            }
-
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
-
-            val translated = ChatOG.translator!!.translate(sentMessage.message, language)
-            translateCallback(translated, player, messageType, sentMessage, language)
+        if (language == null) {
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language.")
+            )
+            return true
         }
 
-        return true
-    }
+        player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
 
-    private fun translateCallback(
-        translated: OpenAI.Translated,
-        player: Player,
-        messageType: Int,
-        sentMessage: ISentMessage?,
-        language: String
-    ) {
+        val translated = ChatOG.translator!!.translate(sentMessage.message, language)
+
         if (translated.error != null) {
             player.sendMessage(translated.error)
-            return
+            return true
         }
 
         if (translated.translatedText == null) {
             player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not translate that message."))
-            return
+            return true
         }
 
         lateinit var translateMessage: Component
@@ -198,5 +186,7 @@ class TranslateMessage : CommandExecutor {
             }
         }
         player.sendMessage(translateMessage)
+
+        return true
     }
 }

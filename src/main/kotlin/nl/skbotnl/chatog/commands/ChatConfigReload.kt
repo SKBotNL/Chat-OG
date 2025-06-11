@@ -20,7 +20,12 @@ class ChatConfigReload : CommandExecutor {
             return true
         }
 
-        LanguageDatabase.init()
+        ChatOG.languageDatabase = LanguageDatabase()
+        if (ChatOG.languageDatabase.testConnection()) {
+            ChatOG.plugin.logger.severe("Could not connect to Redis")
+            Bukkit.getPluginManager().disablePlugin(ChatOG.plugin)
+            return true
+        }
 
         if (Config.discordEnabled) {
             DiscordBridge.webhook = WebhookClient.withUrl(Config.webhook)

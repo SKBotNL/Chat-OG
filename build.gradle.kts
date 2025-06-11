@@ -47,17 +47,21 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.essentialsx:EssentialsX:2.21.0")
     compileOnly(files("libs/AnnouncerPlus-1.4.1.jar"))
+    compileOnly(project(":libs:Utilities-OG"))
 
-    implementation("net.dv8tion:JDA:5.5.1") {
-        exclude(module = "opus-java")
-    }
-    implementation(project(":libs:Utilities-OG"))
+    implementation("net.dv8tion:JDA:5.5.1")
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.13.1")
-    implementation("io.github.crackthecodeabhi:kreds:0.9.1")
+    implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+}
+
+configurations.all {
+    exclude(group = "com.google.crypto.tink", module = "tink")
+    exclude(group = "net.java", module = "opus-java")
+    exclude(group = "io.projectreactor")
 }
 
 java {
@@ -80,6 +84,7 @@ tasks.jar {
 tasks.shadowJar {
     archiveClassifier.set("") // Use empty string instead of null.
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
+    exclude("natives/**")
     minimize()
 }
 

@@ -1,6 +1,5 @@
 package nl.skbotnl.chatog
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -9,7 +8,6 @@ import java.util.concurrent.TimeUnit
 object BlocklistManager {
     private var blockList = mutableListOf<String>()
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun load() {
         ChatOG.plugin.logger.info("Loading the blocklists...")
 
