@@ -7,9 +7,7 @@ import java.util.*
 class LanguageDatabase {
     private val redisClient: RedisClient = RedisClient.create(Config.redisUrl)
 
-    /**
-     * @return True if failed
-     */
+    /** @return True if failed */
     fun testConnection(): Boolean {
         try {
             val connection = redisClient.connect()

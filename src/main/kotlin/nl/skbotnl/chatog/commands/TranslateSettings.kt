@@ -11,51 +11,52 @@ import org.bukkit.entity.Player
 
 class TranslateSettings : CommandExecutor {
     companion object {
-        val languagesList = listOf(
-            "ar",
-            "az",
-            "bg",
-            "bn",
-            "ca",
-            "cs",
-            "da",
-            "de",
-            "el",
-            "en",
-            "eo",
-            "es",
-            "et",
-            "fa",
-            "fi",
-            "fr",
-            "ga",
-            "he",
-            "hi",
-            "hu",
-            "id",
-            "it",
-            "ja",
-            "ko",
-            "lt",
-            "lv",
-            "ms",
-            "nb",
-            "nl",
-            "pl",
-            "pt",
-            "ro",
-            "ru",
-            "sk",
-            "sl",
-            "sq",
-            "sv",
-            "th",
-            "tl",
-            "tr",
-            "uk",
-            "zh",
-            "zt"
-        )
+        val languagesList =
+            listOf(
+                "ar",
+                "az",
+                "bg",
+                "bn",
+                "ca",
+                "cs",
+                "da",
+                "de",
+                "el",
+                "en",
+                "eo",
+                "es",
+                "et",
+                "fa",
+                "fi",
+                "fr",
+                "ga",
+                "he",
+                "hi",
+                "hu",
+                "id",
+                "it",
+                "ja",
+                "ko",
+                "lt",
+                "lv",
+                "ms",
+                "nb",
+                "nl",
+                "pl",
+                "pt",
+                "ro",
+                "ru",
+                "sk",
+                "sl",
+                "sq",
+                "sv",
+                "th",
+                "tl",
+                "tr",
+                "uk",
+                "zh",
+                "zt",
+            )
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -78,7 +79,9 @@ class TranslateSettings : CommandExecutor {
         }
 
         ChatOG.languageDatabase.setPlayerLanguage(sender.uniqueId, language)
-        sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Set language to: <white>$language."))
+        sender.sendMessage(
+            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Set language to: <white>$language.")
+        )
 
         return true
     }

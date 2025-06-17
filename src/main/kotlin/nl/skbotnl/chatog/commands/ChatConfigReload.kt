@@ -15,7 +15,9 @@ import org.bukkit.command.CommandSender
 class ChatConfigReload : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (Config.load()) {
-            sender.sendMessage(UtilitiesOG.trueogColorize("<red>Failed to reload the config. Check the console for more information."))
+            sender.sendMessage(
+                UtilitiesOG.trueogColorize("<red>Failed to reload the config. Check the console for more information.")
+            )
             Bukkit.getPluginManager().disablePlugin(ChatOG.plugin)
             return true
         }
@@ -38,7 +40,9 @@ class ChatConfigReload : CommandExecutor {
             DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.status), false)
         }
 
-        sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Successfully reloaded the config."))
+        sender.sendMessage(
+            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Successfully reloaded the config.")
+        )
         return true
     }
 }

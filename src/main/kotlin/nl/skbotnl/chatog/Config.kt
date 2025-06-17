@@ -1,8 +1,8 @@
 package nl.skbotnl.chatog
 
+import java.io.File
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
 
 object Config {
     lateinit var prefix: String
@@ -33,9 +33,7 @@ object Config {
 
     data class RGBColor(val r: Int, val g: Int, val b: Int)
 
-    /**
-     * @return True if failed
-     */
+    /** @return True if failed */
     fun load(): Boolean {
         val file = File(ChatOG.plugin.dataFolder, "config.yml")
         if (!file.exists()) {
@@ -79,11 +77,12 @@ object Config {
                 return true
             }
 
-            openAIModel = try {
-                config.get("model") as String
-            } catch (_: Exception) {
-                ""
-            }
+            openAIModel =
+                try {
+                    config.get("model") as String
+                } catch (_: Exception) {
+                    ""
+                }
         }
 
         try {
@@ -182,7 +181,6 @@ object Config {
                 }
             }
 
-
             try {
                 webhook = config.get("webhook") as String
             } catch (_: Exception) {
@@ -214,55 +212,59 @@ object Config {
             return false
         }
 
-        val messageColors = mapOf<String, NamedTextColor>(
-            Pair("BLACK", NamedTextColor.BLACK),
-            Pair("DARK_BLUE", NamedTextColor.DARK_BLUE),
-            Pair("DARK_GREEN", NamedTextColor.DARK_GREEN),
-            Pair("DARK_AQUA", NamedTextColor.DARK_AQUA),
-            Pair("DARK_RED", NamedTextColor.DARK_RED),
-            Pair("DARK_PURPLE", NamedTextColor.DARK_PURPLE),
-            Pair("GOLD", NamedTextColor.GOLD),
-            Pair("GRAY", NamedTextColor.GRAY),
-            Pair("DARK_GRAY", NamedTextColor.DARK_GRAY),
-            Pair("BLUE", NamedTextColor.BLUE),
-            Pair("GREEN", NamedTextColor.GREEN),
-            Pair("AQUA", NamedTextColor.AQUA),
-            Pair("RED", NamedTextColor.RED),
-            Pair("LIGHT_PURPLE", NamedTextColor.LIGHT_PURPLE),
-            Pair("YELLOW", NamedTextColor.YELLOW),
-            Pair("WHITE", NamedTextColor.WHITE),
-        )
+        val messageColors =
+            mapOf<String, NamedTextColor>(
+                Pair("BLACK", NamedTextColor.BLACK),
+                Pair("DARK_BLUE", NamedTextColor.DARK_BLUE),
+                Pair("DARK_GREEN", NamedTextColor.DARK_GREEN),
+                Pair("DARK_AQUA", NamedTextColor.DARK_AQUA),
+                Pair("DARK_RED", NamedTextColor.DARK_RED),
+                Pair("DARK_PURPLE", NamedTextColor.DARK_PURPLE),
+                Pair("GOLD", NamedTextColor.GOLD),
+                Pair("GRAY", NamedTextColor.GRAY),
+                Pair("DARK_GRAY", NamedTextColor.DARK_GRAY),
+                Pair("BLUE", NamedTextColor.BLUE),
+                Pair("GREEN", NamedTextColor.GREEN),
+                Pair("AQUA", NamedTextColor.AQUA),
+                Pair("RED", NamedTextColor.RED),
+                Pair("LIGHT_PURPLE", NamedTextColor.LIGHT_PURPLE),
+                Pair("YELLOW", NamedTextColor.YELLOW),
+                Pair("WHITE", NamedTextColor.WHITE),
+            )
         roles.forEach {
             val messageColorList = config.getStringList("roles.$it.message_color")
-            roleMessageColor[it] = if (messageColorList.isEmpty()) {
-                try {
-                    config.get("roles.$it.message_color") as String
-                } catch (_: Exception) {
-                    return@forEach
-                }
-
-                if (!messageColors.contains(messageColorList[0].uppercase())) {
-                    ChatOG.plugin.logger.severe("The message color for \"$it\" (\"${messageColorList[0]}\") is invalid.")
-                    return@forEach
-                }
-
-                messageColors[messageColorList[0].uppercase()]!!
-            } else {
-                if (messageColorList.size != 3) {
-                    ChatOG.plugin.logger.severe("The message color for \"$it\" is not a color or an RGB value.")
-                    return@forEach
-                }
-
-                messageColorList.forEach colorForEach@{ colorInList ->
+            roleMessageColor[it] =
+                if (messageColorList.isEmpty()) {
                     try {
-                        colorInList.toUByte()
+                        config.get("roles.$it.message_color") as String
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("The RGB value for \"$it\" is invalid.")
                         return@forEach
                     }
+
+                    if (!messageColors.contains(messageColorList[0].uppercase())) {
+                        ChatOG.plugin.logger.severe(
+                            "The message color for \"$it\" (\"${messageColorList[0]}\") is invalid."
+                        )
+                        return@forEach
+                    }
+
+                    messageColors[messageColorList[0].uppercase()]!!
+                } else {
+                    if (messageColorList.size != 3) {
+                        ChatOG.plugin.logger.severe("The message color for \"$it\" is not a color or an RGB value.")
+                        return@forEach
+                    }
+
+                    messageColorList.forEach colorForEach@{ colorInList ->
+                        try {
+                            colorInList.toUByte()
+                        } catch (_: Exception) {
+                            ChatOG.plugin.logger.severe("The RGB value for \"$it\" is invalid.")
+                            return@forEach
+                        }
+                    }
+                    RGBColor(messageColorList[0].toInt(), messageColorList[1].toInt(), messageColorList[2].toInt())
                 }
-                RGBColor(messageColorList[0].toInt(), messageColorList[1].toInt(), messageColorList[2].toInt())
-            }
         }
 
         return false

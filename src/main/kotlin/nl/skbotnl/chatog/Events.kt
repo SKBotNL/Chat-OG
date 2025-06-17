@@ -2,6 +2,7 @@ package nl.skbotnl.chatog
 
 import io.papermc.paper.advancement.AdvancementDisplay.Frame.*
 import io.papermc.paper.event.player.AsyncChatEvent
+import java.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
@@ -28,7 +29,6 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
 import xyz.jpenilla.announcerplus.listener.JoinQuitListener
-import java.util.*
 
 @OptIn(DelicateCoroutinesApi::class)
 class Events : Listener {
@@ -46,17 +46,16 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(
-                event.player,
-                "&8[%simpleclans_clan_color_tag%&8] $chatString"
-            )
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
 
         ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} has joined the game. ${
                     Bukkit.getOnlinePlayers().count()
-                } player(s) online.", event.player.uniqueId, 0x00FF00
+                } player(s) online.",
+                event.player.uniqueId,
+                0x00FF00,
             )
         }
     }
@@ -73,17 +72,16 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(
-                event.player,
-                "&8[%simpleclans_clan_color_tag%&8] $chatString"
-            )
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
 
         ChatOG.scope.launch {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} has left the game. ${
                     Bukkit.getOnlinePlayers().count() - 1
-                } player(s) online.", event.player.uniqueId, 0xFF0000
+                } player(s) online.",
+                event.player.uniqueId,
+                0xFF0000,
             )
         }
     }
@@ -100,10 +98,7 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(
-                event.player,
-                "&8[%simpleclans_clan_color_tag%&8] $chatString"
-            )
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
 
         val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
@@ -112,7 +107,9 @@ class Events : Listener {
             DiscordBridge.sendEmbed(
                 "${removeColor(chatString)} was kicked with reason: \"${reason}\". ${
                     Bukkit.getOnlinePlayers().count() - 1
-                } player(s) online.", event.player.uniqueId, 0xFF0000
+                } player(s) online.",
+                event.player.uniqueId,
+                0xFF0000,
             )
         }
     }
@@ -129,30 +126,24 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(
-                event.player,
-                "&8[%simpleclans_clan_color_tag%&8] $chatString"
-            )
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
 
         val advancementTitleKey = event.advancement.display?.title() ?: return
         val advancementTitle = PlainTextComponentSerializer.plainText().serialize(advancementTitleKey)
 
-        val advancementMessage = when (event.advancement.display?.frame()) {
-            GOAL -> "has reached the goal [$advancementTitle]"
-            TASK -> "has made the advancement [$advancementTitle]"
-            CHALLENGE -> "has completed the challenge [$advancementTitle]"
-            else -> {
-                return
+        val advancementMessage =
+            when (event.advancement.display?.frame()) {
+                GOAL -> "has reached the goal [$advancementTitle]"
+                TASK -> "has made the advancement [$advancementTitle]"
+                CHALLENGE -> "has completed the challenge [$advancementTitle]"
+                else -> {
+                    return
+                }
             }
-        }
 
         ChatOG.scope.launch {
-            DiscordBridge.sendEmbed(
-                "${removeColor(chatString)} $advancementMessage.",
-                event.player.uniqueId,
-                0xFFFF00
-            )
+            DiscordBridge.sendEmbed("${removeColor(chatString)} $advancementMessage.", event.player.uniqueId, 0xFFFF00)
         }
     }
 
@@ -170,9 +161,7 @@ class Events : Listener {
             return
         }
 
-        ChatOG.scope.launch {
-            DiscordBridge.sendMessage(content, "[Server] Broadcast", null)
-        }
+        ChatOG.scope.launch { DiscordBridge.sendMessage(content, "[Server] Broadcast", null) }
     }
 
     @EventHandler
@@ -194,15 +183,12 @@ class Events : Listener {
         var chatString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            chatString =
-                PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
+            chatString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
         }
 
         val discordMessageString = Helper.convertEmojis(oldTextComponent.content())
 
-        ChatOG.scope.launch {
-            DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId)
-        }
+        ChatOG.scope.launch { DiscordBridge.sendMessage(discordMessageString, chatString, event.player.uniqueId) }
 
         val messageComponents = Helper.convertLinks(oldTextComponent.content(), event.player)
 
@@ -212,26 +198,22 @@ class Events : Listener {
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(event.player)}"))
 
-        var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
-        textComponent = textComponent.hoverEvent(
-            HoverEvent.hoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                UtilitiesOG.trueogColorize("<green>Click to translate this message")
+        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
+        textComponent =
+            textComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
             )
-        )
 
         val randomUUID = UUID.randomUUID()
-        textComponent = textComponent.clickEvent(
-            ClickEvent.clickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID 1"
+        textComponent =
+            textComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
             )
-        )
 
-        event.viewers().forEach {
-            it.sendMessage(textComponent)
-        }
+        event.viewers().forEach { it.sendMessage(textComponent) }
 
         TranslateMessage.chatMessages[randomUUID] =
             TranslateMessage.SentChatMessage(oldTextComponent.content(), event.player)
@@ -241,12 +223,22 @@ class Events : Listener {
     fun onCommandPreprocess(event: PlayerCommandPreprocessEvent) {
         val checkSplit = event.message.split(" ", limit = 2)[0]
 
-        if (!(checkSplit == "/msg" || checkSplit == "/whisper" || checkSplit == "/pm" || checkSplit == "/reply" || checkSplit == "/r")) {
+        if (
+            !(checkSplit == "/msg" ||
+                checkSplit == "/whisper" ||
+                checkSplit == "/pm" ||
+                checkSplit == "/reply" ||
+                checkSplit == "/r")
+        ) {
             if (checkSplit == "/s") {
                 event.isCancelled = true
 
                 if (!event.player.hasPermission("chat-og.staff")) {
-                    event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
+                    event.player.sendMessage(
+                        UtilitiesOG.trueogColorize(
+                            "${Config.prefix}<reset>: <red>You do not have permission to run this command."
+                        )
+                    )
                     return
                 }
 
@@ -256,11 +248,15 @@ class Events : Listener {
                     if (ChatSystemHelper.inChat[event.player.uniqueId] == ChatType.STAFFCHAT) {
                         ChatSystemHelper.inChat[event.player.uniqueId] = ""
 
-                        event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat."))
+                        event.player.sendMessage(
+                            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat.")
+                        )
                         return
                     }
                     ChatSystemHelper.inChat[event.player.uniqueId] = ChatType.STAFFCHAT
-                    event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in staff chat."))
+                    event.player.sendMessage(
+                        UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in staff chat.")
+                    )
                     return
                 }
 
@@ -270,11 +266,12 @@ class Events : Listener {
         }
         event.isCancelled = true
 
-        val messageSplit: List<String> = if (checkSplit == "/r" || checkSplit == "/reply") {
-            event.message.split(" ", ignoreCase = true, limit = 2)
-        } else {
-            event.message.split(" ", ignoreCase = true, limit = 3)
-        }
+        val messageSplit: List<String> =
+            if (checkSplit == "/r" || checkSplit == "/reply") {
+                event.message.split(" ", ignoreCase = true, limit = 2)
+            } else {
+                event.message.split(" ", ignoreCase = true, limit = 3)
+            }
 
         if (messageSplit.count() < 3 && !(checkSplit == "/r" || checkSplit == "/reply")) {
             event.player.sendMessage(UtilitiesOG.trueogColorize("<red>${messageSplit[0]} <to> <message>"))
@@ -292,7 +289,9 @@ class Events : Listener {
             message = messageSplit[1]
 
             if (!lastMessaged.containsKey(event.player.uniqueId)) {
-                event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You haven't messaged anyone yet."))
+                event.player.sendMessage(
+                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You haven't messaged anyone yet.")
+                )
                 return
             }
 
@@ -304,62 +303,62 @@ class Events : Listener {
         }
 
         if (player == null) {
-            event.player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That player doesn't exist or isn't online."))
+            event.player.sendMessage(
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That player doesn't exist or isn't online.")
+            )
             return
         }
 
         val randomUUID = UUID.randomUUID()
 
-        TranslateMessage.pmMessages[randomUUID] = TranslateMessage.SentPMMessage(
-            message,
-            event.player.uniqueId,
-            player.uniqueId
-        )
+        TranslateMessage.pmMessages[randomUUID] =
+            TranslateMessage.SentPMMessage(message, event.player.uniqueId, player.uniqueId)
 
-        val colourMessage = if (event.player.hasPermission("chat-og.color")) {
-            UtilitiesOG.trueogColorize(legacyToMm(message))
-        } else {
-            Component.text(message)
-        }
+        val colourMessage =
+            if (event.player.hasPermission("chat-og.color")) {
+                UtilitiesOG.trueogColorize(legacyToMm(message))
+            } else {
+                Component.text(message)
+            }
 
         val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${player.name}<gold>]<white>"
-        var toSenderTextComponent = Component.join(
-            JoinConfiguration.separator(Component.text(" ")),
-            UtilitiesOG.trueogColorize(toSenderPrefix),
-            colourMessage
-        )
-        toSenderTextComponent = toSenderTextComponent.hoverEvent(
-            HoverEvent.hoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                UtilitiesOG.trueogColorize("<green>Click to translate this message")
+        var toSenderTextComponent =
+            Component.join(
+                JoinConfiguration.separator(Component.text(" ")),
+                UtilitiesOG.trueogColorize(toSenderPrefix),
+                colourMessage,
             )
-        )
-        toSenderTextComponent = toSenderTextComponent.clickEvent(
-            ClickEvent.clickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID 3"
+        toSenderTextComponent =
+            toSenderTextComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
             )
-        )
+        toSenderTextComponent =
+            toSenderTextComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 3")
+            )
         event.player.sendMessage(toSenderTextComponent)
 
         val toPrefix = "<gold>[<dark_red>${event.player.name} <gold>-> <red>me<gold>]<white>"
-        var toTextComponent = Component.join(
-            JoinConfiguration.separator(Component.text(" ")),
-            UtilitiesOG.trueogColorize(toPrefix),
-            colourMessage
-        )
-        toTextComponent = toTextComponent.hoverEvent(
-            HoverEvent.hoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                UtilitiesOG.trueogColorize("<green>Click to translate this message")
+        var toTextComponent =
+            Component.join(
+                JoinConfiguration.separator(Component.text(" ")),
+                UtilitiesOG.trueogColorize(toPrefix),
+                colourMessage,
             )
-        )
-        toTextComponent = toTextComponent.clickEvent(
-            ClickEvent.clickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID 3"
+        toTextComponent =
+            toTextComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
             )
-        )
+        toTextComponent =
+            toTextComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 3")
+            )
         player.sendMessage(toTextComponent)
 
         lastMessaged[event.player.uniqueId] = player.uniqueId
@@ -382,7 +381,7 @@ class Events : Listener {
                 DiscordBridge.sendEmbed(
                     removeColor((event.deathMessage() as TextComponent).content()),
                     event.player.uniqueId,
-                    0xFF0000
+                    0xFF0000,
                 )
             }
             return
@@ -391,8 +390,7 @@ class Events : Listener {
         var nameString = "${ChatOG.chat.getPlayerPrefix(event.player)} ${event.player.name}"
 
         if (PlaceholderAPI.setPlaceholders(event.player, "%simpleclans_clan_color_tag%") != "") {
-            nameString =
-                PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $nameString")
+            nameString = PlaceholderAPI.setPlaceholders(event.player, "&8[%simpleclans_clan_color_tag%&8] $nameString")
         }
         val nameComponent = UtilitiesOG.trueogColorize(legacyToMm(nameString))
 
@@ -416,22 +414,20 @@ class Events : Listener {
     @EventHandler
     fun onVanish(event: VanishStatusChangeEvent) {
         if (event.value) {
-            val playerQuitEvent = PlayerQuitEvent(
-                event.affected.base,
-                Component.translatable(
-                    "multiplayer.player.left",
-                    NamedTextColor.YELLOW,
-                    event.affected.base.displayName()
-                ),
-                PlayerQuitEvent.QuitReason.DISCONNECTED
-            )
+            val playerQuitEvent =
+                PlayerQuitEvent(
+                    event.affected.base,
+                    Component.translatable(
+                        "multiplayer.player.left",
+                        NamedTextColor.YELLOW,
+                        event.affected.base.displayName(),
+                    ),
+                    PlayerQuitEvent.QuitReason.DISCONNECTED,
+                )
             JoinQuitListener().onQuit(playerQuitEvent)
             onQuit(playerQuitEvent)
         } else {
-            val playerJoinEvent = PlayerJoinEvent(
-                event.affected.base,
-                Component.text("")
-            )
+            val playerJoinEvent = PlayerJoinEvent(event.affected.base, Component.text(""))
             JoinQuitListener().onJoin(playerJoinEvent)
             onJoin(playerJoinEvent)
         }
