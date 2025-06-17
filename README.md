@@ -1,4 +1,6 @@
 # Chat-OG
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSKBotNL%2FChat-OG.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSKBotNL%2FChat-OG?ref=badge_shield)
+
 Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 
 ## Features
@@ -14,3 +16,7 @@ Chat plugin for [TrueOG](https://github.com/true-og/true-og)
 ## Emoji Converter Credits
 - https://github.com/mathiasbynens/emoji-test-regex-pattern
 - https://github.com/amio/emoji.json/blob/HEAD/scripts/gen.js (this project is using a modified version, it's in the repository's root folder also called `gen.js`)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSKBotNL%2FChat-OG.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSKBotNL%2FChat-OG?ref=badge_large)
