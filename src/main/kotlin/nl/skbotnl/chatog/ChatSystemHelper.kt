@@ -1,5 +1,6 @@
 package nl.skbotnl.chatog
 
+import java.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
@@ -14,7 +15,6 @@ import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.*
 
 @OptIn(DelicateCoroutinesApi::class)
 object ChatSystemHelper {
@@ -48,22 +48,20 @@ object ChatSystemHelper {
 
         val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
-        var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
-        textComponent = textComponent.hoverEvent(
-            HoverEvent.hoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                UtilitiesOG.trueogColorize("<green>Click to translate this message")
+        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
+        textComponent =
+            textComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
             )
-        )
 
         val randomUUID = UUID.randomUUID()
-        textComponent = textComponent.clickEvent(
-            ClickEvent.clickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID 1"
+        textComponent =
+            textComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
             )
-        )
 
         TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
 
@@ -97,22 +95,20 @@ object ChatSystemHelper {
 
         val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
 
-        var textComponent =
-            Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
-        textComponent = textComponent.hoverEvent(
-            HoverEvent.hoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                UtilitiesOG.trueogColorize("<green>Click to translate this message")
+        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
+        textComponent =
+            textComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
             )
-        )
 
         val randomUUID = UUID.randomUUID()
-        textComponent = textComponent.clickEvent(
-            ClickEvent.clickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/translatemessage $randomUUID 1"
+        textComponent =
+            textComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
             )
-        )
 
         TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
 

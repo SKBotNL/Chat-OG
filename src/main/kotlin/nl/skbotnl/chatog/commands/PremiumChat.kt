@@ -16,18 +16,26 @@ class PremiumChat : CommandExecutor {
             return true
         }
         if (!sender.hasPermission("chat-og.premium")) {
-            sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You do not have permission to run this command."))
+            sender.sendMessage(
+                UtilitiesOG.trueogColorize(
+                    "${Config.prefix}<reset>: <red>You do not have permission to run this command."
+                )
+            )
             return true
         }
         if (args == null || args.isEmpty()) {
             if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.PREMIUMCHAT) {
                 ChatSystemHelper.inChat[sender.uniqueId] = ""
 
-                sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat."))
+                sender.sendMessage(
+                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat.")
+                )
                 return true
             }
             ChatSystemHelper.inChat[sender.uniqueId] = ChatType.PREMIUMCHAT
-            sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in premium chat."))
+            sender.sendMessage(
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in premium chat.")
+            )
             return true
         }
 

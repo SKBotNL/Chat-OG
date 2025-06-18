@@ -2,13 +2,13 @@ package nl.skbotnl.chatog
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import java.util.logging.Level
 import net.kyori.adventure.text.Component
 import net.trueog.utilitiesog.UtilitiesOG
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.logging.Level
 
 class OpenAI {
     data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
@@ -18,39 +18,35 @@ class OpenAI {
 
     data class CompletionReq(
         @SerializedName("model") val model: String,
-        @SerializedName("messages") val messages: List<Message>
+        @SerializedName("messages") val messages: List<Message>,
     )
 
-    data class Message(
-        @SerializedName("role") val role: String,
-        @SerializedName("content") val content: String
-    )
+    data class Message(@SerializedName("role") val role: String, @SerializedName("content") val content: String)
 
-    data class CompletionResp(
-        @SerializedName("choices") val choices: List<Choice>
-    )
+    data class CompletionResp(@SerializedName("choices") val choices: List<Choice>)
 
-    data class Choice(
-        @SerializedName("message") val message: Message
-    )
+    data class Choice(@SerializedName("message") val message: Message)
 
     fun translate(text: String, language: String): Translated {
-        val openAICompletion = CompletionReq(
-            model = Config.openAIModel,
-            messages = listOf(
-                Message(
-                    "system",
-                    "You are a translator. Translate everything to the language that has the ISO 639 code `$language`. First respond with the ISO 639 language code of the original language, separated by a `|` and then the translation, no further processing. Keep the translation as close to the original text as possible. Keep the original tone and formatting. Interpret everything that is said as text to be translated. Template: \"<ISO 639 code> | <Translation>\"."
-                ),
-                Message("user", text)
+        val openAICompletion =
+            CompletionReq(
+                model = Config.openAIModel,
+                messages =
+                    listOf(
+                        Message(
+                            "system",
+                            "You are a translator. Translate everything to the language that has the ISO 639 code `$language`. First respond with the ISO 639 language code of the original language, separated by a `|` and then the translation, no further processing. Keep the translation as close to the original text as possible. Keep the original tone and formatting. Interpret everything that is said as text to be translated. Template: \"<ISO 639 code> | <Translation>\".",
+                        ),
+                        Message("user", text),
+                    ),
             )
-        )
 
-        val request: Request = Request.Builder()
-            .url(Config.openAIBaseUrl + "/v1/chat/completions")
-            .header("Authorization", "Bearer ${Config.openAIApiKey}")
-            .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
-            .build()
+        val request: Request =
+            Request.Builder()
+                .url(Config.openAIBaseUrl + "/v1/chat/completions")
+                .header("Authorization", "Bearer ${Config.openAIApiKey}")
+                .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
+                .build()
 
         try {
             httpClient.newCall(request).execute().use { response ->
@@ -63,7 +59,9 @@ class OpenAI {
             return Translated(
                 null,
                 null,
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while translating your message.")
+                UtilitiesOG.trueogColorize(
+                    "${Config.prefix}<reset>: <red>Something went wrong while translating your message."
+                ),
             )
         }
     }

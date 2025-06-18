@@ -1,6 +1,7 @@
 package nl.skbotnl.chatog
 
 import dev.minn.jda.ktx.coroutines.await
+import java.util.*
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -11,7 +12,6 @@ import net.kyori.adventure.text.format.TextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.*
 
 object Helper {
     private var translateTimeout: MutableMap<UUID, Long> = HashMap()
@@ -31,24 +31,31 @@ object Helper {
     }
 
     fun legacyToMm(text: String): String {
-        return text.replace("[§&]4".toRegex(), "<dark_red>").replace("[§&]c".toRegex(), "<red>")
-            .replace("[§&]6".toRegex(), "<gold>").replace("[§&]e".toRegex(), "<yellow>")
-            .replace("[§&]2".toRegex(), "<dark_green>").replace("[§&]a".toRegex(), "<green>")
-            .replace("[§&]b".toRegex(), "<aqua>").replace("[§&]3".toRegex(), "<dark_aqua>")
-            .replace("[§&]1".toRegex(), "<dark_blue>").replace("[§&]9".toRegex(), "<blue>")
+        return text
+            .replace("[§&]4".toRegex(), "<dark_red>")
+            .replace("[§&]c".toRegex(), "<red>")
+            .replace("[§&]6".toRegex(), "<gold>")
+            .replace("[§&]e".toRegex(), "<yellow>")
+            .replace("[§&]2".toRegex(), "<dark_green>")
+            .replace("[§&]a".toRegex(), "<green>")
+            .replace("[§&]b".toRegex(), "<aqua>")
+            .replace("[§&]3".toRegex(), "<dark_aqua>")
+            .replace("[§&]1".toRegex(), "<dark_blue>")
+            .replace("[§&]9".toRegex(), "<blue>")
             .replace("[§&]d".toRegex(), "<light_purple>")
-            .replace("[§&]5".toRegex(), "<dark_purple>").replace("[§&]f".toRegex(), "<white>")
+            .replace("[§&]5".toRegex(), "<dark_purple>")
+            .replace("[§&]f".toRegex(), "<white>")
             .replace("[§&]7".toRegex(), "<gray>")
-            .replace("[§&]8".toRegex(), "<dark_gray>").replace("[§&]0".toRegex(), "<black>")
+            .replace("[§&]8".toRegex(), "<dark_gray>")
+            .replace("[§&]0".toRegex(), "<black>")
             .replace("[§&]r".toRegex(), "<reset>")
     }
 
     private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
+
     fun removeColor(text: String): String {
         var tempText = text
-        colorRegex.findAll(text).iterator().forEach {
-            tempText = tempText.replace(it.value, "")
-        }
+        colorRegex.findAll(text).iterator().forEach { tempText = tempText.replace(it.value, "") }
         return tempText
     }
 
@@ -76,6 +83,7 @@ object Helper {
     }
 
     private val getColorRegex = Regex("(&)?&([0-9a-fk-orA-FK-OR])")
+
     private fun getColor(text: String): String {
         val it = getColorRegex.findAll(text).iterator()
 
@@ -88,6 +96,7 @@ object Helper {
     }
 
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
+
     suspend fun convertMentions(text: String): String {
         val guild = DiscordBridge.jda?.getGuildById(Config.guildId)
         if (guild == null) {
@@ -122,7 +131,11 @@ object Helper {
             if (urlIter.hasNext()) {
                 urlIter.forEach { link ->
                     if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."))
+                        player.sendMessage(
+                            UtilitiesOG.trueogColorize(
+                                "${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."
+                            )
+                        )
                         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                             if (onlinePlayer.hasPermission("group.moderator")) {
                                 onlinePlayer.sendMessage(
@@ -130,7 +143,7 @@ object Helper {
                                         "${Config.prefix}<reset>: ${player.name} has posted a disallowed link: ${
                                             word.replace(
                                                 ".",
-                                                "[dot]"
+                                                "[dot]",
                                             )
                                         }."
                                     )
@@ -141,19 +154,18 @@ object Helper {
                     }
 
                     var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(34, 100, 255))
-                    linkComponent = linkComponent.hoverEvent(
-                        HoverEvent.hoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            UtilitiesOG.trueogColorize("<green>Click to open link")
+                    linkComponent =
+                        linkComponent.hoverEvent(
+                            HoverEvent.hoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                UtilitiesOG.trueogColorize("<green>Click to open link"),
+                            )
                         )
-                    )
 
-                    linkComponent = linkComponent.clickEvent(
-                        ClickEvent.clickEvent(
-                            ClickEvent.Action.OPEN_URL,
-                            link.groups[2]!!.value
+                    linkComponent =
+                        linkComponent.clickEvent(
+                            ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, link.groups[2]!!.value)
                         )
-                    )
 
                     val beforeComponent =
                         UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
@@ -167,24 +179,25 @@ object Helper {
                 }
                 return@forEach
             }
-            val wordComponent = if (player.hasPermission("chat-og.color")) {
-                if (messageComponents.isNotEmpty()) {
-                    val lastContent = (messageComponents.last() as TextComponent).content()
-                    if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
-                        UtilitiesOG.trueogColorize(legacyToMm(getColorSection(lastContent) + word))
+            val wordComponent =
+                if (player.hasPermission("chat-og.color")) {
+                    if (messageComponents.isNotEmpty()) {
+                        val lastContent = (messageComponents.last() as TextComponent).content()
+                        if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
+                            UtilitiesOG.trueogColorize(legacyToMm(getColorSection(lastContent) + word))
+                        } else {
+                            UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
+                        }
                     } else {
                         UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
                     }
                 } else {
-                    UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
+                    Component.join(
+                        JoinConfiguration.noSeparators(),
+                        UtilitiesOG.trueogColorize(legacyToMm(chatColor)),
+                        Component.text(word),
+                    )
                 }
-            } else {
-                Component.join(
-                    JoinConfiguration.noSeparators(),
-                    UtilitiesOG.trueogColorize(legacyToMm(chatColor)),
-                    Component.text(word)
-                )
-            }
             messageComponents += wordComponent
         }
 
@@ -204,14 +217,19 @@ object Helper {
         }
 
         if (guildEmojis != null) {
-            emojiRegex.findAll(text).iterator().asSequence().distinctBy { it.value }.forEach {
-                guildEmojis.forEach { emoji ->
-                    if (emoji.name == it.groupValues[1]) {
-                        val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
-                        discordMessageString = discordMessageString.replace(it.value, replaceWith)
+            emojiRegex
+                .findAll(text)
+                .iterator()
+                .asSequence()
+                .distinctBy { it.value }
+                .forEach {
+                    guildEmojis.forEach { emoji ->
+                        if (emoji.name == it.groupValues[1]) {
+                            val replaceWith = "<${if (emoji.isAnimated) "a" else ""}:${it.groupValues[1]}:${emoji.id}>"
+                            discordMessageString = discordMessageString.replace(it.value, replaceWith)
+                        }
                     }
                 }
-            }
         }
 
         return discordMessageString

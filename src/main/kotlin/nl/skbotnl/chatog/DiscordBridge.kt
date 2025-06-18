@@ -9,6 +9,7 @@ import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.jdabuilder.cache
 import dev.minn.jda.ktx.jdabuilder.intents
 import dev.minn.jda.ktx.jdabuilder.light
+import java.util.*
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -32,7 +33,6 @@ import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.Helper.stripGroupMentions
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
-import java.util.*
 
 object DiscordBridge {
     var jda: JDA? = null
@@ -60,17 +60,19 @@ object DiscordBridge {
             ChatOG.plugin.logger.warning("Config option \"premiumWebhook\" is invalid")
         }
 
-        jda = light(Config.botToken, enableCoroutines = true) {
-            intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
-            cache += listOf(CacheFlag.EMOJI)
-            setMemberCachePolicy(MemberCachePolicy.ALL)
-        }
+        jda =
+            light(Config.botToken, enableCoroutines = true) {
+                intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+                cache += listOf(CacheFlag.EMOJI)
+                setMemberCachePolicy(MemberCachePolicy.ALL)
+            }
 
         jda?.presence?.setPresence(Activity.playing(Config.status), false)
 
         jda?.listener<ReadyEvent> {
             sendMessageWithBot(Config.serverHasStartedMessage)
-            jda?.getGuildById(Config.guildId)?.upsertCommand(Config.listCommandName, "List all online players.")
+            jda?.getGuildById(Config.guildId)
+                ?.upsertCommand(Config.listCommandName, "List all online players.")
                 ?.queue()
         }
 
@@ -82,15 +84,17 @@ object DiscordBridge {
                         it.hook.sendMessage("There are no players online.").queue()
                         return@listener
                     }
-                    it.hook.sendMessage(
-                        "${
+                    it.hook
+                        .sendMessage(
+                            "${
                             Config.listCommandText
                                 .replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString())
                                 .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
                         }\n${
                             Bukkit.getOnlinePlayers().joinToString(separator = ", ") { player -> player.name }
                         }"
-                    ).queue()
+                        )
+                        .queue()
                 } catch (e: Exception) {
                     ChatOG.plugin.logger.warning("Could not respond to /list interaction")
                 }
@@ -98,7 +102,11 @@ object DiscordBridge {
         }
 
         jda?.listener<MessageReceivedEvent> {
-            if (it.channel.id != Config.channelId && (if (Config.staffDiscordEnabled) it.channel.id != Config.staffChannelId else true) && (if (Config.premiumDiscordEnabled) it.channel.id != Config.premiumChannelId else true)) {
+            if (
+                it.channel.id != Config.channelId &&
+                    (if (Config.staffDiscordEnabled) it.channel.id != Config.staffChannelId else true) &&
+                    (if (Config.premiumDiscordEnabled) it.channel.id != Config.premiumChannelId else true)
+            ) {
                 return@listener
             }
 
@@ -111,11 +119,12 @@ object DiscordBridge {
             val user = it.author
             val member = it.member ?: return@listener
             val color = member.color
-            val textColor: TextColor = if (color == null) {
-                TextColor.color(153, 170, 181)
-            } else {
-                TextColor.color(color.rgb)
-            }
+            val textColor: TextColor =
+                if (color == null) {
+                    TextColor.color(153, 170, 181)
+                } else {
+                    TextColor.color(color.rgb)
+                }
 
             val roles = member.roles
             val roleIds = roles.map { role -> role.id }
@@ -123,52 +132,55 @@ object DiscordBridge {
             val topRole = roles.maxBy { role -> role.positionRaw }
 
             val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
-            val userComponent: TextComponent = if (color == null) {
-                Component.text("@${user.name}").color(NamedTextColor.GRAY)
-            } else {
-                Component.text("[#${topRole.name}] @${user.name}").color(textColor)
-            }
+            val userComponent: TextComponent =
+                if (color == null) {
+                    Component.text("@${user.name}").color(NamedTextColor.GRAY)
+                } else {
+                    Component.text("[#${topRole.name}] @${user.name}").color(textColor)
+                }
 
-            val messageColor = if (Config.roles.isEmpty()) {
-                NamedTextColor.GRAY
-            } else {
-                val roleId =
-                    message.guild.getRoleById(Config.roles.filter { role -> topRole.id == message.guild.getRoleById(role)?.id }[0])?.id
-                if (roleId != null) {
-                    val roleColor = Config.roleMessageColor[roleId]
+            val messageColor =
+                if (Config.roles.isEmpty()) {
+                    NamedTextColor.GRAY
+                } else {
+                    val roleId =
+                        message.guild
+                            .getRoleById(
+                                Config.roles.filter { role -> topRole.id == message.guild.getRoleById(role)?.id }[0]
+                            )
+                            ?.id
+                    if (roleId != null) {
+                        val roleColor = Config.roleMessageColor[roleId]
 
-                    if (roleColor is Config.RGBColor) {
-                        TextColor.color(roleColor.r, roleColor.g, roleColor.b)
-                    } else {
-                        roleColor as NamedTextColor
-                    }
-                } else NamedTextColor.GRAY
-            }
+                        if (roleColor is Config.RGBColor) {
+                            TextColor.color(roleColor.r, roleColor.g, roleColor.b)
+                        } else {
+                            roleColor as NamedTextColor
+                        }
+                    } else NamedTextColor.GRAY
+                }
 
             val messageComponents = mutableListOf<Component>(Component.text(" >").color(messageColor))
 
             val attachmentComponents = mutableListOf<Component>()
 
-            if (message.stickers.size != 0) attachmentComponents += Component.text("[Sticker: ${message.stickers[0].name}]")
-                .color(messageColor)
+            if (message.stickers.size != 0)
+                attachmentComponents += Component.text("[Sticker: ${message.stickers[0].name}]").color(messageColor)
 
             if (message.attachments.isNotEmpty()) {
                 message.attachments.forEach { attachment ->
                     var linkComponent = Component.text(attachment.url).color(TextColor.color(34, 100, 255))
 
-                    linkComponent = linkComponent.hoverEvent(
-                        HoverEvent.hoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            UtilitiesOG.trueogColorize("<green>Click to open link")
+                    linkComponent =
+                        linkComponent.hoverEvent(
+                            HoverEvent.hoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                UtilitiesOG.trueogColorize("<green>Click to open link"),
+                            )
                         )
-                    )
 
-                    linkComponent = linkComponent.clickEvent(
-                        ClickEvent.clickEvent(
-                            ClickEvent.Action.OPEN_URL,
-                            attachment.url
-                        )
-                    )
+                    linkComponent =
+                        linkComponent.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, attachment.url))
 
                     attachmentComponents += linkComponent
                 }
@@ -187,7 +199,7 @@ object DiscordBridge {
                                                 "${Config.prefix}<reset>: @${user.name} has posted a disallowed link: ${
                                                     word.replace(
                                                         ".",
-                                                        "[dot]"
+                                                        "[dot]",
                                                     )
                                                 }."
                                             )
@@ -199,29 +211,29 @@ object DiscordBridge {
 
                             var linkComponent =
                                 Component.text(url.groups[2]!!.value).color(TextColor.color(34, 100, 255))
-                            linkComponent = linkComponent.hoverEvent(
-                                HoverEvent.hoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
-                                    UtilitiesOG.trueogColorize("<green>Click to open link")
+                            linkComponent =
+                                linkComponent.hoverEvent(
+                                    HoverEvent.hoverEvent(
+                                        HoverEvent.Action.SHOW_TEXT,
+                                        UtilitiesOG.trueogColorize("<green>Click to open link"),
+                                    )
                                 )
-                            )
 
-                            linkComponent = linkComponent.clickEvent(
-                                ClickEvent.clickEvent(
-                                    ClickEvent.Action.OPEN_URL,
-                                    url.groups[2]!!.value
+                            linkComponent =
+                                linkComponent.clickEvent(
+                                    ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url.groups[2]!!.value)
                                 )
-                            )
 
                             val beforeComponent = Component.text(url.groups[1]?.value ?: "").color(messageColor)
                             val afterComponent = Component.text(url.groups[4]?.value ?: "").color(messageColor)
 
-                            val fullComponent = Component.join(
-                                JoinConfiguration.noSeparators(),
-                                beforeComponent,
-                                linkComponent,
-                                afterComponent
-                            )
+                            val fullComponent =
+                                Component.join(
+                                    JoinConfiguration.noSeparators(),
+                                    beforeComponent,
+                                    linkComponent,
+                                    afterComponent,
+                                )
                             messageComponents += fullComponent
                         }
                         continue
@@ -229,25 +241,29 @@ object DiscordBridge {
 
                     var messageText: Component = Component.text(word)
                     if (Config.colorCodeRoles.any { colorCodeRole -> colorCodeRole in roleIds }) {
-                        messageText = if (messageComponents.isNotEmpty()) {
-                            val lastContent = (messageComponents.last() as TextComponent).content()
-                            if (Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == "") {
-                                UtilitiesOG.trueogColorize(legacyToMm(Helper.getColorSection(lastContent) + word))
+                        messageText =
+                            if (messageComponents.isNotEmpty()) {
+                                val lastContent = (messageComponents.last() as TextComponent).content()
+                                if (
+                                    Helper.getColorSection(lastContent) != "" && Helper.getFirstColorSection(word) == ""
+                                ) {
+                                    UtilitiesOG.trueogColorize(legacyToMm(Helper.getColorSection(lastContent) + word))
+                                } else {
+                                    UtilitiesOG.trueogColorize(legacyToMm(word))
+                                }
                             } else {
                                 UtilitiesOG.trueogColorize(legacyToMm(word))
                             }
-                        } else {
-                            UtilitiesOG.trueogColorize(legacyToMm(word))
-                        }
                     }
                     messageComponents += messageText.color(messageColor)
                 }
             }
 
-            val contentComponent = Component.join(
-                JoinConfiguration.separator(Component.text(" ")),
-                messageComponents + attachmentComponents
-            )
+            val contentComponent =
+                Component.join(
+                    JoinConfiguration.separator(Component.text(" ")),
+                    messageComponents + attachmentComponents,
+                )
 
             var replyComponent = Component.text("")
 
@@ -255,61 +271,63 @@ object DiscordBridge {
                 val replyMessage = message.messageReference!!.message
                 if (replyMessage != null) {
                     replyComponent =
-                        Component.text("[Reply to: ${if (!replyMessage.isWebhookMessage) "@" else ""}${replyMessage.author.name}] ")
+                        Component.text(
+                                "[Reply to: ${if (!replyMessage.isWebhookMessage) "@" else ""}${replyMessage.author.name}] "
+                            )
                             .color(NamedTextColor.GREEN)
                 }
             }
 
-            var messageComponent = when (it.channel.id) {
-                Config.staffChannelId -> {
-                    val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
-                    Component.join(
-                        JoinConfiguration.noSeparators(),
-                        discordComponent,
-                        staffComponent,
-                        replyComponent,
-                        userComponent,
-                        contentComponent
-                    )
+            var messageComponent =
+                when (it.channel.id) {
+                    Config.staffChannelId -> {
+                        val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
+                        Component.join(
+                            JoinConfiguration.noSeparators(),
+                            discordComponent,
+                            staffComponent,
+                            replyComponent,
+                            userComponent,
+                            contentComponent,
+                        )
+                    }
+
+                    Config.premiumChannelId -> {
+                        val premiumComponent = Component.text("PREMIUM | ").color(NamedTextColor.GREEN)
+                        Component.join(
+                            JoinConfiguration.noSeparators(),
+                            discordComponent,
+                            premiumComponent,
+                            replyComponent,
+                            userComponent,
+                            contentComponent,
+                        )
+                    }
+
+                    else -> {
+                        Component.join(
+                            JoinConfiguration.noSeparators(),
+                            discordComponent,
+                            replyComponent,
+                            userComponent,
+                            contentComponent,
+                        )
+                    }
                 }
 
-                Config.premiumChannelId -> {
-                    val premiumComponent = Component.text("PREMIUM | ").color(NamedTextColor.GREEN)
-                    Component.join(
-                        JoinConfiguration.noSeparators(),
-                        discordComponent,
-                        premiumComponent,
-                        replyComponent,
-                        userComponent,
-                        contentComponent
+            messageComponent =
+                messageComponent.hoverEvent(
+                    HoverEvent.hoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        UtilitiesOG.trueogColorize("<green>Click to translate this message"),
                     )
-                }
-
-                else -> {
-                    Component.join(
-                        JoinConfiguration.noSeparators(),
-                        discordComponent,
-                        replyComponent,
-                        userComponent,
-                        contentComponent
-                    )
-                }
-            }
-
-            messageComponent = messageComponent.hoverEvent(
-                HoverEvent.hoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    UtilitiesOG.trueogColorize("<green>Click to translate this message")
                 )
-            )
 
             val randomUUID = UUID.randomUUID()
-            messageComponent = messageComponent.clickEvent(
-                ClickEvent.clickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
-                    "/translatemessage $randomUUID 2"
+            messageComponent =
+                messageComponent.clickEvent(
+                    ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 2")
                 )
-            )
 
             when (it.channel.id) {
                 Config.staffChannelId -> {
@@ -335,12 +353,13 @@ object DiscordBridge {
                 }
             }
 
-            TranslateMessage.customMessages[randomUUID] = TranslateMessage.SentCustomMessage(
-                message.contentDisplay,
-                member.effectiveName,
-                Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent),
-                Component.text(" > ").color(messageColor)
-            )
+            TranslateMessage.customMessages[randomUUID] =
+                TranslateMessage.SentCustomMessage(
+                    message.contentDisplay,
+                    member.effectiveName,
+                    Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent),
+                    Component.text(" > ").color(messageColor),
+                )
         }
     }
 
@@ -363,9 +382,10 @@ object DiscordBridge {
             return
         }
 
-        val webhookMessage = WebhookMessageBuilder()
-            .setUsername(removeColor(player))
-            .setContent(stripGroupMentions(convertMentions(message)))
+        val webhookMessage =
+            WebhookMessageBuilder()
+                .setUsername(removeColor(player))
+                .setContent(stripGroupMentions(convertMentions(message)))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://minotar.net/helm/$uuid.png")
         }
@@ -381,9 +401,10 @@ object DiscordBridge {
             return
         }
 
-        val webhookMessage = WebhookMessageBuilder()
-            .setUsername(removeColor(player))
-            .setContent(stripGroupMentions((convertMentions(message))))
+        val webhookMessage =
+            WebhookMessageBuilder()
+                .setUsername(removeColor(player))
+                .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://minotar.net/helm/$uuid.png")
         }
@@ -399,9 +420,10 @@ object DiscordBridge {
             return
         }
 
-        val webhookMessage = WebhookMessageBuilder()
-            .setUsername(removeColor(player))
-            .setContent(stripGroupMentions((convertMentions(message))))
+        val webhookMessage =
+            WebhookMessageBuilder()
+                .setUsername(removeColor(player))
+                .setContent(stripGroupMentions((convertMentions(message))))
         if (uuid != null) {
             webhookMessage.setAvatarUrl("https://minotar.net/helm/$uuid.png")
         }
@@ -422,9 +444,8 @@ object DiscordBridge {
             iconUrl = "https://minotar.net/helm/$uuid.png"
         }
 
-        val webhookMessage = WebhookEmbedBuilder()
-            .setColor(color)
-            .setAuthor(WebhookEmbed.EmbedAuthor(message, iconUrl, null))
+        val webhookMessage =
+            WebhookEmbedBuilder().setColor(color).setAuthor(WebhookEmbed.EmbedAuthor(message, iconUrl, null))
 
         webhook?.send(webhookMessage.build())
     }

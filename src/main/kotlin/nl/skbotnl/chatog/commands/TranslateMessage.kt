@@ -1,5 +1,6 @@
 package nl.skbotnl.chatog.commands
 
+import java.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
@@ -15,7 +16,6 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.*
 
 class TranslateMessage : CommandExecutor {
     interface ISentMessage {
@@ -23,13 +23,13 @@ class TranslateMessage : CommandExecutor {
     }
 
     data class SentChatMessage(override val message: String, val player: Player) : ISentMessage
+
     data class SentCustomMessage(
         override val message: String,
         val username: String,
         val prefix: Component,
-        val suffix: Component
-    ) :
-        ISentMessage
+        val suffix: Component,
+    ) : ISentMessage
 
     data class SentPMMessage(override val message: String, val sender: UUID, val receiver: UUID) : ISentMessage
 
@@ -77,14 +77,15 @@ class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val sentMessage: ISentMessage? = when (messageType) {
-            1 -> chatMessages[uuid]
-            2 -> customMessages[uuid]
-            3 -> pmMessages[uuid]
-            else -> {
-                return false
+        val sentMessage: ISentMessage? =
+            when (messageType) {
+                1 -> chatMessages[uuid]
+                2 -> customMessages[uuid]
+                3 -> pmMessages[uuid]
+                else -> {
+                    return false
+                }
             }
-        }
 
         if (sentMessage == null) {
             player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not find that message."))
@@ -92,9 +93,7 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (ChatOG.translator == null) {
-            player.sendMessage(
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>The translator is disabled.")
-            )
+            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>The translator is disabled."))
             return true
         }
 
@@ -102,12 +101,16 @@ class TranslateMessage : CommandExecutor {
 
         if (language == null) {
             player.sendMessage(
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language.")
+                UtilitiesOG.trueogColorize(
+                    "${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
+                )
             )
             return true
         }
 
-        player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)..."))
+        player.sendMessage(
+            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)...")
+        )
 
         val translated = ChatOG.translator!!.translate(sentMessage.message, language)
 
@@ -117,7 +120,9 @@ class TranslateMessage : CommandExecutor {
         }
 
         if (translated.translatedText == null) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not translate that message."))
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not translate that message.")
+            )
             return true
         }
 
@@ -131,20 +136,26 @@ class TranslateMessage : CommandExecutor {
                         ChatOG.chat.getPlayerSuffix(sentChatMessage.player)
                     }"
                 if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%simpleclans_clan_color_tag%") != "") {
-                    playerString = PlaceholderAPI.setPlaceholders(
-                        sentMessage.player,
-                        "&8[%simpleclans_clan_color_tag%&8] $playerString"
-                    )
+                    playerString =
+                        PlaceholderAPI.setPlaceholders(
+                            sentMessage.player,
+                            "&8[%simpleclans_clan_color_tag%&8] $playerString",
+                        )
                 }
                 val playerComponent =
-                    UtilitiesOG.trueogColorize(legacyToMm("<light_purple>[${translated.translatedFrom} -> $language (Can be inaccurate)] $playerString"))
+                    UtilitiesOG.trueogColorize(
+                        legacyToMm(
+                            "<light_purple>[${translated.translatedFrom} -> $language (Can be inaccurate)] $playerString"
+                        )
+                    )
 
                 // Don't convert color in translated messages
-                translateMessage = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    playerComponent,
-                    Component.text(translated.translatedText)
-                )
+                translateMessage =
+                    Component.join(
+                        JoinConfiguration.noSeparators(),
+                        playerComponent,
+                        Component.text(translated.translatedText),
+                    )
             }
 
             2 -> {
@@ -154,14 +165,15 @@ class TranslateMessage : CommandExecutor {
                     Component.text("[${translated.translatedFrom} -> $language (Can be inaccurate)] ")
                         .color(NamedTextColor.LIGHT_PURPLE)
 
-                translateMessage = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    translatedComponent,
-                    sentCustomMessage.prefix,
-                    Component.text(sentCustomMessage.username),
-                    sentCustomMessage.suffix,
-                    Component.text(translated.translatedText)
-                )
+                translateMessage =
+                    Component.join(
+                        JoinConfiguration.noSeparators(),
+                        translatedComponent,
+                        sentCustomMessage.prefix,
+                        Component.text(sentCustomMessage.username),
+                        sentCustomMessage.suffix,
+                        Component.text(translated.translatedText),
+                    )
             }
 
             3 -> {
@@ -171,18 +183,24 @@ class TranslateMessage : CommandExecutor {
                     Component.text("[${translated.translatedFrom} -> $language (Can be inaccurate)] ")
                         .color(NamedTextColor.LIGHT_PURPLE)
 
-                val pmComponent = if (player.uniqueId == sentPMMessage.sender) {
-                    UtilitiesOG.trueogColorize("<gold>[<red>me <gold>-> <dark_red>${Bukkit.getPlayer(sentPMMessage.receiver)!!.name}<gold>]<white> ")
-                } else {
-                    UtilitiesOG.trueogColorize("<gold>[<dark_red>${Bukkit.getPlayer(sentPMMessage.sender)!!.name} <gold>-> <red>me<gold>]<white> ")
-                }
+                val pmComponent =
+                    if (player.uniqueId == sentPMMessage.sender) {
+                        UtilitiesOG.trueogColorize(
+                            "<gold>[<red>me <gold>-> <dark_red>${Bukkit.getPlayer(sentPMMessage.receiver)!!.name}<gold>]<white> "
+                        )
+                    } else {
+                        UtilitiesOG.trueogColorize(
+                            "<gold>[<dark_red>${Bukkit.getPlayer(sentPMMessage.sender)!!.name} <gold>-> <red>me<gold>]<white> "
+                        )
+                    }
 
-                translateMessage = Component.join(
-                    JoinConfiguration.noSeparators(),
-                    translatedComponent,
-                    pmComponent,
-                    Component.text(translated.translatedText)
-                )
+                translateMessage =
+                    Component.join(
+                        JoinConfiguration.noSeparators(),
+                        translatedComponent,
+                        pmComponent,
+                        Component.text(translated.translatedText),
+                    )
             }
         }
         player.sendMessage(translateMessage)

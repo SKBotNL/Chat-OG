@@ -1,9 +1,9 @@
 package nl.skbotnl.chatog
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.net.URI
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object BlocklistManager {
     private var blockList = mutableListOf<String>()
@@ -24,22 +24,21 @@ object BlocklistManager {
     }
 
     private fun refresh() {
-        URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt").toURL().openStream()
+        URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt")
+            .toURL()
+            .openStream()
             .use { input ->
                 input.bufferedReader().use { bufferedReader ->
-                    bufferedReader.lines().skip(11).forEach {
-                        blockList += it
-                    }
+                    bufferedReader.lines().skip(11).forEach { blockList += it }
                 }
             }
     }
 
     private val urlRegex = Regex("^(https?|ftp|file)://([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*?[^/]*)")
+
     fun checkUrl(url: String): Boolean {
         var baseUrl: String? = null
-        urlRegex.findAll(url).iterator().forEach { urlMatch ->
-            baseUrl = urlMatch.groups[2]?.value
-        }
+        urlRegex.findAll(url).iterator().forEach { urlMatch -> baseUrl = urlMatch.groups[2]?.value }
         if (baseUrl == null) {
             return false
         }

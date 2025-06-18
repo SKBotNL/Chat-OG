@@ -1,12 +1,12 @@
 package nl.skbotnl.chatog
 
 import com.earth2me.essentials.Essentials
+import java.util.*
 import kotlinx.coroutines.*
 import net.milkbowl.vault.chat.Chat
 import nl.skbotnl.chatog.commands.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
 
 class ChatOG : JavaPlugin() {
     @OptIn(DelicateCoroutinesApi::class)
@@ -59,9 +59,10 @@ class ChatOG : JavaPlugin() {
             Bukkit.getPluginManager().disablePlugin(this)
             return
         }
-        translator = if (Config.openAIEnabled) {
-            OpenAI()
-        } else null
+        translator =
+            if (Config.openAIEnabled) {
+                OpenAI()
+            } else null
 
         languageDatabase = LanguageDatabase()
         if (languageDatabase.testConnection()) {
@@ -71,9 +72,7 @@ class ChatOG : JavaPlugin() {
         }
 
         BlocklistManager.load()
-        scope.launch {
-            EmojiConverter.load()
-        }
+        scope.launch { EmojiConverter.load() }
 
         val rsp = server.servicesManager.getRegistration(Chat::class.java)
         chat = rsp!!.provider
@@ -87,9 +86,7 @@ class ChatOG : JavaPlugin() {
         this.getCommand("p")?.setExecutor(PremiumChat())
 
         if (Config.discordEnabled) {
-            scope.launch {
-                DiscordBridge.main()
-            }
+            scope.launch { DiscordBridge.main() }
         }
     }
 
@@ -103,8 +100,6 @@ class ChatOG : JavaPlugin() {
 
         scope.cancel()
 
-        runBlocking {
-            scope.coroutineContext[Job]?.join()
-        }
+        runBlocking { scope.coroutineContext[Job]?.join() }
     }
 }
