@@ -6,6 +6,8 @@ import org.bukkit.configuration.file.YamlConfiguration
 
 internal class Config private constructor() {
     lateinit var prefix: String
+    var blocklistEnabled = false
+    var blocklists = listOf<String>()
     lateinit var redisUrl: String
     var openAIEnabled = false
     var openAIBaseUrl: String? = null
@@ -27,8 +29,8 @@ internal class Config private constructor() {
     var premiumWebhook: String? = null
     var listCommandName: String? = null
     var listCommandText: String? = null
-    var colorCodeRoles: List<String> = listOf()
-    var roles: Set<String> = setOf()
+    var colorCodeRoles = listOf<String>()
+    var roles = setOf<String>()
     var roleMessageColor: MutableMap<String, Any> = mutableMapOf()
 
     data class RGBColor(val r: Int, val g: Int, val b: Int)
@@ -48,6 +50,17 @@ internal class Config private constructor() {
             } catch (_: Exception) {
                 ChatOG.plugin.logger.severe("Failed to parse config option \"prefix\" as a string")
                 return null
+            }
+
+            try {
+                config.blocklistEnabled = yamlConfig.get("blocklistEnabled") as Boolean
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"blocklistEnabled\" as a string")
+                return null
+            }
+
+            if (config.blocklistEnabled) {
+                config.blocklists = yamlConfig.getStringList("blocklists")
             }
 
             try {

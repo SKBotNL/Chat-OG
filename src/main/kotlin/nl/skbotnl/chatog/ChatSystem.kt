@@ -30,7 +30,7 @@ internal object ChatSystem {
         var playerPartString = ChatUtil.getPlayerPartString(player)
         playerPartString = "&cSTAFF | $playerPartString"
 
-        if (config.staffDiscordEnabled) {
+        if (config!!.staffDiscordEnabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             ChatOG.scope.launch {
@@ -76,7 +76,7 @@ internal object ChatSystem {
         var playerPartString = ChatUtil.getPlayerPartString(player)
         playerPartString = "&aPREMIUM | $playerPartString"
 
-        if (config.premiumDiscordEnabled) {
+        if (config!!.premiumDiscordEnabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             ChatOG.scope.launch {

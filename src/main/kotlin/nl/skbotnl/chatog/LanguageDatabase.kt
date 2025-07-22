@@ -6,7 +6,7 @@ import java.util.*
 import nl.skbotnl.chatog.ChatOG.Companion.config
 
 internal class LanguageDatabase {
-    private val redisClient: RedisClient = RedisClient.create(config.redisUrl)
+    private val redisClient: RedisClient = RedisClient.create(config!!.redisUrl)
 
     /** @return True if failed */
     fun testConnection(): Boolean {

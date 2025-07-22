@@ -18,7 +18,7 @@ internal class StaffChat : CommandExecutor {
         if (!sender.hasPermission("chat-og.staff")) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
+                    "${config!!.prefix}<reset>: <red>You do not have permission to run this command."
                 )
             )
             return true
@@ -28,13 +28,13 @@ internal class StaffChat : CommandExecutor {
                 ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in normal chat.")
+                    UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in normal chat.")
                 )
                 return true
             }
             ChatSystem.inChat[sender.uniqueId] = ChatType.STAFF_CHAT
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in staff chat.")
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in staff chat.")
             )
             return true
         }

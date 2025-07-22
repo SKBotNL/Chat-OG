@@ -10,22 +10,22 @@ import org.bukkit.entity.Player
 class ChatAPI {
     @Suppress("unused")
     fun isDiscordEnabled(): Boolean {
-        return ChatOG.config.discordEnabled
+        return ChatOG.config!!.discordEnabled
     }
 
     @Suppress("unused")
     fun isStaffDiscordEnabled(): Boolean {
-        return ChatOG.config.staffDiscordEnabled
+        return ChatOG.config!!.staffDiscordEnabled
     }
 
     @Suppress("unused")
     fun isPremiumDiscordEnabled(): Boolean {
-        return ChatOG.config.premiumDiscordEnabled
+        return ChatOG.config!!.premiumDiscordEnabled
     }
 
     @Suppress("unused")
     fun sendMessageWithBot(message: String) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         scope.launch {
             discordBridgeLock.read {
                 val discordBridge = ChatOG.discordBridge
@@ -37,7 +37,7 @@ class ChatAPI {
 
     @Suppress("unused")
     fun sendMessage(message: String, player: Player) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         discordBridgeLock.read {
             val discordBridge = ChatOG.discordBridge
             scope.launch { discordBridge!!.sendMessage(message, player) }
@@ -47,7 +47,7 @@ class ChatAPI {
 
     @Suppress("unused")
     fun sendMessage(message: String, name: String, uuid: UUID?) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         discordBridgeLock.read {
             val discordBridge = ChatOG.discordBridge
             scope.launch { discordBridge!!.sendMessage(message, name, uuid) }
@@ -57,7 +57,7 @@ class ChatAPI {
 
     @Suppress("unused")
     fun sendStaffMessage(message: String, name: String, uuid: UUID?) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         discordBridgeLock.read {
             val discordBridge = ChatOG.discordBridge
             scope.launch { discordBridge!!.sendStaffMessage(message, name, uuid) }
@@ -67,7 +67,7 @@ class ChatAPI {
 
     @Suppress("unused")
     fun sendPremiumMessage(message: String, name: String, uuid: UUID?) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         discordBridgeLock.read {
             val discordBridge = ChatOG.discordBridge
             scope.launch { discordBridge!!.sendPremiumMessage(message, name, uuid) }
@@ -77,7 +77,7 @@ class ChatAPI {
 
     @Suppress("unused")
     fun sendEmbed(message: String, uuid: UUID?, color: Int?) {
-        if (!ChatOG.config.discordEnabled) return
+        if (!ChatOG.config!!.discordEnabled) return
         discordBridgeLock.read {
             val discordBridge = ChatOG.discordBridge
             scope.launch { discordBridge!!.sendEmbed(message, uuid, color) }

@@ -26,7 +26,7 @@ internal class PrivateMessage : CommandExecutor {
         if (args == null || args.isEmpty()) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>You did not provide the player that you want to send a message to and your message."
+                    "${config!!.prefix}<reset>: <red>You did not provide the player that you want to send a message to and your message."
                 )
             )
             return true
@@ -34,7 +34,7 @@ internal class PrivateMessage : CommandExecutor {
         if (args.size < 2) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>Please provide the player that you want to send a message to and your message."
+                    "${config!!.prefix}<reset>: <red>Please provide the player that you want to send a message to and your message."
                 )
             )
             return true
@@ -45,7 +45,7 @@ internal class PrivateMessage : CommandExecutor {
         val toPlayer = Bukkit.getPlayer(playerName)
         if (toPlayer == null) {
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>That player doesn't exist or isn't online.")
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>That player doesn't exist or isn't online.")
             )
             return true
         }

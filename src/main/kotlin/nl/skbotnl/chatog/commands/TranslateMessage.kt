@@ -57,7 +57,9 @@ internal class TranslateMessage : CommandExecutor {
         val player: Player = sender
 
         if (ChatUtil.getTranslateTimeout(player.uniqueId) != 0L) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>You're doing that too fast."))
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>You're doing that too fast.")
+            )
             return true
         }
 
@@ -66,7 +68,7 @@ internal class TranslateMessage : CommandExecutor {
         try {
             uuid = UUID.fromString(args[0])
         } catch (_: IllegalArgumentException) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>That is not a valid UUID."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>That is not a valid UUID."))
             return true
         }
 
@@ -74,7 +76,7 @@ internal class TranslateMessage : CommandExecutor {
         try {
             messageType = args[1].toInt()
         } catch (_: NumberFormatException) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Invalid message type."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>Invalid message type."))
             return true
         }
 
@@ -89,12 +91,16 @@ internal class TranslateMessage : CommandExecutor {
             }
 
         if (sentMessage == null) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Could not find that message."))
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>Could not find that message.")
+            )
             return true
         }
 
         if (ChatOG.translator == null) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>The translator is disabled."))
+            player.sendMessage(
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>The translator is disabled.")
+            )
             return true
         }
 
@@ -103,14 +109,14 @@ internal class TranslateMessage : CommandExecutor {
         if (language == null) {
             player.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
+                    "${config!!.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
                 )
             )
             return true
         }
 
         player.sendMessage(
-            UtilitiesOG.trueogColorize("${config.prefix}<reset>: Translating message (this can take some time)...")
+            UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: Translating message (this can take some time)...")
         )
 
         val translated = ChatOG.translator!!.translate(sentMessage.message, language)
@@ -122,7 +128,7 @@ internal class TranslateMessage : CommandExecutor {
 
         if (translated.translatedText == null) {
             player.sendMessage(
-                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Could not translate that message.")
+                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>Could not translate that message.")
             )
             return true
         }

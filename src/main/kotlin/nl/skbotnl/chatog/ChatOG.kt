@@ -18,8 +18,8 @@ internal class ChatOG : JavaPlugin() {
         val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         lateinit var plugin: JavaPlugin
-        lateinit var config: Config
-        lateinit var blocklistManager: BlocklistManager
+        var config: Config? = null
+        var blocklistManager: BlocklistManager? = null
         lateinit var luckPerms: LuckPerms
         lateinit var languageDatabase: LanguageDatabase
         var translator: OpenAI? = null
@@ -40,16 +40,18 @@ internal class ChatOG : JavaPlugin() {
                     return
                 }
 
-        blocklistManager = BlocklistManager()
+        if (Companion.config!!.blocklistEnabled) {
+            blocklistManager = BlocklistManager()
+        }
 
         translator =
-            if (Companion.config.openAIEnabled) {
-                if (Companion.config.openAIBaseUrl == null) {
+            if (Companion.config!!.openAIEnabled) {
+                if (Companion.config!!.openAIBaseUrl == null) {
                     this.logger.warning(
                         "You have enabled OpenAI translation but have not set up the base url, not enabling the translator"
                     )
                     null
-                } else if (Companion.config.openAIApiKey == null) {
+                } else if (Companion.config!!.openAIApiKey == null) {
                     this.logger.warning(
                         "You have enabled OpenAI translation but have not set up the api key, not enabling the translator"
                     )
@@ -91,7 +93,7 @@ internal class ChatOG : JavaPlugin() {
         this.getCommand("reply")?.setExecutor(Reply())
         this.getCommand("r")?.setExecutor(Reply())
 
-        if (Companion.config.discordEnabled) {
+        if (Companion.config!!.discordEnabled) {
             scope.launch { discordBridgeLock.write { discordBridge = DiscordBridge.create() } }
         }
 
@@ -100,17 +102,17 @@ internal class ChatOG : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (Companion.config.discordEnabled) {
+        if (Companion.config?.discordEnabled == true) {
             discordBridgeLock.read {
                 val discordBridge = discordBridge
                 val serverHasStoppedMessage =
-                    if (Companion.config.serverHasStoppedMessage == null) {
+                    if (Companion.config!!.serverHasStoppedMessage == null) {
                         this.logger.warning(
                             "You have enabled Discord but have not set up the server has stopped message, using the default one instead"
                         )
                         "The server has stopped"
                     } else {
-                        Companion.config.serverHasStoppedMessage!!
+                        Companion.config!!.serverHasStoppedMessage!!
                     }
                 discordBridge!!.sendMessageWithBot(serverHasStoppedMessage)
                 discordBridge.shutdownNow()
