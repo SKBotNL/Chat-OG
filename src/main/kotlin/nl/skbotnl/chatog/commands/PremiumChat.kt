@@ -1,15 +1,15 @@
 package nl.skbotnl.chatog.commands
 
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatSystemHelper
-import nl.skbotnl.chatog.ChatSystemHelper.ChatType
-import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatSystem
+import nl.skbotnl.chatog.ChatSystem.ChatType
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class PremiumChat : CommandExecutor {
+internal class PremiumChat : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             sender.sendMessage("You can only execute this command as a player.")
@@ -18,28 +18,28 @@ class PremiumChat : CommandExecutor {
         if (!sender.hasPermission("chat-og.premium")) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${Config.prefix}<reset>: <red>You do not have permission to run this command."
+                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
                 )
             )
             return true
         }
         if (args == null || args.isEmpty()) {
-            if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.PREMIUMCHAT) {
-                ChatSystemHelper.inChat[sender.uniqueId] = ""
+            if (ChatSystem.inChat[sender.uniqueId] == ChatType.PREMIUM_CHAT) {
+                ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat.")
+                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in normal chat.")
                 )
                 return true
             }
-            ChatSystemHelper.inChat[sender.uniqueId] = ChatType.PREMIUMCHAT
+            ChatSystem.inChat[sender.uniqueId] = ChatType.PREMIUM_CHAT
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in premium chat.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in premium chat.")
             )
             return true
         }
 
-        ChatSystemHelper.sendMessageInPremiumChat(sender, args.joinToString(separator = " "))
+        ChatSystem.sendMessageInPremiumChat(sender, args.joinToString(separator = " "))
 
         return true
     }

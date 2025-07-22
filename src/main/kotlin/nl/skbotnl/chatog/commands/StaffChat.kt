@@ -1,45 +1,45 @@
 package nl.skbotnl.chatog.commands
 
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatSystemHelper
-import nl.skbotnl.chatog.ChatSystemHelper.ChatType
-import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatSystem
+import nl.skbotnl.chatog.ChatSystem.ChatType
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class StaffChat : CommandExecutor {
+internal class StaffChat : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("You can only execute this command as a player")
+            sender.sendMessage("You can only execute this command as a player.")
             return true
         }
         if (!sender.hasPermission("chat-og.staff")) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${Config.prefix}<reset>: <red>You do not have permission to run this command."
+                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
                 )
             )
             return true
         }
         if (args == null || args.isEmpty()) {
-            if (ChatSystemHelper.inChat[sender.uniqueId] == ChatType.STAFFCHAT) {
-                ChatSystemHelper.inChat[sender.uniqueId] = ""
+            if (ChatSystem.inChat[sender.uniqueId] == ChatType.STAFF_CHAT) {
+                ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in normal chat.")
+                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in normal chat.")
                 )
                 return true
             }
-            ChatSystemHelper.inChat[sender.uniqueId] = ChatType.STAFFCHAT
+            ChatSystem.inChat[sender.uniqueId] = ChatType.STAFF_CHAT
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: You are now talking in staff chat.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in staff chat.")
             )
             return true
         }
 
-        ChatSystemHelper.sendMessageInStaffChat(sender, args.joinToString(separator = " "))
+        ChatSystem.sendMessageInStaffChat(sender, args.joinToString(separator = " "))
 
         return true
     }

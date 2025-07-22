@@ -1,9 +1,12 @@
 package nl.skbotnl.chatog.commands
 
-import club.minnced.discord.webhook.WebhookClient
-import net.dv8tion.jda.api.entities.Activity
+import kotlin.concurrent.write
+import kotlinx.coroutines.launch
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
+import nl.skbotnl.chatog.ChatOG.Companion.scope
 import nl.skbotnl.chatog.Config
 import nl.skbotnl.chatog.DiscordBridge
 import nl.skbotnl.chatog.LanguageDatabase
@@ -12,15 +15,19 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 
-class ChatConfigReload : CommandExecutor {
+internal class ChatConfigReload : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
-        if (Config.load()) {
-            sender.sendMessage(
-                UtilitiesOG.trueogColorize("<red>Failed to reload the config. Check the console for more information.")
-            )
-            Bukkit.getPluginManager().disablePlugin(ChatOG.plugin)
-            return true
-        }
+        config =
+            Config.create()
+                ?: run {
+                    sender.sendMessage(
+                        UtilitiesOG.trueogColorize(
+                            "<red>Failed to reload the config. Check the console for more information."
+                        )
+                    )
+                    Bukkit.getPluginManager().disablePlugin(ChatOG.plugin)
+                    return true
+                }
 
         ChatOG.languageDatabase = LanguageDatabase()
         if (ChatOG.languageDatabase.testConnection()) {
@@ -29,20 +36,25 @@ class ChatConfigReload : CommandExecutor {
             return true
         }
 
-        if (Config.discordEnabled) {
-            DiscordBridge.webhook = WebhookClient.withUrl(Config.webhook)
-            if (Config.staffDiscordEnabled) {
-                DiscordBridge.staffWebhook = WebhookClient.withUrl(Config.staffWebhook)
+        if (config.discordEnabled) {
+            scope.launch {
+                discordBridgeLock.write {
+                    val discordBridge = ChatOG.discordBridge
+                    if (discordBridge != null) {
+                        discordBridge.sendMessageWithBot("Reloading the config...")
+                        discordBridge.shutdownNow()
+                    }
+                    ChatOG.discordBridge = DiscordBridge.create()
+                    sender.sendMessage(
+                        UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Successfully reloaded the config.")
+                    )
+                }
             }
-            if (Config.premiumDiscordEnabled) {
-                DiscordBridge.premiumWebhook = WebhookClient.withUrl(Config.premiumWebhook)
-            }
-            DiscordBridge.jda?.presence?.setPresence(Activity.playing(Config.status), false)
+        } else {
+            sender.sendMessage(
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Successfully reloaded the config.")
+            )
         }
-
-        sender.sendMessage(
-            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Successfully reloaded the config.")
-        )
         return true
     }
 }

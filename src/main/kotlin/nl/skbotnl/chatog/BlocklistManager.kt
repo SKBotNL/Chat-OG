@@ -5,14 +5,13 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-object BlocklistManager {
+class BlocklistManager {
+    private val lock = Any()
     private var blockList = mutableListOf<String>()
 
-    fun load() {
+    init {
         ChatOG.plugin.logger.info("Loading the blocklists...")
-
         refresh()
-
         ChatOG.plugin.logger.info("Loaded the blocklists!")
 
         ChatOG.scope.launch {
@@ -24,30 +23,22 @@ object BlocklistManager {
     }
 
     private fun refresh() {
+        blockList.clear()
         URI("https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/multi.txt")
             .toURL()
             .openStream()
             .use { input ->
                 input.bufferedReader().use { bufferedReader ->
-                    bufferedReader.lines().skip(11).forEach { blockList += it }
+                    synchronized(lock) { bufferedReader.lines().forEach { if (!it.startsWith("#")) blockList.add(it) } }
                 }
             }
     }
 
-    private val urlRegex = Regex("^(https?|ftp|file)://([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*?[^/]*)")
+    private val urlRegex = Regex("(?:https?://)?([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})")
 
     fun checkUrl(url: String): Boolean {
-        var baseUrl: String? = null
-        urlRegex.findAll(url).iterator().forEach { urlMatch -> baseUrl = urlMatch.groups[2]?.value }
-        if (baseUrl == null) {
-            return false
-        }
-
-        blockList.forEach {
-            if (it == baseUrl) {
-                return true
-            }
-        }
-        return false
+        val match = urlRegex.find(url) ?: return false
+        val baseUrl = match.groups[1]?.value ?: return false
+        return synchronized(lock) { blockList.contains(baseUrl) }
     }
 }

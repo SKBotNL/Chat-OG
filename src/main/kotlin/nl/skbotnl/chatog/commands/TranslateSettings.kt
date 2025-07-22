@@ -3,13 +3,13 @@ package nl.skbotnl.chatog.commands
 import kotlinx.coroutines.DelicateCoroutinesApi
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG
-import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.ChatOG.Companion.config
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class TranslateSettings : CommandExecutor {
+internal class TranslateSettings : CommandExecutor {
     companion object {
         val languagesList =
             listOf(
@@ -74,13 +74,13 @@ class TranslateSettings : CommandExecutor {
         val language = args[0]
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Invalid language."))
+            sender.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Invalid language."))
             return true
         }
 
         ChatOG.languageDatabase.setPlayerLanguage(sender.uniqueId, language)
         sender.sendMessage(
-            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <green>Set language to: <white>$language.")
+            UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Set language to: <white>$language.")
         )
 
         return true

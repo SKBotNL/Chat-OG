@@ -5,12 +5,13 @@ import com.google.gson.annotations.SerializedName
 import java.util.logging.Level
 import net.kyori.adventure.text.Component
 import net.trueog.utilitiesog.UtilitiesOG
+import nl.skbotnl.chatog.ChatOG.Companion.config
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class OpenAI {
+internal class OpenAI {
     data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
 
     private var httpClient: OkHttpClient = OkHttpClient()
@@ -30,7 +31,7 @@ class OpenAI {
     fun translate(text: String, language: String): Translated {
         val openAICompletion =
             CompletionReq(
-                model = Config.openAIModel,
+                model = config.openAIModel ?: "",
                 messages =
                     listOf(
                         Message(
@@ -43,8 +44,8 @@ class OpenAI {
 
         val request: Request =
             Request.Builder()
-                .url(Config.openAIBaseUrl + "/v1/chat/completions")
-                .header("Authorization", "Bearer ${Config.openAIApiKey}")
+                .url(config.openAIBaseUrl + "/v1/chat/completions")
+                .header("Authorization", "Bearer ${config.openAIApiKey}")
                 .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
                 .build()
 
@@ -60,7 +61,7 @@ class OpenAI {
                 null,
                 null,
                 UtilitiesOG.trueogColorize(
-                    "${Config.prefix}<reset>: <red>Something went wrong while translating your message."
+                    "${config.prefix}<reset>: <red>Something went wrong while translating that message."
                 ),
             )
         }

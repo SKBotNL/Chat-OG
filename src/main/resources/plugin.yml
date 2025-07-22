@@ -3,7 +3,13 @@ version: '${version}'
 main: nl.skbotnl.chatog.ChatOG
 author: SKBotNL
 api-version: '${apiVersion}'
-depend: [ PlaceholderAPI, Vault, AnnouncerPlus, Utilities-OG, Essentials ]
+depend:
+  - PlaceholderAPI
+  - LuckPerms
+  - AnnouncerPlus
+  - Utilities-OG
+softdepend:
+  - Essentials
 commands:
   translatemessage:
     description: Internal command for translating messages
@@ -20,6 +26,24 @@ commands:
   s:
     description: Toggle or talk in staff chat
     usage: /s OR /s <message here>
+  pc:
+    description: Toggle or talk in premium chat
+    usage: /p OR /p <message here>
   p:
     description: Toggle or talk in premium chat
     usage: /p OR /p <message here>
+  msg:
+    description: Send a private message to a player
+    usage: /msg <player name> <message>
+  whisper:
+    description: Send a private message to a player
+    usage: /whisper <player name> <message>
+  pm:
+    description: Send a private message to a player
+    usage: /pm <player name> <message>
+  r:
+    description: Sends a message to the player that you messaged last or who last messaged you
+    usage: /r <message>
+  reply:
+    description: Sends a message to the player that you messaged last or who last messaged you
+    usage: /reply <message>
