@@ -139,7 +139,11 @@ internal object ChatUtil {
 
     private val urlRegex = Regex("(.*?)((?:https?://)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:/?[a-zA-Z]*)+)(.*)")
 
-    val noColorMm = MiniMessage.builder().editTags { b -> b.tag("a", ChatUtil::createA) }.build()
+    val noColorMm =
+        MiniMessage.builder()
+            .tags(TagResolver.builder().build())
+            .editTags { b -> b.tag("a", ChatUtil::createA) }
+            .build()
 
     val colorMm =
         MiniMessage.builder()
@@ -172,11 +176,11 @@ internal object ChatUtil {
         )
     }
 
-    fun processText(text: String, player: Player) = processText(text, player, null)
+    fun processText(text: String, player: Player) = processText(text, player, null, false)
 
-    fun processText(text: String, username: String) = processText(text, null, username)
+    fun processText(text: String, username: String, color: Boolean) = processText(text, null, username, color)
 
-    private fun processText(text: String, player: Player?, username: String?): Component? {
+    private fun processText(text: String, player: Player?, username: String?, color: Boolean): Component? {
         val words: MutableList<String> = mutableListOf()
 
         legacyToMm(text).split(" ").forEach { word ->
@@ -215,9 +219,16 @@ internal object ChatUtil {
         }
 
         return if (player?.hasPermission("chat-og.color") == true) {
+            println("A")
             colorMm.deserialize(words.joinToString(" "))
         } else {
-            noColorMm.deserialize(words.joinToString(" "))
+            if (color) {
+                println("B")
+                colorMm.deserialize(words.joinToString(" "))
+            } else {
+                println("C")
+                noColorMm.deserialize(words.joinToString(" "))
+            }
         }
     }
 
@@ -257,5 +268,16 @@ internal object ChatUtil {
         tempText = tempText.replace("(<@&)(\\d*>)".toRegex(), "$1\u200E$2")
 
         return tempText
+    }
+
+    fun recolorComponent(component: Component, color: TextColor): Component {
+        var newComponent = component
+        if (component.color() == null) {
+            newComponent = component.color(color)
+        }
+
+        val children = newComponent.children().map { recolorComponent(it, color) }
+        newComponent.children(children)
+        return newComponent
     }
 }

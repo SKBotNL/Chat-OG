@@ -30,6 +30,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatUtil.convertMentions
+import nl.skbotnl.chatog.ChatUtil.recolorComponent
 import nl.skbotnl.chatog.ChatUtil.stripGroupMentions
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
@@ -257,13 +258,23 @@ internal class DiscordBridge private constructor() {
                     }
                 }
 
+                val useColor =
+                    if (config!!.useColorCodeRoles) {
+                        roles.any { role -> role.id in config!!.colorCodeRoles }
+                    } else {
+                        true
+                    }
+
                 if (message.contentDisplay != "") {
                     messageComponents +=
-                        ChatUtil.processText(
+                        recolorComponent(
+                            ChatUtil.processText(
                                 EmojiConverter.replaceEmojisWithNames(message.contentDisplay),
                                 "@${user.name}",
-                            )
-                            ?.color(messageColor) ?: return@listener
+                                useColor,
+                            ) ?: return@listener,
+                            messageColor,
+                        )
                 }
 
                 val contentComponent =

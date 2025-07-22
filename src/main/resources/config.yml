@@ -43,6 +43,7 @@ listCommandName: list
 # Available placeholders: %onlineplayers%, %maxplayers%
 listCommandText: "%onlineplayers% player(s) online:"
 
+useColorCodeRoles: false
 # Configure which roles can use color codes with Discord -> Minecraft
 # For example:
 #

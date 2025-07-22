@@ -32,6 +32,7 @@ internal class Config private constructor() {
     var developerWebhook: String? = null
     var listCommandName: String? = null
     var listCommandText: String? = null
+    var useColorCodeRoles = false
     var colorCodeRoles = listOf<String>()
     var roles = setOf<String>()
     var roleMessageColor: MutableMap<String, Any> = mutableMapOf()
@@ -58,7 +59,7 @@ internal class Config private constructor() {
             try {
                 config.blocklistEnabled = yamlConfig.get("blocklistEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"blocklistEnabled\" as a string")
+                ChatOG.plugin.logger.severe("Failed to parse config option \"blocklistEnabled\" as a boolean")
                 return null
             }
 
@@ -240,6 +241,13 @@ internal class Config private constructor() {
                     config.listCommandText = yamlConfig.get("listCommandText") as String
                 } catch (_: Exception) {
                     ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandText\" as a string")
+                    return null
+                }
+
+                try {
+                    config.useColorCodeRoles = yamlConfig.get("useColorCodeRoles") as Boolean
+                } catch (_: Exception) {
+                    ChatOG.plugin.logger.severe("Failed to parse config option \"useColorCodeRoles\" as a boolean")
                     return null
                 }
 
