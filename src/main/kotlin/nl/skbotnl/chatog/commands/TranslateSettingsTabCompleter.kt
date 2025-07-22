@@ -4,7 +4,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 
-class TranslateSettingsTabCompleter : TabCompleter {
+internal class TranslateSettingsTabCompleter : TabCompleter {
     override fun onTabComplete(
         sender: CommandSender,
         command: Command,

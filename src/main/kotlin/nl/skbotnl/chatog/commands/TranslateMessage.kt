@@ -8,16 +8,17 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG
-import nl.skbotnl.chatog.Config
+import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.Helper
 import nl.skbotnl.chatog.Helper.legacyToMm
+import nl.skbotnl.chatog.PlayerAffix
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class TranslateMessage : CommandExecutor {
+internal class TranslateMessage : CommandExecutor {
     interface ISentMessage {
         val message: String
     }
@@ -56,7 +57,7 @@ class TranslateMessage : CommandExecutor {
         val player: Player = sender
 
         if (Helper.getTranslateTimeout(player.uniqueId) != 0L) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>You're doing that too fast."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>You're doing that too fast."))
             return true
         }
 
@@ -65,7 +66,7 @@ class TranslateMessage : CommandExecutor {
         try {
             uuid = UUID.fromString(args[0])
         } catch (_: IllegalArgumentException) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>That is not a valid UUID."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>That is not a valid UUID."))
             return true
         }
 
@@ -73,7 +74,7 @@ class TranslateMessage : CommandExecutor {
         try {
             messageType = args[1].toInt()
         } catch (_: NumberFormatException) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Invalid message type."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Invalid message type."))
             return true
         }
 
@@ -88,12 +89,12 @@ class TranslateMessage : CommandExecutor {
             }
 
         if (sentMessage == null) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not find that message."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Could not find that message."))
             return true
         }
 
         if (ChatOG.translator == null) {
-            player.sendMessage(UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>The translator is disabled."))
+            player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>The translator is disabled."))
             return true
         }
 
@@ -102,14 +103,14 @@ class TranslateMessage : CommandExecutor {
         if (language == null) {
             player.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${Config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
+                    "${config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
                 )
             )
             return true
         }
 
         player.sendMessage(
-            UtilitiesOG.trueogColorize("${Config.prefix}<reset>: Translating message (this can take some time)...")
+            UtilitiesOG.trueogColorize("${config.prefix}<reset>: Translating message (this can take some time)...")
         )
 
         val translated = ChatOG.translator!!.translate(sentMessage.message, language)
@@ -121,7 +122,7 @@ class TranslateMessage : CommandExecutor {
 
         if (translated.translatedText == null) {
             player.sendMessage(
-                UtilitiesOG.trueogColorize("${Config.prefix}<reset>: <red>Could not translate that message.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Could not translate that message.")
             )
             return true
         }
@@ -132,8 +133,8 @@ class TranslateMessage : CommandExecutor {
             1 -> {
                 val sentChatMessage = sentMessage as SentChatMessage
                 var playerString =
-                    "${ChatOG.chat.getPlayerPrefix(sentChatMessage.player)}${sentChatMessage.player.name}${
-                        ChatOG.chat.getPlayerSuffix(sentChatMessage.player)
+                    "${PlayerAffix.getPrefix(sentChatMessage.player.uniqueId)}${sentChatMessage.player.name}${
+                        PlayerAffix.getSuffix(sentChatMessage.player.uniqueId)
                     }"
                 if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%simpleclans_clan_color_tag%") != "") {
                     playerString =

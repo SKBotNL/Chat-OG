@@ -2,18 +2,25 @@ package nl.skbotnl.chatog
 
 import dev.minn.jda.ktx.coroutines.await
 import java.util.*
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
+import kotlin.concurrent.read
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.Context
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.Tag
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import net.trueog.utilitiesog.UtilitiesOG
+import nl.skbotnl.chatog.ChatOG.Companion.blocklistManager
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-object Helper {
+internal object Helper {
     private var translateTimeout: MutableMap<UUID, Long> = HashMap()
 
     fun getTranslateTimeout(uuid: UUID): Long {
@@ -30,25 +37,37 @@ object Helper {
         return cooldown
     }
 
+    private val legacyToMmMap =
+        mapOf(
+            "0" to "<black>",
+            "1" to "<dark_blue>",
+            "2" to "<dark_green>",
+            "3" to "<dark_aqua>",
+            "4" to "<dark_red>",
+            "5" to "<dark_purple>",
+            "6" to "<gold>",
+            "7" to "<gray>",
+            "8" to "<dark_gray>",
+            "9" to "<blue>",
+            "a" to "<green>",
+            "b" to "<aqua>",
+            "c" to "<red>",
+            "d" to "<light_purple>",
+            "e" to "<yellow>",
+            "f" to "<white>",
+            "k" to "<obfuscated>",
+            "l" to "<bold>",
+            "m" to "<strikethrough>",
+            "n" to "<underlined>",
+            "o" to "<italic>",
+            "r" to "<reset>",
+            "*" to "<rainbow>",
+        )
+
+    val legacyRegex = Regex("[§&]([0-9a-fk-or*])", RegexOption.IGNORE_CASE)
+
     fun legacyToMm(text: String): String {
-        return text
-            .replace("[§&]4".toRegex(), "<dark_red>")
-            .replace("[§&]c".toRegex(), "<red>")
-            .replace("[§&]6".toRegex(), "<gold>")
-            .replace("[§&]e".toRegex(), "<yellow>")
-            .replace("[§&]2".toRegex(), "<dark_green>")
-            .replace("[§&]a".toRegex(), "<green>")
-            .replace("[§&]b".toRegex(), "<aqua>")
-            .replace("[§&]3".toRegex(), "<dark_aqua>")
-            .replace("[§&]1".toRegex(), "<dark_blue>")
-            .replace("[§&]9".toRegex(), "<blue>")
-            .replace("[§&]d".toRegex(), "<light_purple>")
-            .replace("[§&]5".toRegex(), "<dark_purple>")
-            .replace("[§&]f".toRegex(), "<white>")
-            .replace("[§&]7".toRegex(), "<gray>")
-            .replace("[§&]8".toRegex(), "<dark_gray>")
-            .replace("[§&]0".toRegex(), "<black>")
-            .replace("[§&]r".toRegex(), "<reset>")
+        return legacyRegex.replace(text) { legacyToMmMap[it.groupValues[1].lowercase()] ?: it.value }
     }
 
     private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
@@ -59,48 +78,12 @@ object Helper {
         return tempText
     }
 
-    fun getColorSection(text: String): String {
-        val it = colorRegex.findAll(text).iterator()
-
-        var last = ""
-        while (it.hasNext()) {
-            last = it.next().value
-        }
-
-        return last
-    }
-
-    fun getFirstColorSection(text: String): String {
-        val it = colorRegex.findAll(text).iterator()
-
-        var first = ""
-        while (it.hasNext()) {
-            first = it.next().value
-            break
-        }
-
-        return first
-    }
-
-    private val getColorRegex = Regex("(&)?&([0-9a-fk-orA-FK-OR])")
-
-    private fun getColor(text: String): String {
-        val it = getColorRegex.findAll(text).iterator()
-
-        var last = ""
-        while (it.hasNext()) {
-            last = it.next().value
-        }
-
-        return last
-    }
-
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
 
     suspend fun convertMentions(text: String): String {
-        val guild = DiscordBridge.jda?.getGuildById(Config.guildId)
+        val guild = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!) }
         if (guild == null) {
-            ChatOG.plugin.logger.warning("Can't get the guild, is guildId set?")
+            ChatOG.plugin.logger.warning("Guild was null")
             return text
         }
 
@@ -118,102 +101,98 @@ object Helper {
         return tempText
     }
 
-    private val urlRegex =
-        Regex("(.*)((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;()]*[-a-zA-Z0-9+&@#/%=~_|()])(.*)")
+    private val urlRegex = Regex("(.*?)((?:https?://)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:/?[a-zA-Z]*)+)(.*)")
 
-    fun convertLinks(text: String, player: Player): MutableList<Component> {
-        val messageComponents = mutableListOf<Component>()
+    val noColorMm = MiniMessage.builder().editTags { b -> b.tag("a", Helper::createA) }.build()
 
-        text.split(" ").forEach { word ->
-            val urlIter = urlRegex.findAll(word).iterator()
-            val chatColor = getColor(ChatOG.chat.getPlayerSuffix(player))
+    val colorMm =
+        MiniMessage.builder()
+            .tags(
+                TagResolver.builder()
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.decorations())
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.reset())
+                    .resolver(StandardTags.rainbow())
+                    .resolver(StandardTags.gradient())
+                    .build()
+            )
+            .editTags { b -> b.tag("a", Helper::createA) }
+            .build()
 
-            if (urlIter.hasNext()) {
-                urlIter.forEach { link ->
-                    if (BlocklistManager.checkUrl(word)) {
-                        player.sendMessage(
-                            UtilitiesOG.trueogColorize(
-                                "${Config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."
-                            )
-                        )
-                        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                            if (onlinePlayer.hasPermission("group.moderator")) {
-                                onlinePlayer.sendMessage(
-                                    UtilitiesOG.trueogColorize(
-                                        "${Config.prefix}<reset>: ${player.name} has posted a disallowed link: ${
-                                            word.replace(
-                                                ".",
-                                                "[dot]",
-                                            )
-                                        }."
-                                    )
-                                )
-                            }
-                        }
-                        return messageComponents
-                    }
+    fun createA(args: ArgumentQueue, @Suppress("unused") ctx: Context): Tag {
+        val link = args.popOr("The <a> tag requires exactly one argument, the link to open").value()
 
-                    var linkComponent = Component.text(link.groups[2]!!.value).color(TextColor.color(34, 100, 255))
-                    linkComponent =
-                        linkComponent.hoverEvent(
-                            HoverEvent.hoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                UtilitiesOG.trueogColorize("<green>Click to open link"),
-                            )
-                        )
-
-                    linkComponent =
-                        linkComponent.clickEvent(
-                            ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, link.groups[2]!!.value)
-                        )
-
-                    val beforeComponent =
-                        UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[1]?.value ?: ""))
-                    val afterComponent =
-                        UtilitiesOG.trueogColorize(legacyToMm(chatColor) + (link.groups[4]?.value ?: ""))
-
-                    val fullComponent =
-                        Component.join(JoinConfiguration.noSeparators(), beforeComponent, linkComponent, afterComponent)
-
-                    messageComponents += fullComponent
-                }
-                return@forEach
-            }
-            val wordComponent =
-                if (player.hasPermission("chat-og.color")) {
-                    if (messageComponents.isNotEmpty()) {
-                        val lastContent = (messageComponents.last() as TextComponent).content()
-                        if (getColorSection(lastContent) != "" && getFirstColorSection(word) == "") {
-                            UtilitiesOG.trueogColorize(legacyToMm(getColorSection(lastContent) + word))
-                        } else {
-                            UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
-                        }
-                    } else {
-                        UtilitiesOG.trueogColorize(legacyToMm(chatColor + word))
-                    }
+        return Tag.styling(
+            TextColor.color(34, 100, 255),
+            ClickEvent.openUrl(
+                if (!link.startsWith("http")) {
+                    "https://"
                 } else {
-                    Component.join(
-                        JoinConfiguration.noSeparators(),
-                        UtilitiesOG.trueogColorize(legacyToMm(chatColor)),
-                        Component.text(word),
-                    )
-                }
-            messageComponents += wordComponent
-        }
-
-        return messageComponents
+                    ""
+                } + link
+            ),
+            HoverEvent.showText(UtilitiesOG.trueogColorize("<green>Click to open link")),
+        )
     }
 
-    private val emojiRegex = Regex(":(.*?):")
+    fun processText(text: String, player: Player) = processText(text, player, null)
+
+    fun processText(text: String, username: String) = processText(text, null, username)
+
+    private fun processText(text: String, player: Player?, username: String?): Component? {
+        val words: MutableList<String> = mutableListOf()
+
+        legacyToMm(text).split(" ").forEach { word ->
+            val url = urlRegex.find(word)
+
+            if (url != null) {
+                val link = url.groups[2]?.value ?: ""
+                if (blocklistManager.checkUrl(link)) {
+                    player?.sendMessage(
+                        UtilitiesOG.trueogColorize(
+                            "${config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."
+                        )
+                    )
+                    for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                        if (onlinePlayer.hasPermission("group.moderator")) {
+                            onlinePlayer.sendMessage(
+                                UtilitiesOG.trueogColorize(
+                                    "${config.prefix}<reset>: ${player?.name ?: username} has posted a disallowed link: ${
+                                        word.replace(
+                                            ".",
+                                            "[dot]",
+                                        )
+                                    }."
+                                )
+                            )
+                        }
+                    }
+                    return null
+                }
+                val before = url.groups[1]?.value ?: ""
+                val after = url.groups[3]?.value ?: ""
+                words += "$before<a:$link>$link</a>$after"
+            } else {
+                words += word
+            }
+        }
+
+        return if (player?.hasPermission("chat-og.color") == true) {
+            colorMm.deserialize(words.joinToString(" "))
+        } else {
+            noColorMm.deserialize(words.joinToString(" "))
+        }
+    }
+
+    private val emojiRegex = Regex(":([a-zA-Z0-9_]*?):")
 
     fun convertEmojis(text: String): String {
         var discordMessageString = text
-        var guildEmojis: List<RichCustomEmoji>? = null
 
-        try {
-            guildEmojis = DiscordBridge.jda?.getGuildById(Config.guildId)?.emojis
-        } catch (e: Exception) {
-            ChatOG.plugin.logger.warning("Can't get the guild's emojis, is the guildId set?")
+        val guildEmojis = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!)?.emojis }
+        if (guildEmojis == null) {
+            ChatOG.plugin.logger.warning("Guild emojis was null")
         }
 
         if (guildEmojis != null) {

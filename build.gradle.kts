@@ -37,6 +37,7 @@ dependencies {
     compileOnly("net.essentialsx:EssentialsX:2.21.0")
     compileOnly(files("libs/AnnouncerPlus-1.4.1.jar"))
     compileOnly(project(":libs:Utilities-OG"))
+    compileOnly("net.luckperms:api:5.5")
 
     implementation("net.dv8tion:JDA:5.5.1")
     implementation("club.minnced:jda-ktx:0.12.0")

@@ -1,15 +1,16 @@
 package nl.skbotnl.chatog
 
 import java.util.*
+import kotlin.concurrent.read
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
-import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.trueog.utilitiesog.UtilitiesOG
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
 import nl.skbotnl.chatog.Helper.legacyToMm
 import nl.skbotnl.chatog.Helper.removeColor
 import nl.skbotnl.chatog.commands.TranslateMessage
@@ -17,36 +18,40 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 @OptIn(DelicateCoroutinesApi::class)
-object ChatSystemHelper {
-    object ChatType {
-        const val STAFFCHAT = "staffchat"
-        const val PREMIUMCHAT = "premiumchat"
+internal object ChatSystem {
+    enum class ChatType {
+        GENERAL_CHAT,
+        STAFF_CHAT,
+        PREMIUM_CHAT,
     }
 
-    var inChat: MutableMap<UUID, String> = HashMap()
+    var inChat: MutableMap<UUID, ChatType> = HashMap()
 
     fun sendMessageInStaffChat(player: Player, text: String) {
-        var chatString = "${ChatOG.chat.getPlayerPrefix(player)}${player.name}"
+        var playerPartString = ChatHelper.getPlayerPartString(player)
+        playerPartString = "&cSTAFF | $playerPartString"
 
-        if (PlaceholderAPI.setPlaceholders(player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
-        }
-        chatString = "&cSTAFF | $chatString"
-
-        if (Config.staffDiscordEnabled) {
+        if (config.staffDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
             ChatOG.scope.launch {
-                DiscordBridge.sendStaffMessage(discordMessageString, removeColor(chatString), player.uniqueId)
+                discordBridgeLock.read {
+                    ChatOG.discordBridge?.sendStaffMessage(
+                        discordMessageString,
+                        removeColor(playerPartString),
+                        player.uniqueId,
+                    )
+                }
             }
         }
 
-        val messageComponents = Helper.convertLinks(text, player)
+        val messageComponent = Helper.processText(text, player)
+        if (messageComponent == null) {
+            return
+        }
 
-        val messageComponent =
-            Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
-
-        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
+        val chatComponent =
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =
@@ -73,27 +78,30 @@ object ChatSystemHelper {
     }
 
     fun sendMessageInPremiumChat(player: Player, text: String) {
-        var chatString = "${ChatOG.chat.getPlayerPrefix(player)}${player.name}"
+        var playerPartString = ChatHelper.getPlayerPartString(player)
+        playerPartString = "&aPREMIUM | $playerPartString"
 
-        if (PlaceholderAPI.setPlaceholders(player, "%simpleclans_clan_color_tag%") != "") {
-            chatString = PlaceholderAPI.setPlaceholders(player, "&8[%simpleclans_clan_color_tag%&8] $chatString")
-        }
-        chatString = "&aPREMIUM | $chatString"
-
-        if (Config.premiumDiscordEnabled) {
+        if (config.premiumDiscordEnabled) {
             val discordMessageString = Helper.convertEmojis(text)
 
             ChatOG.scope.launch {
-                DiscordBridge.sendPremiumMessage(discordMessageString, removeColor(chatString), player.uniqueId)
+                discordBridgeLock.read {
+                    ChatOG.discordBridge?.sendPremiumMessage(
+                        discordMessageString,
+                        removeColor(playerPartString),
+                        player.uniqueId,
+                    )
+                }
             }
         }
 
-        val messageComponents = Helper.convertLinks(text, player)
+        val messageComponent = Helper.processText(text, player)
+        if (messageComponent == null) {
+            return
+        }
 
-        val messageComponent =
-            Component.join(JoinConfiguration.separator(Component.text(" ")), messageComponents) as TextComponent
-
-        val chatComponent = UtilitiesOG.trueogColorize(legacyToMm("$chatString${ChatOG.chat.getPlayerSuffix(player)}"))
+        val chatComponent =
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =

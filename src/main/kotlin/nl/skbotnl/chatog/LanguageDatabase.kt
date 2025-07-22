@@ -3,9 +3,10 @@ package nl.skbotnl.chatog
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionException
 import java.util.*
+import nl.skbotnl.chatog.ChatOG.Companion.config
 
-class LanguageDatabase {
-    private val redisClient: RedisClient = RedisClient.create(Config.redisUrl)
+internal class LanguageDatabase {
+    private val redisClient: RedisClient = RedisClient.create(config.redisUrl)
 
     /** @return True if failed */
     fun testConnection(): Boolean {
