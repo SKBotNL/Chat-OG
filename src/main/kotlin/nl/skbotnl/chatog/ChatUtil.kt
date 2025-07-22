@@ -1,9 +1,13 @@
 package nl.skbotnl.chatog
 
 import dev.minn.jda.ktx.coroutines.await
-import java.util.*
+import java.util.HashMap
+import java.util.UUID
+import kotlin.collections.forEach
 import kotlin.concurrent.read
+import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
@@ -13,14 +17,54 @@ import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.blocklistManager
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
 import org.bukkit.Bukkit
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-internal object Helper {
+internal object ChatUtil {
+    fun getPlayerPart(player: Player, addSuffix: Boolean): TextComponent {
+        val playerPartString = getPlayerPartString(player)
+
+        val suffix =
+            if (addSuffix) {
+                PlayerAffix.getSuffix(player.uniqueId)
+            } else {
+                ""
+            }
+
+        return UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>$suffix"))
+    }
+
+    fun getPlayerPartString(player: Player): String {
+        var playerPart = "${PlayerAffix.getPrefix(player.uniqueId)}${player.name}"
+
+        if (PlaceholderAPI.setPlaceholders(player, "%simpleclans_clan_color_tag%") != "") {
+            playerPart = PlaceholderAPI.setPlaceholders(player, "&8[%simpleclans_clan_color_tag%&8] $playerPart")
+        }
+
+        return playerPart
+    }
+
+    val mentionRegex = Regex("@([A-Za-z0-9_]{3,16})")
+
+    fun dingForMentions(dontDingFor: UUID, component: Component) {
+        val messageContent = PlainTextComponentSerializer.plainText().serialize(component)
+
+        val namesToMention = mutableListOf<String>()
+        mentionRegex.findAll(messageContent).iterator().forEach { namesToMention += it.groups[1]!!.value.lowercase() }
+
+        for (player in Bukkit.getOnlinePlayers()) {
+            if (player.uniqueId == dontDingFor) continue
+            if (player.name.lowercase() !in namesToMention) continue
+            player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
+        }
+    }
+
     private var translateTimeout: MutableMap<UUID, Long> = HashMap()
 
     fun getTranslateTimeout(uuid: UUID): Long {
@@ -70,14 +114,6 @@ internal object Helper {
         return legacyRegex.replace(text) { legacyToMmMap[it.groupValues[1].lowercase()] ?: it.value }
     }
 
-    private val colorRegex = Regex("[§&]?[§&]([0-9a-fk-orA-FK-OR])")
-
-    fun removeColor(text: String): String {
-        var tempText = text
-        colorRegex.findAll(text).iterator().forEach { tempText = tempText.replace(it.value, "") }
-        return tempText
-    }
-
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
 
     suspend fun convertMentions(text: String): String {
@@ -103,7 +139,7 @@ internal object Helper {
 
     private val urlRegex = Regex("(.*?)((?:https?://)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:/?[a-zA-Z]*)+)(.*)")
 
-    val noColorMm = MiniMessage.builder().editTags { b -> b.tag("a", Helper::createA) }.build()
+    val noColorMm = MiniMessage.builder().editTags { b -> b.tag("a", ChatUtil::createA) }.build()
 
     val colorMm =
         MiniMessage.builder()
@@ -117,7 +153,7 @@ internal object Helper {
                     .resolver(StandardTags.gradient())
                     .build()
             )
-            .editTags { b -> b.tag("a", Helper::createA) }
+            .editTags { b -> b.tag("a", ChatUtil::createA) }
             .build()
 
     fun createA(args: ArgumentQueue, @Suppress("unused") ctx: Context): Tag {

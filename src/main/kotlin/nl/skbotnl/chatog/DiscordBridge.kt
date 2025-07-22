@@ -29,8 +29,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.Helper.convertMentions
-import nl.skbotnl.chatog.Helper.stripGroupMentions
+import nl.skbotnl.chatog.ChatUtil.convertMentions
+import nl.skbotnl.chatog.ChatUtil.stripGroupMentions
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -245,7 +245,7 @@ internal class DiscordBridge private constructor() {
 
                 if (message.contentDisplay != "") {
                     messageComponents +=
-                        Helper.processText(
+                        ChatUtil.processText(
                                 EmojiConverter.replaceEmojisWithNames(message.contentDisplay),
                                 "@${user.name}",
                             )
@@ -381,7 +381,7 @@ internal class DiscordBridge private constructor() {
     suspend fun sendMessage(message: String, player: Player) {
         val webhookMessage =
             WebhookMessageBuilder()
-                .setUsername(UtilitiesOG.stripFormatting(ChatHelper.getPlayerPartString(player)))
+                .setUsername(UtilitiesOG.stripFormatting(ChatUtil.getPlayerPartString(player)))
                 .setContent(UtilitiesOG.stripFormatting(stripGroupMentions(convertMentions(message))))
                 .setAvatarUrl("https://minotar.net/helm/${player.uniqueId}.png")
 

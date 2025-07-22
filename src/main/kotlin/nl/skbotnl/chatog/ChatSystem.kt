@@ -11,8 +11,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
-import nl.skbotnl.chatog.Helper.legacyToMm
-import nl.skbotnl.chatog.Helper.removeColor
+import nl.skbotnl.chatog.ChatUtil.legacyToMm
 import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -28,24 +27,20 @@ internal object ChatSystem {
     var inChat: MutableMap<UUID, ChatType> = HashMap()
 
     fun sendMessageInStaffChat(player: Player, text: String) {
-        var playerPartString = ChatHelper.getPlayerPartString(player)
+        var playerPartString = ChatUtil.getPlayerPartString(player)
         playerPartString = "&cSTAFF | $playerPartString"
 
         if (config.staffDiscordEnabled) {
-            val discordMessageString = Helper.convertEmojis(text)
+            val discordMessageString = ChatUtil.convertEmojis(text)
 
             ChatOG.scope.launch {
                 discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendStaffMessage(
-                        discordMessageString,
-                        removeColor(playerPartString),
-                        player.uniqueId,
-                    )
+                    ChatOG.discordBridge?.sendStaffMessage(discordMessageString, playerPartString, player.uniqueId)
                 }
             }
         }
 
-        val messageComponent = Helper.processText(text, player)
+        val messageComponent = ChatUtil.processText(text, player)
         if (messageComponent == null) {
             return
         }
@@ -78,24 +73,20 @@ internal object ChatSystem {
     }
 
     fun sendMessageInPremiumChat(player: Player, text: String) {
-        var playerPartString = ChatHelper.getPlayerPartString(player)
+        var playerPartString = ChatUtil.getPlayerPartString(player)
         playerPartString = "&aPREMIUM | $playerPartString"
 
         if (config.premiumDiscordEnabled) {
-            val discordMessageString = Helper.convertEmojis(text)
+            val discordMessageString = ChatUtil.convertEmojis(text)
 
             ChatOG.scope.launch {
                 discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendPremiumMessage(
-                        discordMessageString,
-                        removeColor(playerPartString),
-                        player.uniqueId,
-                    )
+                    ChatOG.discordBridge?.sendPremiumMessage(discordMessageString, playerPartString, player.uniqueId)
                 }
             }
         }
 
-        val messageComponent = Helper.processText(text, player)
+        val messageComponent = ChatUtil.processText(text, player)
         if (messageComponent == null) {
             return
         }
