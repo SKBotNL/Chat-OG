@@ -207,6 +207,8 @@ internal class Events : Listener {
 
         event.viewers().forEach { it.sendMessage(textComponent) }
 
+        ChatHelper.dingForMentions(event.player.uniqueId, messageComponent)
+
         TranslateMessage.chatMessages[randomUUID] =
             TranslateMessage.SentChatMessage(eventMessage.content(), event.player)
     }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class BlocklistManager {
     private val lock = Any()
-    private var blockList = mutableListOf<String>()
+    private val blockList = mutableListOf<String>()
 
     init {
         ChatOG.plugin.logger.info("Loading the blocklists...")
