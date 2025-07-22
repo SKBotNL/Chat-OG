@@ -168,13 +168,20 @@ internal class Events : Listener {
 
         val eventMessage = event.message() as TextComponent
 
-        if (ChatSystem.inChat[event.player.uniqueId] == ChatType.STAFF_CHAT) {
-            ChatSystem.sendMessageInStaffChat(event.player, eventMessage.content())
-            return
-        }
-        if (ChatSystem.inChat[event.player.uniqueId] == ChatType.PREMIUM_CHAT) {
-            ChatSystem.sendMessageInPremiumChat(event.player, eventMessage.content())
-            return
+        when (ChatSystem.inChat[event.player.uniqueId]) {
+            ChatType.STAFF_CHAT -> {
+                ChatSystem.sendMessageInStaffChat(event.player, eventMessage.content())
+                return
+            }
+            ChatType.PREMIUM_CHAT -> {
+                ChatSystem.sendMessageInPremiumChat(event.player, eventMessage.content())
+                return
+            }
+            ChatType.DEVELOPER_CHAT -> {
+                ChatSystem.sendMessageInDeveloperChat(event.player, eventMessage.content())
+                return
+            }
+            else -> {}
         }
 
         val discordMessageString = ChatUtil.convertEmojis(eventMessage.content())

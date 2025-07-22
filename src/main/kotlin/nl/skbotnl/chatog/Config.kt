@@ -16,6 +16,7 @@ internal class Config private constructor() {
     var discordEnabled = false
     var staffDiscordEnabled = false
     var premiumDiscordEnabled = false
+    var developerDiscordEnabled = false
     var status: String? = null
     var serverHasStartedMessage: String? = null
     var serverHasStoppedMessage: String? = null
@@ -23,10 +24,12 @@ internal class Config private constructor() {
     var channelId: String? = null
     var staffChannelId: String? = null
     var premiumChannelId: String? = null
+    var developerChannelId: String? = null
     var guildId: String? = null
     var webhook: String? = null
     var staffWebhook: String? = null
     var premiumWebhook: String? = null
+    var developerWebhook: String? = null
     var listCommandName: String? = null
     var listCommandText: String? = null
     var colorCodeRoles = listOf<String>()
@@ -121,6 +124,13 @@ internal class Config private constructor() {
                 return null
             }
 
+            try {
+                config.developerDiscordEnabled = yamlConfig.get("developerDiscordEnabled") as Boolean
+            } catch (_: Exception) {
+                ChatOG.plugin.logger.severe("Failed to parse config option \"developerDiscordEnabled\" as a boolean")
+                return null
+            }
+
             if (config.discordEnabled) {
                 try {
                     config.status = yamlConfig.get("status") as String
@@ -192,6 +202,22 @@ internal class Config private constructor() {
                         config.premiumWebhook = yamlConfig.get("premiumWebhook") as String
                     } catch (_: Exception) {
                         ChatOG.plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
+                        return null
+                    }
+                }
+
+                if (config.developerDiscordEnabled) {
+                    try {
+                        config.developerChannelId = (yamlConfig.get("developerChannelId") as Long).toString()
+                    } catch (_: Exception) {
+                        ChatOG.plugin.logger.severe("Failed to parse config option \"developerChannelId\" as a long")
+                        return null
+                    }
+
+                    try {
+                        config.developerWebhook = yamlConfig.get("developerWebhook") as String
+                    } catch (_: Exception) {
+                        ChatOG.plugin.logger.severe("Failed to parse config option \"developerWebhook\" as a string")
                         return null
                     }
                 }

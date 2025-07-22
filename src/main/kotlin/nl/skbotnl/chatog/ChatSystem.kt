@@ -22,6 +22,7 @@ internal object ChatSystem {
         GENERAL_CHAT,
         STAFF_CHAT,
         PREMIUM_CHAT,
+        DEVELOPER_CHAT,
     }
 
     var inChat: MutableMap<UUID, ChatType> = HashMap()
@@ -113,6 +114,52 @@ internal object ChatSystem {
 
         for (p in Bukkit.getOnlinePlayers()) {
             if (p.hasPermission("chat-og.premium")) {
+                p.sendMessage(textComponent)
+            }
+        }
+    }
+
+    fun sendMessageInDeveloperChat(player: Player, text: String) {
+        var playerPartString = ChatUtil.getPlayerPartString(player)
+        playerPartString = "<aqua>DEVELOPER | $playerPartString"
+
+        if (config!!.premiumDiscordEnabled) {
+            val discordMessageString = ChatUtil.convertEmojis(text)
+
+            ChatOG.scope.launch {
+                discordBridgeLock.read {
+                    ChatOG.discordBridge?.sendDeveloperMessage(discordMessageString, playerPartString, player.uniqueId)
+                }
+            }
+        }
+
+        val messageComponent = ChatUtil.processText(text, player)
+        if (messageComponent == null) {
+            return
+        }
+
+        val chatComponent =
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
+
+        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
+        textComponent =
+            textComponent.hoverEvent(
+                HoverEvent.hoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                )
+            )
+
+        val randomUUID = UUID.randomUUID()
+        textComponent =
+            textComponent.clickEvent(
+                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
+            )
+
+        TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
+
+        for (p in Bukkit.getOnlinePlayers()) {
+            if (p.hasPermission("chat-og.developer")) {
                 p.sendMessage(textComponent)
             }
         }

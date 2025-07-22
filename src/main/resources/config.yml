@@ -25,6 +25,7 @@ model: ""
 discordEnabled: false
 staffDiscordEnabled: false
 premiumDiscordEnabled: false
+developerDiscordEnabled: false
 status: Minecraft
 serverHasStartedMessage: The server has started
 serverHasStoppedMessage: The server has stopped
@@ -33,9 +34,11 @@ guildId: <put the id of the guild here>
 channelId: <put the id of the channel here>
 staffChannelId: <put the id of the channel here>
 premiumChannelId: <put the id of the channel here>
+developerChannelId: <put the id of the channel here>
 webhook: <put the webhook here>
-staffWebhook: <put the webhook here>
-premiumWebhook: <put the webhook here>
+staffWebhook: <put the webhook url here>
+premiumWebhook: <put the webhook url here>
+developerWebhook: <put the webhook url here>
 listCommandName: list
 # Available placeholders: %onlineplayers%, %maxplayers%
 listCommandText: "%onlineplayers% player(s) online:"

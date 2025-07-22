@@ -40,6 +40,7 @@ internal class DiscordBridge private constructor() {
     private lateinit var webhook: WebhookClient
     private var staffWebhook: WebhookClient? = null
     private var premiumWebhook: WebhookClient? = null
+    private var developerWebhook: WebhookClient? = null
 
     companion object {
         fun create(): DiscordBridge? {
@@ -71,6 +72,17 @@ internal class DiscordBridge private constructor() {
                 }
             } else if (config!!.premiumDiscordEnabled) {
                 ChatOG.plugin.logger.warning("You have enabled premium Discord but have not set up the premium webhook")
+            }
+            if (config!!.developerWebhook != null) {
+                try {
+                    discordBridge.developerWebhook = WebhookClient.withUrl(config!!.developerWebhook!!)
+                } catch (_: IllegalArgumentException) {
+                    ChatOG.plugin.logger.warning("Config option \"developer\" is invalid")
+                }
+            } else if (config!!.premiumDiscordEnabled) {
+                ChatOG.plugin.logger.warning(
+                    "You have enabled developer Discord but have not set up the developer webhook"
+                )
             }
 
             if (config!!.botToken == null) {
@@ -162,7 +174,8 @@ internal class DiscordBridge private constructor() {
                 if (
                     it.channel.id != config!!.channelId &&
                         (if (config!!.staffDiscordEnabled) it.channel.id != config!!.staffChannelId else true) &&
-                        (if (config!!.premiumDiscordEnabled) it.channel.id != config!!.premiumChannelId else true)
+                        (if (config!!.premiumDiscordEnabled) it.channel.id != config!!.premiumChannelId else true) &&
+                        (if (config!!.developerDiscordEnabled) it.channel.id != config!!.developerChannelId else true)
                 ) {
                     return@listener
                 }
@@ -292,6 +305,18 @@ internal class DiscordBridge private constructor() {
                                 JoinConfiguration.noSeparators(),
                                 discordComponent,
                                 premiumComponent,
+                                replyComponent,
+                                userComponent,
+                                contentComponent,
+                            )
+                        }
+
+                        config!!.developerChannelId -> {
+                            val developerComponent = Component.text("DEVELOPER | ").color(NamedTextColor.AQUA)
+                            Component.join(
+                                JoinConfiguration.noSeparators(),
+                                discordComponent,
+                                developerComponent,
                                 replyComponent,
                                 userComponent,
                                 contentComponent,
@@ -434,6 +459,24 @@ internal class DiscordBridge private constructor() {
             }
 
         premiumWebhook!!.send(webhookMessage.build())
+    }
+
+    suspend fun sendDeveloperMessage(message: String, name: String, uuid: UUID?) {
+        if (!config!!.developerDiscordEnabled) return
+
+        if (developerWebhook == null) {
+            ChatOG.plugin.logger.warning("developerWebhook has not been set or is invalid")
+            return
+        }
+
+        val webhookMessage =
+            WebhookMessageBuilder().apply {
+                setUsername(UtilitiesOG.stripFormatting(name))
+                setContent(UtilitiesOG.stripFormatting(stripGroupMentions((convertMentions(message)))))
+                if (uuid != null) setAvatarUrl("https://minotar.net/helm/$uuid.png")
+            }
+
+        developerWebhook!!.send(webhookMessage.build())
     }
 
     fun sendEmbed(message: String, uuid: UUID?, color: Int?) {
