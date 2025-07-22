@@ -46,12 +46,12 @@ internal class ChatOG : JavaPlugin() {
             if (Companion.config.openAIEnabled) {
                 if (Companion.config.openAIBaseUrl == null) {
                     this.logger.warning(
-                        "You have enabled OpenAI but have not set up the base url, not enabling the translator"
+                        "You have enabled OpenAI translation but have not set up the base url, not enabling the translator"
                     )
                     null
                 } else if (Companion.config.openAIApiKey == null) {
                     this.logger.warning(
-                        "You have enabled OpenAI but have not set up the api key, not enabling the translator"
+                        "You have enabled OpenAI translation but have not set up the api key, not enabling the translator"
                     )
                     null
                 } else {
