@@ -27,8 +27,6 @@ internal class ChatOG : JavaPlugin() {
         val discordBridgeLock = ReentrantReadWriteLock()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
         var lastMessagedMap: MutableMap<UUID, UUID> = HashMap()
-
-        fun isConfigInitialized() = ::config.isInitialized
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -108,22 +106,20 @@ internal class ChatOG : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (isConfigInitialized()) {
-            if (Companion.config.discordEnabled) {
-                discordBridgeLock.read {
-                    val discordBridge = discordBridge
-                    val serverHasStoppedMessage =
-                        if (Companion.config.serverHasStoppedMessage == null) {
-                            this.logger.warning(
-                                "You have enabled Discord but have not set up the server has stopped message, using the default one instead"
-                            )
-                            "The server has stopped"
-                        } else {
-                            Companion.config.serverHasStoppedMessage!!
-                        }
-                    discordBridge!!.sendMessageWithBot(serverHasStoppedMessage)
-                    discordBridge.shutdownNow()
-                }
+        if (discordBridge != null) {
+            discordBridgeLock.read {
+                val discordBridge = discordBridge
+                val serverHasStoppedMessage =
+                    if (Companion.config.serverHasStoppedMessage == null) {
+                        this.logger.warning(
+                            "You have enabled Discord but have not set up the server has stopped message, using the default one instead"
+                        )
+                        "The server has stopped"
+                    } else {
+                        Companion.config.serverHasStoppedMessage!!
+                    }
+                discordBridge!!.sendMessageWithBot(serverHasStoppedMessage)
+                discordBridge.shutdownNow()
             }
         }
 
