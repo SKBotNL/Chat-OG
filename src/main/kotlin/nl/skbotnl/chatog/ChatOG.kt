@@ -27,6 +27,8 @@ internal class ChatOG : JavaPlugin() {
         val discordBridgeLock = ReentrantReadWriteLock()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
         var lastMessagedMap: MutableMap<UUID, UUID> = HashMap()
+
+        fun isLanguageDatabaseInitialized() = ::languageDatabase.isInitialized
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -121,6 +123,10 @@ internal class ChatOG : JavaPlugin() {
                 discordBridge!!.sendMessageWithBot(serverHasStoppedMessage)
                 discordBridge.shutdownNow()
             }
+        }
+
+        if (isLanguageDatabaseInitialized()) {
+            languageDatabase.shutdown()
         }
 
         scope.cancel()
