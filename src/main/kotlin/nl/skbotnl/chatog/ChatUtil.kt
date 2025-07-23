@@ -117,7 +117,7 @@ internal object ChatUtil {
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
 
     suspend fun convertMentions(text: String): String {
-        val guild = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config!!.guildId!!) }
+        val guild = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!) }
         if (guild == null) {
             ChatOG.plugin.logger.warning("Guild was null")
             return text
@@ -191,14 +191,14 @@ internal object ChatUtil {
                 if (blocklistManager?.checkUrl(link) == true) {
                     player?.sendMessage(
                         UtilitiesOG.trueogColorize(
-                            "${config!!.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."
+                            "${config.prefix}<reset>: <red>WARNING: You are not allowed to post links like that here."
                         )
                     )
                     for (onlinePlayer in Bukkit.getOnlinePlayers()) {
                         if (onlinePlayer.hasPermission("group.moderator")) {
                             onlinePlayer.sendMessage(
                                 UtilitiesOG.trueogColorize(
-                                    "${config!!.prefix}<reset>: ${player?.name ?: username} has posted a disallowed link: ${
+                                    "${config.prefix}<reset>: ${player?.name ?: username} has posted a disallowed link: ${
                                         word.replace(
                                             ".",
                                             "[dot]",
@@ -237,7 +237,7 @@ internal object ChatUtil {
     fun convertEmojis(text: String): String {
         var discordMessageString = text
 
-        val guildEmojis = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config!!.guildId!!)?.emojis }
+        val guildEmojis = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!)?.emojis }
         if (guildEmojis == null) {
             ChatOG.plugin.logger.warning("Guild emojis was null")
         }

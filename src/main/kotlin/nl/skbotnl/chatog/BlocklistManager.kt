@@ -24,7 +24,7 @@ class BlocklistManager {
 
     private fun refresh() {
         blockList.clear()
-        ChatOG.config!!.blocklists.forEach { blocklist ->
+        ChatOG.config.blocklists.forEach { blocklist ->
             URI(blocklist).toURL().openStream().use { input ->
                 input.bufferedReader().use { bufferedReader ->
                     synchronized(lock) { bufferedReader.lines().forEach { if (!it.startsWith("#")) blockList.add(it) } }

@@ -35,7 +35,7 @@ import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 internal class Events : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (ChatOG.essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
@@ -59,7 +59,7 @@ internal class Events : Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (ChatOG.essentials.getUser(event.player).isVanished) {
@@ -83,7 +83,7 @@ internal class Events : Listener {
 
     @EventHandler
     fun onKick(event: PlayerKickEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (ChatOG.essentials.getUser(event.player).isVanished) {
@@ -109,7 +109,7 @@ internal class Events : Listener {
 
     @EventHandler
     fun onAdvancement(event: PlayerAdvancementDoneEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (ChatOG.essentials.getUser(event.player).isVanished) {
@@ -144,7 +144,7 @@ internal class Events : Listener {
 
     @EventHandler
     fun onBroadcast(event: BroadcastMessageEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (event.message() !is TextComponent) {
@@ -221,7 +221,7 @@ internal class Events : Listener {
 
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
-        if (!config!!.discordEnabled) {
+        if (!config.discordEnabled) {
             return
         }
         if (ChatOG.essentials.getUser(event.player).isVanished) {

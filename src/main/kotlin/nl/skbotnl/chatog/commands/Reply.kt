@@ -25,7 +25,7 @@ internal class Reply : CommandExecutor {
 
         if (args == null || args.isEmpty()) {
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>You did not provide your message.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>You did not provide your message.")
             )
             return true
         }
@@ -33,7 +33,7 @@ internal class Reply : CommandExecutor {
         val lastMessaged = lastMessagedMap[sender.uniqueId]
         if (lastMessaged == null) {
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>You haven't messaged anyone yet.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>You haven't messaged anyone yet.")
             )
             return true
         }
@@ -41,7 +41,7 @@ internal class Reply : CommandExecutor {
         val toPlayer = Bukkit.getPlayer(lastMessaged)
         if (toPlayer == null) {
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>That player doesn't exist or isn't online.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>That player doesn't exist or isn't online.")
             )
             return true
         }

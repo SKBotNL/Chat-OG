@@ -33,18 +33,18 @@ internal class ChatConfigReload : CommandExecutor {
                     return true
                 }
 
-        if (config!!.blocklistEnabled) {
+        if (config.blocklistEnabled) {
             blocklistManager = BlocklistManager()
         }
 
         translator =
-            if (config!!.openAIEnabled) {
-                if (config!!.openAIBaseUrl == null) {
+            if (config.openAIEnabled) {
+                if (config.openAIBaseUrl == null) {
                     ChatOG.plugin.logger.warning(
                         "You have enabled OpenAI translation but have not set up the base url, not enabling the translator"
                     )
                     null
-                } else if (config!!.openAIApiKey == null) {
+                } else if (config.openAIApiKey == null) {
                     ChatOG.plugin.logger.warning(
                         "You have enabled OpenAI translation but have not set up the api key, not enabling the translator"
                     )
@@ -61,7 +61,7 @@ internal class ChatConfigReload : CommandExecutor {
             return true
         }
 
-        if (config!!.discordEnabled) {
+        if (config.discordEnabled) {
             scope.launch {
                 discordBridgeLock.write {
                     val discordBridge = ChatOG.discordBridge
@@ -71,15 +71,13 @@ internal class ChatConfigReload : CommandExecutor {
                     }
                     ChatOG.discordBridge = DiscordBridge.create()
                     sender.sendMessage(
-                        UtilitiesOG.trueogColorize(
-                            "${config!!.prefix}<reset>: <green>Successfully reloaded the config."
-                        )
+                        UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Successfully reloaded the config.")
                     )
                 }
             }
         } else {
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <green>Successfully reloaded the config.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Successfully reloaded the config.")
             )
         }
         return true

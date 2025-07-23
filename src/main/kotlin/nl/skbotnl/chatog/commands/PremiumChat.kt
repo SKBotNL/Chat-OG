@@ -18,7 +18,7 @@ internal class PremiumChat : CommandExecutor {
         if (!sender.hasPermission("chat-og.premium")) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config!!.prefix}<reset>: <red>You do not have permission to run this command."
+                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
                 )
             )
             return true
@@ -28,13 +28,13 @@ internal class PremiumChat : CommandExecutor {
                 ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in the general chat.")
+                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the general chat.")
                 )
                 return true
             }
             ChatSystem.inChat[sender.uniqueId] = ChatType.PREMIUM_CHAT
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in the premium chat.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the premium chat.")
             )
             return true
         }

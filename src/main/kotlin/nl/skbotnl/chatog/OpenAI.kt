@@ -31,7 +31,7 @@ internal class OpenAI {
     fun translate(text: String, language: String): Translated {
         val openAICompletion =
             CompletionReq(
-                model = config!!.openAIModel ?: "",
+                model = config.openAIModel ?: "",
                 messages =
                     listOf(
                         Message(
@@ -44,8 +44,8 @@ internal class OpenAI {
 
         val request: Request =
             Request.Builder()
-                .url(config!!.openAIBaseUrl + "/v1/chat/completions")
-                .header("Authorization", "Bearer ${config!!.openAIApiKey}")
+                .url(config.openAIBaseUrl + "/v1/chat/completions")
+                .header("Authorization", "Bearer ${config.openAIApiKey}")
                 .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
                 .build()
 
@@ -61,7 +61,7 @@ internal class OpenAI {
                 null,
                 null,
                 UtilitiesOG.trueogColorize(
-                    "${config!!.prefix}<reset>: <red>Something went wrong while translating that message."
+                    "${config.prefix}<reset>: <red>Something went wrong while translating that message."
                 ),
             )
         }

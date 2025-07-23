@@ -74,13 +74,13 @@ internal class TranslateSettings : CommandExecutor {
         val language = args[0]
 
         if (languagesList.indexOf(language) == -1) {
-            sender.sendMessage(UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <red>Invalid language."))
+            sender.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>Invalid language."))
             return true
         }
 
         ChatOG.languageDatabase.setPlayerLanguage(sender.uniqueId, language)
         sender.sendMessage(
-            UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: <green>Set language to: <white>$language.")
+            UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Set language to: <white>$language.")
         )
 
         return true

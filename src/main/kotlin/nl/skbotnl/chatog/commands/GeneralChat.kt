@@ -22,12 +22,12 @@ class GeneralChat : CommandExecutor {
                 ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in the general chat.")
+                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the general chat.")
                 )
                 return true
             }
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are already talking in the general chat.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are already talking in the general chat.")
             )
             return true
         }

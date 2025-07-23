@@ -20,7 +20,7 @@ class DeveloperChat : CommandExecutor {
         if (!sender.hasPermission("chat-og.developer")) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config!!.prefix}<reset>: <red>You do not have permission to run this command."
+                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
                 )
             )
             return true
@@ -31,13 +31,13 @@ class DeveloperChat : CommandExecutor {
                 ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
 
                 sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in the general chat.")
+                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the general chat.")
                 )
                 return true
             }
             ChatSystem.inChat[sender.uniqueId] = ChatType.DEVELOPER_CHAT
             sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config!!.prefix}<reset>: You are now talking in the developer chat.")
+                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the developer chat.")
             )
             return true
         }
