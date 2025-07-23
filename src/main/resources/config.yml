@@ -56,10 +56,17 @@ useColorCodeRoles: false
 #     1234567891234567890:
 #         message_color: RED
 #
-# message_color can be one of these: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
+# message_color can be one of the following: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
 #
 # You can also use RGB for the color:
 #
 # roles:
 #     1234567891234567890:
 #         message_color: [255, 255, 255]
+
+# Configure the suffix for roles (has to include the space). color codes are allowed.
+# For example:
+
+# roleSuffixes:
+#     1234567891234567890:
+#         suffix: ": "

@@ -36,6 +36,8 @@ internal class Config private constructor() {
     var colorCodeRoles = listOf<String>()
     var roles = setOf<String>()
     var roleMessageColor: MutableMap<String, Any> = mutableMapOf()
+    var rolesWithSuffixes = setOf<String>()
+    var roleSuffix: MutableMap<String, String> = mutableMapOf()
 
     data class RGBColor(val r: Int, val g: Int, val b: Int)
 
@@ -254,66 +256,92 @@ internal class Config private constructor() {
                 config.colorCodeRoles = yamlConfig.getStringList("colorCodeRoles")
 
                 config.roles = yamlConfig.getConfigurationSection("roles")?.getKeys(false) ?: setOf()
+                config.rolesWithSuffixes = yamlConfig.getConfigurationSection("roleSuffixes")?.getKeys(false) ?: setOf()
             }
 
-            if (config.roles.isEmpty()) {
-                config.roleMessageColor = mutableMapOf()
-                return config
-            }
+            if (config.roles.isNotEmpty()) {
+                val messageColors =
+                    mapOf<String, NamedTextColor>(
+                        Pair("BLACK", NamedTextColor.BLACK),
+                        Pair("DARK_BLUE", NamedTextColor.DARK_BLUE),
+                        Pair("DARK_GREEN", NamedTextColor.DARK_GREEN),
+                        Pair("DARK_AQUA", NamedTextColor.DARK_AQUA),
+                        Pair("DARK_RED", NamedTextColor.DARK_RED),
+                        Pair("DARK_PURPLE", NamedTextColor.DARK_PURPLE),
+                        Pair("GOLD", NamedTextColor.GOLD),
+                        Pair("GRAY", NamedTextColor.GRAY),
+                        Pair("DARK_GRAY", NamedTextColor.DARK_GRAY),
+                        Pair("BLUE", NamedTextColor.BLUE),
+                        Pair("GREEN", NamedTextColor.GREEN),
+                        Pair("AQUA", NamedTextColor.AQUA),
+                        Pair("RED", NamedTextColor.RED),
+                        Pair("LIGHT_PURPLE", NamedTextColor.LIGHT_PURPLE),
+                        Pair("YELLOW", NamedTextColor.YELLOW),
+                        Pair("WHITE", NamedTextColor.WHITE),
+                    )
+                config.roles.forEach {
+                    val messageColorList = yamlConfig.getStringList("roles.$it.message_color")
+                    config.roleMessageColor[it] =
+                        if (messageColorList.isEmpty()) {
+                            try {
+                                yamlConfig.get("roles.$it.message_color") as String
+                            } catch (_: Exception) {
+                                ChatOG.plugin.logger.warning(
+                                    "Failed to parse config option \"role.$it.message_color\" as a string"
+                                )
+                                return@forEach
+                            }
 
-            val messageColors =
-                mapOf<String, NamedTextColor>(
-                    Pair("BLACK", NamedTextColor.BLACK),
-                    Pair("DARK_BLUE", NamedTextColor.DARK_BLUE),
-                    Pair("DARK_GREEN", NamedTextColor.DARK_GREEN),
-                    Pair("DARK_AQUA", NamedTextColor.DARK_AQUA),
-                    Pair("DARK_RED", NamedTextColor.DARK_RED),
-                    Pair("DARK_PURPLE", NamedTextColor.DARK_PURPLE),
-                    Pair("GOLD", NamedTextColor.GOLD),
-                    Pair("GRAY", NamedTextColor.GRAY),
-                    Pair("DARK_GRAY", NamedTextColor.DARK_GRAY),
-                    Pair("BLUE", NamedTextColor.BLUE),
-                    Pair("GREEN", NamedTextColor.GREEN),
-                    Pair("AQUA", NamedTextColor.AQUA),
-                    Pair("RED", NamedTextColor.RED),
-                    Pair("LIGHT_PURPLE", NamedTextColor.LIGHT_PURPLE),
-                    Pair("YELLOW", NamedTextColor.YELLOW),
-                    Pair("WHITE", NamedTextColor.WHITE),
-                )
-            config.roles.forEach {
-                val messageColorList = yamlConfig.getStringList("roles.$it.message_color")
-                config.roleMessageColor[it] =
-                    if (messageColorList.isEmpty()) {
-                        try {
-                            yamlConfig.get("roles.$it.message_color") as String
-                        } catch (_: Exception) {
-                            return@forEach
+                            if (!messageColors.contains(messageColorList[0].uppercase())) {
+                                ChatOG.plugin.logger.severe(
+                                    "The message color for \"$it\" (\"${messageColorList[0]}\") is invalid."
+                                )
+                                return@forEach
+                            }
+
+                            messageColors[messageColorList[0].uppercase()]!!
+                        } else {
+                            if (messageColorList.size != 3) {
+                                ChatOG.plugin.logger.severe(
+                                    "The message color for \"$it\" is not a color or an RGB value."
+                                )
+                                return@forEach
+                            }
+
+                            messageColorList.forEach colorForEach@{ colorInList ->
+                                try {
+                                    colorInList.toUByte()
+                                } catch (_: Exception) {
+                                    ChatOG.plugin.logger.severe("The RGB value for \"$it\" is invalid.")
+                                    return@forEach
+                                }
+                            }
+                            RGBColor(
+                                messageColorList[0].toInt(),
+                                messageColorList[1].toInt(),
+                                messageColorList[2].toInt(),
+                            )
                         }
+                }
+            } else {
+                config.roleMessageColor = mutableMapOf()
+            }
 
-                        if (!messageColors.contains(messageColorList[0].uppercase())) {
-                            ChatOG.plugin.logger.severe(
-                                "The message color for \"$it\" (\"${messageColorList[0]}\") is invalid."
+            if (config.rolesWithSuffixes.isNotEmpty()) {
+                config.rolesWithSuffixes.forEach {
+                    val suffixList =
+                        try {
+                            yamlConfig.get("roleSuffixes.$it.suffix") as String
+                        } catch (_: Exception) {
+                            ChatOG.plugin.logger.warning(
+                                "Failed to parse config option \"roleSuffixes.$it.suffix\" as a string"
                             )
                             return@forEach
                         }
-
-                        messageColors[messageColorList[0].uppercase()]!!
-                    } else {
-                        if (messageColorList.size != 3) {
-                            ChatOG.plugin.logger.severe("The message color for \"$it\" is not a color or an RGB value.")
-                            return@forEach
-                        }
-
-                        messageColorList.forEach colorForEach@{ colorInList ->
-                            try {
-                                colorInList.toUByte()
-                            } catch (_: Exception) {
-                                ChatOG.plugin.logger.severe("The RGB value for \"$it\" is invalid.")
-                                return@forEach
-                            }
-                        }
-                        RGBColor(messageColorList[0].toInt(), messageColorList[1].toInt(), messageColorList[2].toInt())
-                    }
+                    config.roleSuffix[it] = suffixList
+                }
+            } else {
+                config.roleSuffix = mutableMapOf()
             }
 
             return config

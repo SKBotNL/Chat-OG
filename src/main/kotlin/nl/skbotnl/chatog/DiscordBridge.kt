@@ -199,6 +199,7 @@ internal class DiscordBridge private constructor() {
 
                 val roles = member.roles
                 val topRole = roles.maxByOrNull { role -> role.positionRaw }
+                val sortedRoles = member.roles.sortedByDescending { role -> role.positionRaw }
 
                 val discordComponent = Component.text("Discord: ").color(TextColor.color(88, 101, 242))
                 val userComponent: TextComponent =
@@ -212,13 +213,7 @@ internal class DiscordBridge private constructor() {
                     if (config.roles.isEmpty()) {
                         NamedTextColor.GRAY
                     } else {
-                        val roleId =
-                            message.guild
-                                .getRoleById(
-                                    config.roles
-                                        .filter { role -> topRole!!.id == message.guild.getRoleById(role)?.id }[0]
-                                )
-                                ?.id
+                        val roleId = sortedRoles.first { role -> role.id in config.roles }?.id
                         if (roleId != null) {
                             val roleColor = config.roleMessageColor[roleId]
 
@@ -230,7 +225,19 @@ internal class DiscordBridge private constructor() {
                         } else NamedTextColor.GRAY
                     }
 
-                val messageComponents = mutableListOf<Component>(Component.text(">"))
+                val suffix =
+                    if (config.rolesWithSuffixes.isEmpty()) {
+                        ">"
+                    } else {
+                        val roleId = sortedRoles.first { role -> role.id in config.rolesWithSuffixes }?.id
+                        if (roleId != null) {
+                            config.roleSuffix[roleId]!!
+                        } else {
+                            ">"
+                        }
+                    }
+
+                val messageComponents = mutableListOf<Component>(UtilitiesOG.trueogColorize(suffix))
 
                 val attachmentComponents = mutableListOf<Component>()
 
@@ -279,7 +286,8 @@ internal class DiscordBridge private constructor() {
                 val contentComponent =
                     Component.join(
                         JoinConfiguration.separator(Component.text(" ")),
-                        messageComponents + attachmentComponents,
+                        Component.join(JoinConfiguration.noSeparators(), messageComponents),
+                        Component.join(JoinConfiguration.noSeparators(), attachmentComponents),
                     )
 
                 var replyComponent = Component.text("")
@@ -387,7 +395,7 @@ internal class DiscordBridge private constructor() {
                         message.contentDisplay,
                         member.effectiveName,
                         Component.join(JoinConfiguration.noSeparators(), discordComponent, userComponent),
-                        Component.text("> "),
+                        Component.text("$suffix "),
                     )
             }
             return discordBridge
