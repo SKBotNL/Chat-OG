@@ -219,14 +219,11 @@ internal object ChatUtil {
         }
 
         return if (player?.hasPermission("chat-og.color") == true) {
-            println("A")
             colorMm.deserialize(words.joinToString(" "))
         } else {
             if (color) {
-                println("B")
                 colorMm.deserialize(words.joinToString(" "))
             } else {
-                println("C")
                 noColorMm.deserialize(words.joinToString(" "))
             }
         }
