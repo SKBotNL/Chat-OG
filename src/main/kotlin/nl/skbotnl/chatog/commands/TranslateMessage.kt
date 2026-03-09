@@ -1,7 +1,6 @@
 package nl.skbotnl.chatog.commands
 
 import java.util.*
-import kotlinx.coroutines.DelicateCoroutinesApi
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -40,7 +39,6 @@ internal class TranslateMessage : CommandExecutor {
         val pmMessages: MutableMap<UUID, SentPMMessage> = HashMap()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             return false

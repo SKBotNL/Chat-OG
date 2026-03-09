@@ -4,7 +4,6 @@ import io.papermc.paper.advancement.AdvancementDisplay.Frame.*
 import io.papermc.paper.event.player.AsyncChatEvent
 import java.util.*
 import kotlin.concurrent.read
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.ess3.api.events.VanishStatusChangeEvent
@@ -31,7 +30,6 @@ import org.bukkit.event.player.*
 import org.bukkit.event.server.BroadcastMessageEvent
 import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 
-@OptIn(DelicateCoroutinesApi::class)
 internal class Events : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
