@@ -341,7 +341,7 @@ internal class DiscordBridge private constructor() {
                             )
                         }
 
-                        else -> {
+                        config.channelId -> {
                             Component.join(
                                 JoinConfiguration.noSeparators(),
                                 discordComponent,
@@ -349,6 +349,10 @@ internal class DiscordBridge private constructor() {
                                 userComponent,
                                 contentComponent,
                             )
+                        }
+
+                        else -> {
+                            throw RuntimeException("Invalid channel id")
                         }
                     }
 
@@ -383,10 +387,22 @@ internal class DiscordBridge private constructor() {
                         }
                     }
 
-                    else -> {
+                    config.developerChannelId -> {
+                        for (p in Bukkit.getOnlinePlayers()) {
+                            if (p.hasPermission("chat-og.developer")) {
+                                p.sendMessage(messageComponent)
+                            }
+                        }
+                    }
+
+                    config.channelId -> {
                         for (p in Bukkit.getOnlinePlayers()) {
                             p.sendMessage(messageComponent)
                         }
+                    }
+
+                    else -> {
+                        throw RuntimeException("Invalid channel id")
                     }
                 }
 

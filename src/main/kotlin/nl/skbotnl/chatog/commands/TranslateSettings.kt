@@ -1,6 +1,5 @@
 package nl.skbotnl.chatog.commands
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
@@ -59,7 +58,6 @@ internal class TranslateSettings : CommandExecutor {
             )
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         if (sender !is Player) {
             return false

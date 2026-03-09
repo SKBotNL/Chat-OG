@@ -2,7 +2,6 @@ package nl.skbotnl.chatog
 
 import java.util.*
 import kotlin.concurrent.read
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -16,7 +15,6 @@ import nl.skbotnl.chatog.commands.TranslateMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-@OptIn(DelicateCoroutinesApi::class)
 internal object ChatSystem {
     enum class ChatType {
         GENERAL_CHAT,
@@ -41,10 +39,7 @@ internal object ChatSystem {
             }
         }
 
-        val messageComponent = ChatUtil.processText(text, player)
-        if (messageComponent == null) {
-            return
-        }
+        val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
@@ -87,10 +82,7 @@ internal object ChatSystem {
             }
         }
 
-        val messageComponent = ChatUtil.processText(text, player)
-        if (messageComponent == null) {
-            return
-        }
+        val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
@@ -133,10 +125,7 @@ internal object ChatSystem {
             }
         }
 
-        val messageComponent = ChatUtil.processText(text, player)
-        if (messageComponent == null) {
-            return
-        }
+        val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))

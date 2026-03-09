@@ -13,7 +13,6 @@ import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 
 internal class ChatOG : JavaPlugin() {
-    @OptIn(DelicateCoroutinesApi::class)
     companion object {
         val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -31,7 +30,6 @@ internal class ChatOG : JavaPlugin() {
         fun isLanguageDatabaseInitialized() = ::languageDatabase.isInitialized
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onEnable() {
         plugin = this
 
