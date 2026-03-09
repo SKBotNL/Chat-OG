@@ -82,10 +82,7 @@ internal object ChatSystem {
             }
         }
 
-        val messageComponent = ChatUtil.processText(text, player)
-        if (messageComponent == null) {
-            return
-        }
+        val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
@@ -128,10 +125,7 @@ internal object ChatSystem {
             }
         }
 
-        val messageComponent = ChatUtil.processText(text, player)
-        if (messageComponent == null) {
-            return
-        }
+        val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
             UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
