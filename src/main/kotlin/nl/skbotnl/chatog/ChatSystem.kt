@@ -115,7 +115,7 @@ internal object ChatSystem {
         var playerPartString = ChatUtil.getPlayerPartString(player)
         playerPartString = "<aqua>DEVELOPER | $playerPartString"
 
-        if (config.premiumDiscordEnabled) {
+        if (config.developerDiscordEnabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             ChatOG.scope.launch {
