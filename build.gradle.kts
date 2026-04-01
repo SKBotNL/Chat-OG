@@ -70,6 +70,7 @@ dependencies {
     implementation("io.lettuce:lettuce-core:7.2.0.RELEASE")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.slf4j:slf4j-nop:2.0.17")
 }
 
 configurations.all {
