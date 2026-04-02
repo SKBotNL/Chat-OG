@@ -70,7 +70,8 @@ dependencies {
     implementation("io.lettuce:lettuce-core:7.2.0.RELEASE")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.slf4j:slf4j-nop:2.0.17")
+    implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
+    implementation("org.slf4j:slf4j-nop:2.0.17") // Provide a relocated no-op SLF4J backend to avoid provider warnings.
 }
 
 configurations.all {
@@ -91,6 +92,7 @@ tasks.shadowJar {
     relocationPrefix = "${project.group}.shadow"
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     exclude("natives/**")
+    mergeServiceFiles()
     minimize()
 }
 
