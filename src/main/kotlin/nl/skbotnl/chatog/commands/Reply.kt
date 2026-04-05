@@ -53,10 +53,7 @@ internal class Reply : CommandExecutor {
         TranslateMessage.pmMessages[randomUUID] =
             TranslateMessage.SentPMMessage(message, sender.uniqueId, toPlayer.uniqueId)
 
-        val messageComponent = ChatUtil.processText(message, sender)
-        if (messageComponent == null) {
-            return true
-        }
+        val messageComponent = ChatUtil.processText(message, sender) ?: return true
 
         val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${toPlayer.name}<gold>]<white>"
         var toSenderTextComponent =

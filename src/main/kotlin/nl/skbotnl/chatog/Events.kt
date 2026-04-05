@@ -164,57 +164,57 @@ internal class Events : Listener {
         if (event.isCancelled) return
         event.isCancelled = true
 
-        val eventMessage = event.message() as TextComponent
-
-        when (ChatSystem.inChat[event.player.uniqueId]) {
-            ChatType.STAFF_CHAT -> {
-                ChatSystem.sendMessageInStaffChat(event.player, eventMessage.content())
-                return
-            }
-            ChatType.PREMIUM_CHAT -> {
-                ChatSystem.sendMessageInPremiumChat(event.player, eventMessage.content())
-                return
-            }
-            ChatType.DEVELOPER_CHAT -> {
-                ChatSystem.sendMessageInDeveloperChat(event.player, eventMessage.content())
-                return
-            }
-            else -> {}
-        }
-
-        val discordMessageString = ChatUtil.convertEmojis(eventMessage.content())
         ChatOG.scope.launch {
-            discordBridgeLock.read { ChatOG.discordBridge?.sendMessage(discordMessageString, event.player) }
-        }
+            val eventMessage = event.message() as TextComponent
 
-        val playerPart = ChatUtil.getPlayerPart(event.player, true)
+            when (ChatSystem.inChat[event.player.uniqueId]) {
+                ChatType.STAFF_CHAT -> {
+                    ChatSystem.sendMessageInStaffChat(event.player, eventMessage.content())
+                    return@launch
+                }
 
-        val messageComponent = ChatUtil.processText(eventMessage.content(), event.player)
-        if (messageComponent == null) {
-            return
-        }
+                ChatType.PREMIUM_CHAT -> {
+                    ChatSystem.sendMessageInPremiumChat(event.player, eventMessage.content())
+                    return@launch
+                }
 
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), playerPart, messageComponent)
-        textComponent =
-            textComponent.hoverEvent(
-                HoverEvent.hoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                ChatType.DEVELOPER_CHAT -> {
+                    ChatSystem.sendMessageInDeveloperChat(event.player, eventMessage.content())
+                    return@launch
+                }
+
+                else -> {}
+            }
+
+            val discordMessageString = ChatUtil.convertEmojis(eventMessage.content())
+            launch { discordBridgeLock.read { ChatOG.discordBridge?.sendMessage(discordMessageString, event.player) } }
+
+            val playerPart = ChatUtil.getPlayerPart(event.player, true)
+
+            val messageComponent = ChatUtil.processText(eventMessage.content(), event.player) ?: return@launch
+
+            var textComponent = Component.join(JoinConfiguration.noSeparators(), playerPart, messageComponent)
+            textComponent =
+                textComponent.hoverEvent(
+                    HoverEvent.hoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        UtilitiesOG.trueogColorize("<green>Click to translate this message"),
+                    )
                 )
-            )
 
-        val randomUUID = UUID.randomUUID()
-        textComponent =
-            textComponent.clickEvent(
-                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
-            )
+            val randomUUID = UUID.randomUUID()
+            textComponent =
+                textComponent.clickEvent(
+                    ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
+                )
 
-        event.viewers().forEach { it.sendMessage(textComponent) }
+            event.viewers().forEach { it.sendMessage(textComponent) }
 
-        ChatUtil.dingForMentions(event.player.uniqueId, messageComponent)
+            ChatUtil.dingForMentions(event.player.uniqueId, messageComponent)
 
-        TranslateMessage.chatMessages[randomUUID] =
-            TranslateMessage.SentChatMessage(eventMessage.content(), event.player)
+            TranslateMessage.chatMessages[randomUUID] =
+                TranslateMessage.SentChatMessage(eventMessage.content(), event.player)
+        }
     }
 
     @EventHandler
