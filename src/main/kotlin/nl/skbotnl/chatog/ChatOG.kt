@@ -24,7 +24,7 @@ internal class ChatOG : JavaPlugin() {
         var translator: OpenAI? = null
         var discordBridge: DiscordBridge? = null
         val discordBridgeLock = ReentrantReadWriteLock()
-        var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials") as Essentials
+        var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials-OG") as Essentials
         var lastMessagedMap: MutableMap<UUID, UUID> = HashMap()
 
         fun isLanguageDatabaseInitialized() = ::languageDatabase.isInitialized

@@ -9,7 +9,7 @@ depend:
   - AnnouncerPlus
   - Utilities-OG
 softdepend:
-  - Essentials
+  - Essentials-OG
 commands:
   translatemessage:
     description: Internal command for translating messages
