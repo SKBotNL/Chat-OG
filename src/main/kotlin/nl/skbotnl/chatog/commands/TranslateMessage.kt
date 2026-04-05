@@ -131,7 +131,7 @@ internal class TranslateMessage : CommandExecutor {
             1 -> {
                 val sentChatMessage = sentMessage as SentChatMessage
                 var playerString =
-                    "${PlayerAffix.getPrefix(sentChatMessage.player.uniqueId)}${sentChatMessage.player.name}${
+                    "${PlayerAffix.getPrefix(sentChatMessage.player.uniqueId)}${sentChatMessage.player.name} ${
                         PlayerAffix.getSuffix(sentChatMessage.player.uniqueId)
                     }"
                 if (PlaceholderAPI.setPlaceholders(sentMessage.player, "%simpleclans_clan_color_tag%") != "") {

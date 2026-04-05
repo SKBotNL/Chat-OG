@@ -21,6 +21,6 @@ internal object PlayerAffix {
         }
         val prefixNode = user.nodes.singleOrNull { node -> node.key.startsWith("suffix.1.") }
         if (prefixNode == null) return "> "
-        return legacyToMm(prefixNode.key.split(".").last())
+        return legacyToMm(prefixNode.key.split(".").last()) + " "
     }
 }

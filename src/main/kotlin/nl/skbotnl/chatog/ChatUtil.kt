@@ -37,7 +37,7 @@ internal object ChatUtil {
                 ""
             }
 
-        return UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>$suffix"))
+        return UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>$suffix"))
     }
 
     fun getPlayerPartString(player: Player): String {

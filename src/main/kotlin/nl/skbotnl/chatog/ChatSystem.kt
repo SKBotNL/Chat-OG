@@ -42,7 +42,7 @@ internal object ChatSystem {
         val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =
@@ -85,7 +85,7 @@ internal object ChatSystem {
         val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =
@@ -128,7 +128,7 @@ internal object ChatSystem {
         val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
+            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =
