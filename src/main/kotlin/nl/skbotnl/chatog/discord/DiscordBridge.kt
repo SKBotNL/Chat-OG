@@ -30,7 +30,6 @@ import net.kyori.adventure.text.format.TextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatOG.Companion.plugin
-import nl.skbotnl.chatog.config.Config
 import nl.skbotnl.chatog.translation.command.TranslateMessage
 import nl.skbotnl.chatog.util.ChatUtil
 import nl.skbotnl.chatog.util.EmojiConverter
@@ -47,9 +46,9 @@ internal class DiscordBridge private constructor() {
     companion object {
         fun create(): DiscordBridge? {
             val discordBridge = DiscordBridge()
-            if (config.webhook != null) {
+            if (config.discord.general.webhook != null) {
                 try {
-                    discordBridge.webhook = WebhookClient.withUrl(config.webhook!!)
+                    discordBridge.webhook = WebhookClient.withUrl(config.discord.general.webhook!!.toString())
                 } catch (_: IllegalArgumentException) {
                     plugin.logger.warning("Config option \"webhook\" is invalid")
                 }
@@ -57,96 +56,66 @@ internal class DiscordBridge private constructor() {
                 plugin.logger.severe("You have enabled Discord but have not set up the webhook")
                 return null
             }
-            if (config.staffWebhook != null) {
+            if (config.discord.staff.webhook != null) {
                 try {
-                    discordBridge.staffWebhook = WebhookClient.withUrl(config.staffWebhook!!)
+                    discordBridge.staffWebhook = WebhookClient.withUrl(config.discord.staff.webhook!!.toString())
                 } catch (_: IllegalArgumentException) {
                     plugin.logger.warning("Config option \"staffWebhook\" is invalid")
                 }
-            } else if (config.staffDiscordEnabled) {
+            } else if (config.discord.staff.enabled) {
                 plugin.logger.warning("You have enabled staff Discord but have not set up the staff webhook")
             }
-            if (config.premiumWebhook != null) {
+            if (config.discord.premium.webhook != null) {
                 try {
-                    discordBridge.premiumWebhook = WebhookClient.withUrl(config.premiumWebhook!!)
+                    discordBridge.premiumWebhook = WebhookClient.withUrl(config.discord.premium.webhook!!.toString())
                 } catch (_: IllegalArgumentException) {
                     plugin.logger.warning("Config option \"premiumWebhook\" is invalid")
                 }
-            } else if (config.premiumDiscordEnabled) {
+            } else if (config.discord.premium.enabled) {
                 plugin.logger.warning("You have enabled premium Discord but have not set up the premium webhook")
             }
-            if (config.developerWebhook != null) {
+            if (config.discord.developer.webhook != null) {
                 try {
-                    discordBridge.developerWebhook = WebhookClient.withUrl(config.developerWebhook!!)
+                    discordBridge.developerWebhook =
+                        WebhookClient.withUrl(config.discord.developer.webhook!!.toString())
                 } catch (_: IllegalArgumentException) {
                     plugin.logger.warning("Config option \"developerWebhook\" is invalid")
                 }
-            } else if (config.developerDiscordEnabled) {
+            } else if (config.discord.developer.enabled) {
                 plugin.logger.warning("You have enabled developer Discord but have not set up the developer webhook")
             }
 
-            if (config.botToken == null) {
+            if (config.discord.botToken == null) {
                 plugin.logger.severe("You have enabled Discord but have not set up the bot token")
                 return null
             }
             discordBridge.jda =
-                light(config.botToken!!, enableCoroutines = true) {
+                light(config.discord.botToken!!, enableCoroutines = true) {
                     intents += listOf(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
                     cache += listOf(CacheFlag.EMOJI)
                     setMemberCachePolicy(MemberCachePolicy.ALL)
                 }
 
-            val status =
-                if (config.status == null) {
-                    plugin.logger.warning(
-                        "You have enabled Discord but have not set up the status, using the default one instead"
-                    )
-                    "Minecraft"
-                } else {
-                    config.status!!
-                }
+            discordBridge.jda.presence.setPresence(Activity.playing(config.discord.status), false)
 
-            discordBridge.jda.presence.setPresence(Activity.playing(status), false)
-
-            val serverHasStartedMessage =
-                if (config.serverHasStartedMessage == null) {
-                    plugin.logger.warning(
-                        "You have enabled Discord but have not set up the server has started message, using the default one instead"
-                    )
-                    "The server has started"
-                } else {
-                    config.serverHasStartedMessage!!
-                }
-
-            if (config.guildId == null) {
+            if (config.discord.guildId == null) {
                 plugin.logger.severe("You have enabled Discord but have not set up the guild ID")
                 return null
             }
 
             discordBridge.jda.listener<ReadyEvent> {
-                discordBridge.sendMessageWithBot(serverHasStartedMessage)
-                val guild = discordBridge.jda.getGuildById(config.guildId!!)
+                discordBridge.sendMessageWithBot(config.discord.serverHasStartedMessage)
+                val guild = discordBridge.jda.getGuildById(config.discord.guildId!!)
                 if (guild == null) {
                     plugin.logger.severe("Guild was null")
                     return@listener
                 }
-                if (config.listCommandName == null) {
-                    plugin.logger.warning(
-                        "You have enabled Discord but have not set up the list command name, the command will not be created"
-                    )
-                    return@listener
-                }
-                if (config.listCommandText == null) {
-                    plugin.logger.warning(
-                        "You have enabled Discord but have not set up the list command text, the command will not be created"
-                    )
-                }
 
-                guild.upsertCommand(config.listCommandName!!, "List all online players.").queue()
+                guild.upsertCommand(config.discord.listCommandName, "List all online players.").queue()
             }
 
             discordBridge.jda.listener<SlashCommandInteractionEvent> {
-                if (it.name == config.listCommandName) {
+                if (it.name == config.discord.listCommandName) {
                     it.deferReply().queue()
                     try {
                         if (Bukkit.getOnlinePlayers().isEmpty()) {
@@ -156,7 +125,7 @@ internal class DiscordBridge private constructor() {
                         it.hook
                             .sendMessage(
                                 "${
-                                    config.listCommandText!!
+                                    config.discord.listCommandText
                                         .replace("%onlineplayers%", Bukkit.getOnlinePlayers().count().toString())
                                         .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
                                 }\n${
@@ -172,10 +141,12 @@ internal class DiscordBridge private constructor() {
 
             discordBridge.jda.listener<MessageReceivedEvent> {
                 if (
-                    it.channel.id != config.channelId &&
-                        (if (config.staffDiscordEnabled) it.channel.id != config.staffChannelId else true) &&
-                        (if (config.premiumDiscordEnabled) it.channel.id != config.premiumChannelId else true) &&
-                        (if (config.developerDiscordEnabled) it.channel.id != config.developerChannelId else true)
+                    it.channel.id != config.discord.general.channelId &&
+                        (if (config.discord.staff.enabled) it.channel.id != config.discord.staff.channelId else true) &&
+                        (if (config.discord.premium.enabled) it.channel.id != config.discord.premium.channelId
+                        else true) &&
+                        (if (config.discord.developer.enabled) it.channel.id != config.discord.developer.channelId
+                        else true)
                 ) {
                     return@listener
                 }
@@ -209,31 +180,18 @@ internal class DiscordBridge private constructor() {
                     }
 
                 val messageColor =
-                    if (config.roles.isEmpty()) {
+                    if (config.discord.roles.isEmpty()) {
                         NamedTextColor.GRAY
                     } else {
-                        val roleId = sortedRoles.first { role -> role.id in config.roles }?.id
-                        if (roleId != null) {
-                            val roleColor = config.roleMessageColor[roleId]
-
-                            if (roleColor is Config.RGBColor) {
-                                TextColor.color(roleColor.r, roleColor.g, roleColor.b)
-                            } else {
-                                roleColor as NamedTextColor
-                            }
-                        } else NamedTextColor.GRAY
+                        sortedRoles.firstNotNullOfOrNull { r -> config.discord.roles[r.id] }?.messageColor
+                            ?: NamedTextColor.GRAY
                     }
 
                 val suffix =
-                    if (config.rolesWithSuffixes.isEmpty()) {
-                        ">"
+                    if (config.discord.roleSuffixes.isEmpty()) {
+                        "> "
                     } else {
-                        val roleId = sortedRoles.first { role -> role.id in config.rolesWithSuffixes }?.id
-                        if (roleId != null) {
-                            config.roleSuffix[roleId]!!
-                        } else {
-                            ">"
-                        }
+                        sortedRoles.firstNotNullOfOrNull { r -> config.discord.roleSuffixes[r.id] }?.suffix ?: "> "
                     }
 
                 val messageComponents = mutableListOf<Component>(UtilitiesOG.trueogColorize(suffix))
@@ -264,8 +222,8 @@ internal class DiscordBridge private constructor() {
                 }
 
                 val useColor =
-                    if (config.useColorCodeRoles) {
-                        roles.any { role -> role.id in config.colorCodeRoles }
+                    if (config.discord.useColorCodeRoles) {
+                        roles.any { role -> role.id in config.discord.colorCodeRoles }
                     } else {
                         true
                     }
@@ -304,7 +262,7 @@ internal class DiscordBridge private constructor() {
 
                 var messageComponent =
                     when (it.channel.id) {
-                        config.staffChannelId -> {
+                        config.discord.staff.channelId -> {
                             val staffComponent = Component.text("STAFF | ").color(NamedTextColor.RED)
                             Component.join(
                                 JoinConfiguration.noSeparators(),
@@ -316,7 +274,7 @@ internal class DiscordBridge private constructor() {
                             )
                         }
 
-                        config.premiumChannelId -> {
+                        config.discord.premium.channelId -> {
                             val premiumComponent = Component.text("PREMIUM | ").color(NamedTextColor.GREEN)
                             Component.join(
                                 JoinConfiguration.noSeparators(),
@@ -328,7 +286,7 @@ internal class DiscordBridge private constructor() {
                             )
                         }
 
-                        config.developerChannelId -> {
+                        config.discord.developer.channelId -> {
                             val developerComponent = Component.text("DEVELOPER | ").color(NamedTextColor.AQUA)
                             Component.join(
                                 JoinConfiguration.noSeparators(),
@@ -340,7 +298,7 @@ internal class DiscordBridge private constructor() {
                             )
                         }
 
-                        config.channelId -> {
+                        config.discord.general.channelId -> {
                             Component.join(
                                 JoinConfiguration.noSeparators(),
                                 discordComponent,
@@ -370,7 +328,7 @@ internal class DiscordBridge private constructor() {
                     )
 
                 when (it.channel.id) {
-                    config.staffChannelId -> {
+                    config.discord.staff.channelId -> {
                         for (p in Bukkit.getOnlinePlayers()) {
                             if (p.hasPermission("chat-og.staff")) {
                                 p.sendMessage(messageComponent)
@@ -378,7 +336,7 @@ internal class DiscordBridge private constructor() {
                         }
                     }
 
-                    config.premiumChannelId -> {
+                    config.discord.premium.channelId -> {
                         for (p in Bukkit.getOnlinePlayers()) {
                             if (p.hasPermission("chat-og.premium")) {
                                 p.sendMessage(messageComponent)
@@ -386,7 +344,7 @@ internal class DiscordBridge private constructor() {
                         }
                     }
 
-                    config.developerChannelId -> {
+                    config.discord.developer.channelId -> {
                         for (p in Bukkit.getOnlinePlayers()) {
                             if (p.hasPermission("chat-og.developer")) {
                                 p.sendMessage(messageComponent)
@@ -394,7 +352,7 @@ internal class DiscordBridge private constructor() {
                         }
                     }
 
-                    config.channelId -> {
+                    config.discord.general.channelId -> {
                         for (p in Bukkit.getOnlinePlayers()) {
                             p.sendMessage(messageComponent)
                         }
@@ -426,9 +384,9 @@ internal class DiscordBridge private constructor() {
     }
 
     fun sendMessageWithBot(message: String) {
-        if (config.channelId == null) return
+        if (config.discord.general.channelId == null) return
 
-        val channel = jda.getChannel<MessageChannel>(config.channelId!!)
+        val channel = jda.getChannel<MessageChannel>(config.discord.general.channelId!!)
         if (channel == null) {
             plugin.logger.warning("channelId has not been set or is invalid")
             return
@@ -461,7 +419,7 @@ internal class DiscordBridge private constructor() {
     }
 
     suspend fun sendStaffMessage(message: String, name: String, uuid: UUID?) {
-        if (!config.staffDiscordEnabled) return
+        if (!config.discord.staff.enabled) return
 
         if (staffWebhook == null) {
             plugin.logger.warning("staffWebhook has not been set or is invalid")
@@ -481,7 +439,7 @@ internal class DiscordBridge private constructor() {
     }
 
     suspend fun sendPremiumMessage(message: String, name: String, uuid: UUID?) {
-        if (!config.premiumDiscordEnabled) return
+        if (!config.discord.premium.enabled) return
 
         if (premiumWebhook == null) {
             plugin.logger.warning("premiumWebhook has not been set or is invalid")
@@ -501,7 +459,7 @@ internal class DiscordBridge private constructor() {
     }
 
     suspend fun sendDeveloperMessage(message: String, name: String, uuid: UUID?) {
-        if (!config.developerDiscordEnabled) return
+        if (!config.discord.developer.enabled) return
 
         if (developerWebhook == null) {
             plugin.logger.warning("developerWebhook has not been set or is invalid")

@@ -63,11 +63,14 @@ dependencies {
     compileOnlyApi(project(":libs:Utilities-OG")) // Import TrueOG Network Utilities-OG Java API (from source).
     compileOnly("net.luckperms:api:5.5") // Import LuckPerms API.
 
+    implementation("tools.jackson.core:jackson-databind:3.1.1")
+    implementation("tools.jackson.dataformat:jackson-dataformat-yaml:3.1.1")
+
     implementation("net.dv8tion:JDA:6.1.2")
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.google.code.gson:gson:2.13.2")
-    implementation("io.lettuce:lettuce-core:7.2.0.RELEASE")
+    implementation("io.lettuce:lettuce-core:7.5.1.RELEASE")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.

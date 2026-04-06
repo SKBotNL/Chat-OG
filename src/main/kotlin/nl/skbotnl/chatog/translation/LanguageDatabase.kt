@@ -3,11 +3,18 @@ package nl.skbotnl.chatog.translation
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionException
 import io.lettuce.core.RedisException
+import io.lettuce.core.RedisURI
 import java.util.UUID
 import nl.skbotnl.chatog.ChatOG.Companion.config
 
 internal class LanguageDatabase {
-    private val redisClient: RedisClient = RedisClient.create(config.redisUrl)
+    private val redisClient: RedisClient =
+        RedisClient.create(
+            RedisURI.Builder.redis(config.redis.host, config.redis.port)
+                .apply { config.redis.password?.let { withPassword(it) } }
+                .withDatabase(config.redis.database)
+                .build()
+        )
 
     /** @return True if failed */
     fun testConnection(): Boolean {

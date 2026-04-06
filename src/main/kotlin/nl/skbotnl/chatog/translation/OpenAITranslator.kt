@@ -32,7 +32,7 @@ internal class OpenAITranslator {
     fun translate(text: String, language: String): Translated {
         val openAICompletion =
             CompletionReq(
-                model = config.openAIModel ?: "",
+                model = config.openai.model ?: "",
                 messages =
                     listOf(
                         Message(
@@ -45,8 +45,8 @@ internal class OpenAITranslator {
 
         val request: Request =
             Request.Builder()
-                .url(config.openAIBaseUrl + "/v1/chat/completions")
-                .header("Authorization", "Bearer ${config.openAIApiKey}")
+                .url(config.openai.baseUrl + "/v1/chat/completions")
+                .header("Authorization", "Bearer ${config.openai.apiKey}")
                 .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
                 .build()
 

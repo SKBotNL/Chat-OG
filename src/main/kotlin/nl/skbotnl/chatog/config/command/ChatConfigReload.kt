@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender
 internal class ChatConfigReload : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
         config =
-            Config.create()
+            Config.loadConfig()
                 ?: run {
                     sender.sendMessage(
                         UtilitiesOG.trueogColorize(
@@ -36,18 +36,18 @@ internal class ChatConfigReload : CommandExecutor {
                     return true
                 }
 
-        if (config.blocklistEnabled) {
+        if (config.blocklist.enabled) {
             blocklistManager = BlocklistManager()
         }
 
         translator =
-            if (config.openAIEnabled) {
-                if (config.openAIBaseUrl == null) {
+            if (config.openai.enabled) {
+                if (config.openai.baseUrl == null) {
                     plugin.logger.warning(
                         "You have enabled OpenAI translation but have not set up the base url, not enabling the translator"
                     )
                     null
-                } else if (config.openAIApiKey == null) {
+                } else if (config.openai.apiKey == null) {
                     plugin.logger.warning(
                         "You have enabled OpenAI translation but have not set up the api key, not enabling the translator"
                     )
@@ -64,7 +64,7 @@ internal class ChatConfigReload : CommandExecutor {
             return true
         }
 
-        if (config.discordEnabled) {
+        if (config.discord.enabled) {
             scope.launch {
                 discordBridgeLock.write {
                     val discordBridge = discordBridge

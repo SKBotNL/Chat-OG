@@ -19,7 +19,7 @@ internal object PremiumChatSystem : ChatSystem() {
     override val name = "premium"
 
     override fun sendDiscordMessage(text: String, playerPartString: String, uuid: UUID) {
-        if (config.premiumDiscordEnabled) {
+        if (config.discord.premium.enabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             scope.launch {

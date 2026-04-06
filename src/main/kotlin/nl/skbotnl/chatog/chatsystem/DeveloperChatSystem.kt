@@ -19,7 +19,7 @@ internal object DeveloperChatSystem : ChatSystem() {
     override val name = "developer"
 
     override fun sendDiscordMessage(text: String, playerPartString: String, uuid: UUID) {
-        if (config.developerDiscordEnabled) {
+        if (config.discord.developer.enabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             scope.launch {

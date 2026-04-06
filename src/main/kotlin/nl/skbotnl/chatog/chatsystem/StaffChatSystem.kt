@@ -19,7 +19,7 @@ internal object StaffChatSystem : ChatSystem() {
     override val name = "staff"
 
     override fun sendDiscordMessage(text: String, playerPartString: String, uuid: UUID) {
-        if (config.staffDiscordEnabled) {
+        if (config.discord.staff.enabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
             scope.launch {

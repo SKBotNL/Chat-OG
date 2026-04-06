@@ -103,7 +103,7 @@ internal object ChatUtil {
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
 
     suspend fun convertMentions(text: String): String {
-        val guild = discordBridgeLock.read { discordBridge?.getGuildById(config.guildId!!) }
+        val guild = discordBridgeLock.read { discordBridge?.getGuildById(config.discord.guildId!!) }
         if (guild == null) {
             plugin.logger.warning("Guild was null")
             return text
@@ -220,7 +220,7 @@ internal object ChatUtil {
     fun convertEmojis(text: String): String {
         var discordMessageString = text
 
-        val guildEmojis = discordBridgeLock.read { discordBridge?.getGuildById(config.guildId!!)?.emojis }
+        val guildEmojis = discordBridgeLock.read { discordBridge?.getGuildById(config.discord.guildId!!)?.emojis }
         if (guildEmojis == null) {
             plugin.logger.warning("Guild emojis was null")
         }

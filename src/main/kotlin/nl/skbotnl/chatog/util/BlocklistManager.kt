@@ -28,7 +28,7 @@ internal class BlocklistManager {
     private fun refresh() {
         synchronized(lock) {
             blockList.clear()
-            config.blocklists.forEach { blocklist ->
+            config.blocklist.blocklists.forEach { blocklist ->
                 URI(blocklist).toURL().openStream().use { input ->
                     input.bufferedReader().use { bufferedReader ->
                         bufferedReader.lines().forEach { if (!it.startsWith("#")) blockList.add(it) }
