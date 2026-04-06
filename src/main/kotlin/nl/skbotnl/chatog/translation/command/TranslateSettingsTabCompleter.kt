@@ -1,4 +1,4 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.translation.command
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

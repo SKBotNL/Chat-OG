@@ -1,20 +1,23 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.util
 
 import java.net.URI
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
+import nl.skbotnl.chatog.ChatOG.Companion.scope
 
 internal class BlocklistManager {
     private val lock = Any()
     private val blockList = mutableListOf<String>()
 
     init {
-        ChatOG.plugin.logger.info("Loading the blocklists...")
+        plugin.logger.info("Loading the blocklists...")
         refresh()
-        ChatOG.plugin.logger.info("Loaded the blocklists!")
+        plugin.logger.info("Loaded the blocklists!")
 
-        ChatOG.scope.launch {
+        scope.launch {
             while (true) {
                 delay(TimeUnit.DAYS.toMillis(1))
                 refresh()
@@ -25,7 +28,7 @@ internal class BlocklistManager {
     private fun refresh() {
         synchronized(lock) {
             blockList.clear()
-            ChatOG.config.blocklists.forEach { blocklist ->
+            config.blocklists.forEach { blocklist ->
                 URI(blocklist).toURL().openStream().use { input ->
                     input.bufferedReader().use { bufferedReader ->
                         bufferedReader.lines().forEach { if (!it.startsWith("#")) blockList.add(it) }

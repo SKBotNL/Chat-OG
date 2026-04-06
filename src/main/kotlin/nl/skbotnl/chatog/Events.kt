@@ -14,14 +14,22 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridge
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
-import nl.skbotnl.chatog.ChatUtil.legacyToMm
-import nl.skbotnl.chatog.PlayerExtensions.chatSystem
+import nl.skbotnl.chatog.ChatOG.Companion.essentials
+import nl.skbotnl.chatog.ChatOG.Companion.scope
+import nl.skbotnl.chatog.util.ChatUtil
+import nl.skbotnl.chatog.util.ChatUtil.legacyToMm
+import nl.skbotnl.chatog.util.PlayerAffix
+import nl.skbotnl.chatog.util.PlayerExtensions.chatSystem
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.*
+import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerKickEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.server.BroadcastMessageEvent
 import xyz.jpenilla.announcerplus.listener.JoinQuitListener
 
@@ -31,15 +39,15 @@ internal class Events : Listener {
         if (!config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
+        if (essentials.getUser(event.player).isVanished && event.joinMessage() !is TextComponent) {
             return
         }
 
         val playerPartString = ChatUtil.getPlayerPartString(event.player)
 
-        ChatOG.scope.launch {
+        scope.launch {
             discordBridgeLock.read {
-                ChatOG.discordBridge?.sendEmbed(
+                discordBridge?.sendEmbed(
                     "$playerPartString has joined the game. ${
                         Bukkit.getOnlinePlayers().count()
                     } player(s) online.",
@@ -55,15 +63,15 @@ internal class Events : Listener {
         if (!config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished) {
+        if (essentials.getUser(event.player).isVanished) {
             return
         }
 
         val playerPartString = ChatUtil.getPlayerPartString(event.player)
 
-        ChatOG.scope.launch {
+        scope.launch {
             discordBridgeLock.read {
-                ChatOG.discordBridge?.sendEmbed(
+                discordBridge?.sendEmbed(
                     "$playerPartString has left the game. ${
                         Bukkit.getOnlinePlayers().count() - 1
                     } player(s) online.",
@@ -79,7 +87,7 @@ internal class Events : Listener {
         if (!config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished) {
+        if (essentials.getUser(event.player).isVanished) {
             return
         }
 
@@ -87,9 +95,9 @@ internal class Events : Listener {
 
         val reason = PlainTextComponentSerializer.plainText().serialize(event.reason())
 
-        ChatOG.scope.launch {
+        scope.launch {
             discordBridgeLock.read {
-                ChatOG.discordBridge?.sendEmbed(
+                discordBridge?.sendEmbed(
                     "$playerPartString was kicked with reason: \"${reason}\". ${
                         Bukkit.getOnlinePlayers().count() - 1
                     } player(s) online.",
@@ -105,7 +113,7 @@ internal class Events : Listener {
         if (!config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished) {
+        if (essentials.getUser(event.player).isVanished) {
             return
         }
 
@@ -124,13 +132,9 @@ internal class Events : Listener {
                 }
             }
 
-        ChatOG.scope.launch {
+        scope.launch {
             discordBridgeLock.read {
-                ChatOG.discordBridge?.sendEmbed(
-                    "$playerPartString $advancementMessage.",
-                    event.player.uniqueId,
-                    0xFFFF00,
-                )
+                discordBridge?.sendEmbed("$playerPartString $advancementMessage.", event.player.uniqueId, 0xFFFF00)
             }
         }
     }
@@ -149,9 +153,7 @@ internal class Events : Listener {
             return
         }
 
-        ChatOG.scope.launch {
-            discordBridgeLock.read { ChatOG.discordBridge?.sendMessage(content, "[Server] Broadcast", null) }
-        }
+        scope.launch { discordBridgeLock.read { discordBridge?.sendMessage(content, "[Server] Broadcast", null) } }
     }
 
     @EventHandler
@@ -159,7 +161,7 @@ internal class Events : Listener {
         if (event.isCancelled) return
         event.isCancelled = true
 
-        ChatOG.scope.launch {
+        scope.launch {
             val eventMessage = event.message() as TextComponent
             event.player.chatSystem.sendMessage(eventMessage.content(), event.player)
         }
@@ -170,14 +172,14 @@ internal class Events : Listener {
         if (!config.discordEnabled) {
             return
         }
-        if (ChatOG.essentials.getUser(event.player).isVanished) {
+        if (essentials.getUser(event.player).isVanished) {
             return
         }
 
         if (event.deathMessage() is TextComponent) {
-            ChatOG.scope.launch {
+            scope.launch {
                 discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendEmbed(
+                    discordBridge?.sendEmbed(
                         (event.deathMessage() as TextComponent).content(),
                         event.player.uniqueId,
                         0xFF0000,
@@ -206,10 +208,8 @@ internal class Events : Listener {
 
         val translatedDeathMessage = PlainTextComponentSerializer.plainText().serialize(deathMessage)
 
-        ChatOG.scope.launch {
-            discordBridgeLock.read {
-                ChatOG.discordBridge?.sendEmbed(translatedDeathMessage, event.player.uniqueId, 0xFF0000)
-            }
+        scope.launch {
+            discordBridgeLock.read { discordBridge?.sendEmbed(translatedDeathMessage, event.player.uniqueId, 0xFF0000) }
         }
     }
 

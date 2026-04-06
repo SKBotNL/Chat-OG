@@ -1,14 +1,14 @@
 package nl.skbotnl.chatog.chatsystem
 
-import java.util.UUID
+import java.util.*
 import kotlin.concurrent.read
 import kotlinx.coroutines.launch
 import net.kyori.adventure.audience.Audience
-import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridge
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
-import nl.skbotnl.chatog.ChatSystem
-import nl.skbotnl.chatog.ChatUtil
+import nl.skbotnl.chatog.ChatOG.Companion.scope
+import nl.skbotnl.chatog.util.ChatUtil
 import org.bukkit.Bukkit
 
 internal object StaffChatSystem : ChatSystem() {
@@ -22,10 +22,8 @@ internal object StaffChatSystem : ChatSystem() {
         if (config.staffDiscordEnabled) {
             val discordMessageString = ChatUtil.convertEmojis(text)
 
-            ChatOG.scope.launch {
-                discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendStaffMessage(discordMessageString, playerPartString, uuid)
-                }
+            scope.launch {
+                discordBridgeLock.read { discordBridge?.sendStaffMessage(discordMessageString, playerPartString, uuid) }
             }
         }
     }

@@ -1,9 +1,9 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.translation
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionException
 import io.lettuce.core.RedisException
-import java.util.*
+import java.util.UUID
 import nl.skbotnl.chatog.ChatOG.Companion.config
 
 internal class LanguageDatabase {

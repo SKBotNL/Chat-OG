@@ -1,4 +1,4 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.discord
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookEmbed
@@ -29,10 +29,11 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.ChatUtil.convertMentions
-import nl.skbotnl.chatog.ChatUtil.recolorComponent
-import nl.skbotnl.chatog.ChatUtil.stripGroupMentions
-import nl.skbotnl.chatog.commands.TranslateMessage
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
+import nl.skbotnl.chatog.config.Config
+import nl.skbotnl.chatog.translation.command.TranslateMessage
+import nl.skbotnl.chatog.util.ChatUtil
+import nl.skbotnl.chatog.util.EmojiConverter
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
@@ -50,44 +51,42 @@ internal class DiscordBridge private constructor() {
                 try {
                     discordBridge.webhook = WebhookClient.withUrl(config.webhook!!)
                 } catch (_: IllegalArgumentException) {
-                    ChatOG.plugin.logger.warning("Config option \"webhook\" is invalid")
+                    plugin.logger.warning("Config option \"webhook\" is invalid")
                 }
             } else {
-                ChatOG.plugin.logger.severe("You have enabled Discord but have not set up the webhook")
+                plugin.logger.severe("You have enabled Discord but have not set up the webhook")
                 return null
             }
             if (config.staffWebhook != null) {
                 try {
                     discordBridge.staffWebhook = WebhookClient.withUrl(config.staffWebhook!!)
                 } catch (_: IllegalArgumentException) {
-                    ChatOG.plugin.logger.warning("Config option \"staffWebhook\" is invalid")
+                    plugin.logger.warning("Config option \"staffWebhook\" is invalid")
                 }
             } else if (config.staffDiscordEnabled) {
-                ChatOG.plugin.logger.warning("You have enabled staff Discord but have not set up the staff webhook")
+                plugin.logger.warning("You have enabled staff Discord but have not set up the staff webhook")
             }
             if (config.premiumWebhook != null) {
                 try {
                     discordBridge.premiumWebhook = WebhookClient.withUrl(config.premiumWebhook!!)
                 } catch (_: IllegalArgumentException) {
-                    ChatOG.plugin.logger.warning("Config option \"premiumWebhook\" is invalid")
+                    plugin.logger.warning("Config option \"premiumWebhook\" is invalid")
                 }
             } else if (config.premiumDiscordEnabled) {
-                ChatOG.plugin.logger.warning("You have enabled premium Discord but have not set up the premium webhook")
+                plugin.logger.warning("You have enabled premium Discord but have not set up the premium webhook")
             }
             if (config.developerWebhook != null) {
                 try {
                     discordBridge.developerWebhook = WebhookClient.withUrl(config.developerWebhook!!)
                 } catch (_: IllegalArgumentException) {
-                    ChatOG.plugin.logger.warning("Config option \"developerWebhook\" is invalid")
+                    plugin.logger.warning("Config option \"developerWebhook\" is invalid")
                 }
             } else if (config.developerDiscordEnabled) {
-                ChatOG.plugin.logger.warning(
-                    "You have enabled developer Discord but have not set up the developer webhook"
-                )
+                plugin.logger.warning("You have enabled developer Discord but have not set up the developer webhook")
             }
 
             if (config.botToken == null) {
-                ChatOG.plugin.logger.severe("You have enabled Discord but have not set up the bot token")
+                plugin.logger.severe("You have enabled Discord but have not set up the bot token")
                 return null
             }
             discordBridge.jda =
@@ -99,7 +98,7 @@ internal class DiscordBridge private constructor() {
 
             val status =
                 if (config.status == null) {
-                    ChatOG.plugin.logger.warning(
+                    plugin.logger.warning(
                         "You have enabled Discord but have not set up the status, using the default one instead"
                     )
                     "Minecraft"
@@ -111,7 +110,7 @@ internal class DiscordBridge private constructor() {
 
             val serverHasStartedMessage =
                 if (config.serverHasStartedMessage == null) {
-                    ChatOG.plugin.logger.warning(
+                    plugin.logger.warning(
                         "You have enabled Discord but have not set up the server has started message, using the default one instead"
                     )
                     "The server has started"
@@ -120,7 +119,7 @@ internal class DiscordBridge private constructor() {
                 }
 
             if (config.guildId == null) {
-                ChatOG.plugin.logger.severe("You have enabled Discord but have not set up the guild ID")
+                plugin.logger.severe("You have enabled Discord but have not set up the guild ID")
                 return null
             }
 
@@ -128,17 +127,17 @@ internal class DiscordBridge private constructor() {
                 discordBridge.sendMessageWithBot(serverHasStartedMessage)
                 val guild = discordBridge.jda.getGuildById(config.guildId!!)
                 if (guild == null) {
-                    ChatOG.plugin.logger.severe("Guild was null")
+                    plugin.logger.severe("Guild was null")
                     return@listener
                 }
                 if (config.listCommandName == null) {
-                    ChatOG.plugin.logger.warning(
+                    plugin.logger.warning(
                         "You have enabled Discord but have not set up the list command name, the command will not be created"
                     )
                     return@listener
                 }
                 if (config.listCommandText == null) {
-                    ChatOG.plugin.logger.warning(
+                    plugin.logger.warning(
                         "You have enabled Discord but have not set up the list command text, the command will not be created"
                     )
                 }
@@ -166,7 +165,7 @@ internal class DiscordBridge private constructor() {
                             )
                             .queue()
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.warning("Could not respond to /list interaction")
+                        plugin.logger.warning("Could not respond to /list interaction")
                     }
                 }
             }
@@ -273,7 +272,7 @@ internal class DiscordBridge private constructor() {
 
                 if (message.contentDisplay != "") {
                     messageComponents +=
-                        recolorComponent(
+                        ChatUtil.recolorComponent(
                             ChatUtil.processText(
                                 EmojiConverter.replaceEmojisWithNames(message.contentDisplay),
                                 "@${user.name}",
@@ -431,7 +430,7 @@ internal class DiscordBridge private constructor() {
 
         val channel = jda.getChannel<MessageChannel>(config.channelId!!)
         if (channel == null) {
-            ChatOG.plugin.logger.warning("channelId has not been set or is invalid")
+            plugin.logger.warning("channelId has not been set or is invalid")
             return
         }
 
@@ -442,7 +441,7 @@ internal class DiscordBridge private constructor() {
         val webhookMessage =
             WebhookMessageBuilder()
                 .setUsername(UtilitiesOG.stripFormatting(ChatUtil.getPlayerPartString(player)))
-                .setContent(UtilitiesOG.stripFormatting(stripGroupMentions(convertMentions(message))))
+                .setContent(UtilitiesOG.stripFormatting(ChatUtil.stripGroupMentions(ChatUtil.convertMentions(message))))
                 .setAvatarUrl("https://minotar.net/helm/${player.uniqueId}.png")
 
         webhook.send(webhookMessage.build())
@@ -452,7 +451,9 @@ internal class DiscordBridge private constructor() {
         val webhookMessage =
             WebhookMessageBuilder().apply {
                 setUsername(UtilitiesOG.stripFormatting(name))
-                setContent(UtilitiesOG.stripFormatting(stripGroupMentions((convertMentions(message)))))
+                setContent(
+                    UtilitiesOG.stripFormatting(ChatUtil.stripGroupMentions((ChatUtil.convertMentions(message))))
+                )
                 if (uuid != null) setAvatarUrl("https://minotar.net/helm/$uuid.png")
             }
 
@@ -463,14 +464,16 @@ internal class DiscordBridge private constructor() {
         if (!config.staffDiscordEnabled) return
 
         if (staffWebhook == null) {
-            ChatOG.plugin.logger.warning("staffWebhook has not been set or is invalid")
+            plugin.logger.warning("staffWebhook has not been set or is invalid")
             return
         }
 
         val webhookMessage =
             WebhookMessageBuilder().apply {
                 setUsername(UtilitiesOG.stripFormatting(name))
-                setContent(UtilitiesOG.stripFormatting(stripGroupMentions((convertMentions(message)))))
+                setContent(
+                    UtilitiesOG.stripFormatting(ChatUtil.stripGroupMentions((ChatUtil.convertMentions(message))))
+                )
                 if (uuid != null) setAvatarUrl("https://minotar.net/helm/$uuid.png")
             }
 
@@ -481,14 +484,16 @@ internal class DiscordBridge private constructor() {
         if (!config.premiumDiscordEnabled) return
 
         if (premiumWebhook == null) {
-            ChatOG.plugin.logger.warning("premiumWebhook has not been set or is invalid")
+            plugin.logger.warning("premiumWebhook has not been set or is invalid")
             return
         }
 
         val webhookMessage =
             WebhookMessageBuilder().apply {
                 setUsername(UtilitiesOG.stripFormatting(name))
-                setContent(UtilitiesOG.stripFormatting(stripGroupMentions((convertMentions(message)))))
+                setContent(
+                    UtilitiesOG.stripFormatting(ChatUtil.stripGroupMentions((ChatUtil.convertMentions(message))))
+                )
                 if (uuid != null) setAvatarUrl("https://minotar.net/helm/$uuid.png")
             }
 
@@ -499,14 +504,16 @@ internal class DiscordBridge private constructor() {
         if (!config.developerDiscordEnabled) return
 
         if (developerWebhook == null) {
-            ChatOG.plugin.logger.warning("developerWebhook has not been set or is invalid")
+            plugin.logger.warning("developerWebhook has not been set or is invalid")
             return
         }
 
         val webhookMessage =
             WebhookMessageBuilder().apply {
                 setUsername(UtilitiesOG.stripFormatting(name))
-                setContent(UtilitiesOG.stripFormatting(stripGroupMentions((convertMentions(message)))))
+                setContent(
+                    UtilitiesOG.stripFormatting(ChatUtil.stripGroupMentions((ChatUtil.convertMentions(message))))
+                )
                 if (uuid != null) setAvatarUrl("https://minotar.net/helm/$uuid.png")
             }
 

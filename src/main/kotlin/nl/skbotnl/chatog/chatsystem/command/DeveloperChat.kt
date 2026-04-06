@@ -1,4 +1,4 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.chatsystem.command
 
 import nl.skbotnl.chatog.chatsystem.DeveloperChatSystem
 

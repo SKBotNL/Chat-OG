@@ -1,6 +1,7 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.util
 
-import java.util.WeakHashMap
+import java.util.*
+import nl.skbotnl.chatog.chatsystem.ChatSystem
 import nl.skbotnl.chatog.chatsystem.GeneralChatSystem
 import org.bukkit.entity.Player
 

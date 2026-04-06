@@ -1,4 +1,4 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.translation.command
 
 import java.util.*
 import me.clip.placeholderapi.PlaceholderAPI
@@ -6,11 +6,12 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.ChatUtil
-import nl.skbotnl.chatog.ChatUtil.legacyToMm
-import nl.skbotnl.chatog.PlayerAffix
+import nl.skbotnl.chatog.ChatOG.Companion.languageDatabase
+import nl.skbotnl.chatog.ChatOG.Companion.translator
+import nl.skbotnl.chatog.util.ChatUtil
+import nl.skbotnl.chatog.util.ChatUtil.legacyToMm
+import nl.skbotnl.chatog.util.PlayerAffix
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -91,13 +92,13 @@ internal class TranslateMessage : CommandExecutor {
             return true
         }
 
-        if (ChatOG.translator == null) {
+        if (translator == null) {
             player.sendMessage(UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>The translator is disabled."))
             return true
         }
 
         val language =
-            ChatOG.languageDatabase.getPlayerLanguage(player.uniqueId).getOrElse {
+            languageDatabase.getPlayerLanguage(player.uniqueId).getOrElse {
                 player.sendMessage(
                     UtilitiesOG.trueogColorize(
                         "${config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
@@ -118,7 +119,7 @@ internal class TranslateMessage : CommandExecutor {
             UtilitiesOG.trueogColorize("${config.prefix}<reset>: Translating message (this can take some time)...")
         )
 
-        val translated = ChatOG.translator!!.translate(sentMessage.message, language)
+        val translated = translator!!.translate(sentMessage.message, language)
 
         if (translated.error != null) {
             player.sendMessage(translated.error)

@@ -1,7 +1,8 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.config
 
 import java.io.File
 import net.kyori.adventure.text.format.NamedTextColor
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
 import org.bukkit.configuration.file.YamlConfiguration
 
 internal class Config private constructor() {
@@ -45,23 +46,23 @@ internal class Config private constructor() {
         fun create(): Config? {
             val config = Config()
 
-            val file = File(ChatOG.plugin.dataFolder, "config.yml")
+            val file = File(plugin.dataFolder, "config.yml")
             if (!file.exists()) {
-                ChatOG.plugin.saveDefaultConfig()
+                plugin.saveDefaultConfig()
             }
             val yamlConfig = YamlConfiguration.loadConfiguration(file)
 
             try {
                 config.prefix = yamlConfig.get("prefix") as String
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"prefix\" as a string")
+                plugin.logger.severe("Failed to parse config option \"prefix\" as a string")
                 return null
             }
 
             try {
                 config.blocklistEnabled = yamlConfig.get("blocklistEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"blocklistEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"blocklistEnabled\" as a boolean")
                 return null
             }
 
@@ -72,14 +73,14 @@ internal class Config private constructor() {
             try {
                 config.redisUrl = yamlConfig.get("redisUrl") as String
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
+                plugin.logger.severe("Failed to parse config option \"redisUrl\" as a string")
                 return null
             }
 
             try {
                 config.openAIEnabled = yamlConfig.get("openAIEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"openAIEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"openAIEnabled\" as a boolean")
                 return null
             }
 
@@ -87,14 +88,14 @@ internal class Config private constructor() {
                 try {
                     config.openAIBaseUrl = yamlConfig.get("baseUrl") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"baseUrl\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"baseUrl\" as a string")
                     return null
                 }
 
                 try {
                     config.openAIApiKey = yamlConfig.get("apiKey") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"apiKey\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"apiKey\" as a string")
                     return null
                 }
 
@@ -109,28 +110,28 @@ internal class Config private constructor() {
             try {
                 config.discordEnabled = yamlConfig.get("discordEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"discordEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"discordEnabled\" as a boolean")
                 return null
             }
 
             try {
                 config.staffDiscordEnabled = yamlConfig.get("staffDiscordEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"staffDiscordEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"staffDiscordEnabled\" as a boolean")
                 return null
             }
 
             try {
                 config.premiumDiscordEnabled = yamlConfig.get("premiumDiscordEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"premiumDiscordEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"premiumDiscordEnabled\" as a boolean")
                 return null
             }
 
             try {
                 config.developerDiscordEnabled = yamlConfig.get("developerDiscordEnabled") as Boolean
             } catch (_: Exception) {
-                ChatOG.plugin.logger.severe("Failed to parse config option \"developerDiscordEnabled\" as a boolean")
+                plugin.logger.severe("Failed to parse config option \"developerDiscordEnabled\" as a boolean")
                 return null
             }
 
@@ -138,42 +139,42 @@ internal class Config private constructor() {
                 try {
                     config.status = yamlConfig.get("status") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"status\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"status\" as a string")
                     return null
                 }
 
                 try {
                     config.serverHasStartedMessage = yamlConfig.get("serverHasStartedMessage") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStartedMessage\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"serverHasStartedMessage\" as a string")
                     return null
                 }
 
                 try {
                     config.serverHasStoppedMessage = yamlConfig.get("serverHasStoppedMessage") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"serverHasStoppedMessage\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"serverHasStoppedMessage\" as a string")
                     return null
                 }
 
                 try {
                     config.botToken = yamlConfig.get("botToken") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"botToken\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"botToken\" as a string")
                     return null
                 }
 
                 try {
                     config.guildId = (yamlConfig.get("guildId") as Long).toString()
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"guildId\" as a long")
+                    plugin.logger.severe("Failed to parse config option \"guildId\" as a long")
                     return null
                 }
 
                 try {
                     config.channelId = (yamlConfig.get("channelId") as Long).toString()
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"channelId\" as a long")
+                    plugin.logger.severe("Failed to parse config option \"channelId\" as a long")
                     return null
                 }
 
@@ -181,14 +182,14 @@ internal class Config private constructor() {
                     try {
                         config.staffChannelId = (yamlConfig.get("staffChannelId") as Long).toString()
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a long")
+                        plugin.logger.severe("Failed to parse config option \"staffChannelId\" as a long")
                         return null
                     }
 
                     try {
                         config.staffWebhook = yamlConfig.get("staffWebhook") as String
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"staffWebhook\" as a string")
+                        plugin.logger.severe("Failed to parse config option \"staffWebhook\" as a string")
                         return null
                     }
                 }
@@ -197,14 +198,14 @@ internal class Config private constructor() {
                     try {
                         config.premiumChannelId = (yamlConfig.get("premiumChannelId") as Long).toString()
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"premiumChannelId\" as a long")
+                        plugin.logger.severe("Failed to parse config option \"premiumChannelId\" as a long")
                         return null
                     }
 
                     try {
                         config.premiumWebhook = yamlConfig.get("premiumWebhook") as String
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
+                        plugin.logger.severe("Failed to parse config option \"premiumWebhook\" as a string")
                         return null
                     }
                 }
@@ -213,14 +214,14 @@ internal class Config private constructor() {
                     try {
                         config.developerChannelId = (yamlConfig.get("developerChannelId") as Long).toString()
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"developerChannelId\" as a long")
+                        plugin.logger.severe("Failed to parse config option \"developerChannelId\" as a long")
                         return null
                     }
 
                     try {
                         config.developerWebhook = yamlConfig.get("developerWebhook") as String
                     } catch (_: Exception) {
-                        ChatOG.plugin.logger.severe("Failed to parse config option \"developerWebhook\" as a string")
+                        plugin.logger.severe("Failed to parse config option \"developerWebhook\" as a string")
                         return null
                     }
                 }
@@ -228,28 +229,28 @@ internal class Config private constructor() {
                 try {
                     config.webhook = yamlConfig.get("webhook") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"webhook\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"webhook\" as a string")
                     return null
                 }
 
                 try {
                     config.listCommandName = yamlConfig.get("listCommandName") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandName\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"listCommandName\" as a string")
                     return null
                 }
 
                 try {
                     config.listCommandText = yamlConfig.get("listCommandText") as String
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"listCommandText\" as a string")
+                    plugin.logger.severe("Failed to parse config option \"listCommandText\" as a string")
                     return null
                 }
 
                 try {
                     config.useColorCodeRoles = yamlConfig.get("useColorCodeRoles") as Boolean
                 } catch (_: Exception) {
-                    ChatOG.plugin.logger.severe("Failed to parse config option \"useColorCodeRoles\" as a boolean")
+                    plugin.logger.severe("Failed to parse config option \"useColorCodeRoles\" as a boolean")
                     return null
                 }
 
@@ -286,14 +287,14 @@ internal class Config private constructor() {
                             try {
                                 yamlConfig.get("roles.$it.message_color") as String
                             } catch (_: Exception) {
-                                ChatOG.plugin.logger.warning(
+                                plugin.logger.warning(
                                     "Failed to parse config option \"role.$it.message_color\" as a string"
                                 )
                                 return@forEach
                             }
 
                             if (!messageColors.contains(messageColorList[0].uppercase())) {
-                                ChatOG.plugin.logger.severe(
+                                plugin.logger.severe(
                                     "The message color for \"$it\" (\"${messageColorList[0]}\") is invalid."
                                 )
                                 return@forEach
@@ -302,9 +303,7 @@ internal class Config private constructor() {
                             messageColors[messageColorList[0].uppercase()]!!
                         } else {
                             if (messageColorList.size != 3) {
-                                ChatOG.plugin.logger.severe(
-                                    "The message color for \"$it\" is not a color or an RGB value."
-                                )
+                                plugin.logger.severe("The message color for \"$it\" is not a color or an RGB value.")
                                 return@forEach
                             }
 
@@ -312,7 +311,7 @@ internal class Config private constructor() {
                                 try {
                                     colorInList.toUByte()
                                 } catch (_: Exception) {
-                                    ChatOG.plugin.logger.severe("The RGB value for \"$it\" is invalid.")
+                                    plugin.logger.severe("The RGB value for \"$it\" is invalid.")
                                     return@forEach
                                 }
                             }
@@ -333,7 +332,7 @@ internal class Config private constructor() {
                         try {
                             yamlConfig.get("roleSuffixes.$it.suffix") as String
                         } catch (_: Exception) {
-                            ChatOG.plugin.logger.warning(
+                            plugin.logger.warning(
                                 "Failed to parse config option \"roleSuffixes.$it.suffix\" as a string"
                             )
                             return@forEach

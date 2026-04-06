@@ -1,6 +1,7 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.util
 
 import com.google.gson.JsonParser
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
 
 internal object EmojiConverter {
     private val emojiRegex =
@@ -10,7 +11,7 @@ internal object EmojiConverter {
     private var emojiMap: HashMap<String, String> = hashMapOf()
 
     fun load() {
-        val jElement = JsonParser.parseReader(ChatOG.plugin.getResource("emoji.json")?.bufferedReader())
+        val jElement = JsonParser.parseReader(plugin.getResource("emoji.json")?.bufferedReader())
         jElement.asJsonArray.forEach {
             emojiMap[it.asJsonObject.get("char").asString] = it.asJsonObject.get("name").asString
         }

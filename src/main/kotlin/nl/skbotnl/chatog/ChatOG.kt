@@ -7,7 +7,22 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 import kotlinx.coroutines.*
 import net.luckperms.api.LuckPerms
-import nl.skbotnl.chatog.commands.*
+import nl.skbotnl.chatog.chatsystem.command.DeveloperChat
+import nl.skbotnl.chatog.chatsystem.command.GeneralChat
+import nl.skbotnl.chatog.chatsystem.command.PremiumChat
+import nl.skbotnl.chatog.chatsystem.command.StaffChat
+import nl.skbotnl.chatog.config.Config
+import nl.skbotnl.chatog.config.command.ChatConfigReload
+import nl.skbotnl.chatog.discord.DiscordBridge
+import nl.skbotnl.chatog.messaging.command.PrivateMessage
+import nl.skbotnl.chatog.messaging.command.Reply
+import nl.skbotnl.chatog.translation.LanguageDatabase
+import nl.skbotnl.chatog.translation.OpenAITranslator
+import nl.skbotnl.chatog.translation.command.TranslateMessage
+import nl.skbotnl.chatog.translation.command.TranslateSettings
+import nl.skbotnl.chatog.translation.command.TranslateSettingsTabCompleter
+import nl.skbotnl.chatog.util.BlocklistManager
+import nl.skbotnl.chatog.util.EmojiConverter
 import org.bukkit.Bukkit
 import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
@@ -21,7 +36,7 @@ internal class ChatOG : JavaPlugin() {
         var blocklistManager: BlocklistManager? = null
         lateinit var luckPerms: LuckPerms
         lateinit var languageDatabase: LanguageDatabase
-        var translator: OpenAI? = null
+        var translator: OpenAITranslator? = null
         var discordBridge: DiscordBridge? = null
         val discordBridgeLock = ReentrantReadWriteLock()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials-OG") as Essentials
@@ -57,7 +72,7 @@ internal class ChatOG : JavaPlugin() {
                     )
                     null
                 } else {
-                    OpenAI()
+                    OpenAITranslator()
                 }
             } else null
 

@@ -1,13 +1,15 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.chatsystem
 
-import java.util.UUID
+import java.util.*
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.commands.TranslateMessage
+import nl.skbotnl.chatog.translation.command.TranslateMessage
+import nl.skbotnl.chatog.util.ChatUtil
+import nl.skbotnl.chatog.util.PlayerAffix
 import org.bukkit.entity.Player
 
 internal abstract class ChatSystem {
