@@ -96,12 +96,19 @@ internal class TranslateMessage : CommandExecutor {
             return true
         }
 
-        val language = ChatOG.languageDatabase.getPlayerLanguage(player.uniqueId)
-
+        val language =
+            ChatOG.languageDatabase.getPlayerLanguage(player.uniqueId).getOrElse {
+                player.sendMessage(
+                    UtilitiesOG.trueogColorize(
+                        "${config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
+                    )
+                )
+                return true
+            }
         if (language == null) {
             player.sendMessage(
                 UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>Something went wrong while trying to get your preferred language."
+                    "${config.prefix}<reset>: <red>You have not set your preferred language yet."
                 )
             )
             return true

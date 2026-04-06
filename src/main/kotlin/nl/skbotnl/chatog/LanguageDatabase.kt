@@ -2,6 +2,7 @@ package nl.skbotnl.chatog
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionException
+import io.lettuce.core.RedisException
 import java.util.*
 import nl.skbotnl.chatog.ChatOG.Companion.config
 
@@ -19,12 +20,16 @@ internal class LanguageDatabase {
         }
     }
 
-    fun getPlayerLanguage(uuid: UUID): String? {
-        val connection = redisClient.connect()
-        val commands = connection.sync()
-        val value = commands.get("chatog:language:$uuid")
-        connection.close()
-        return value
+    fun getPlayerLanguage(uuid: UUID): Result<String?> {
+        try {
+            val connection = redisClient.connect()
+            val commands = connection.sync()
+            val value = commands.get("chatog:language:$uuid")
+            connection.close()
+            return Result.success(value)
+        } catch (e: RedisException) {
+            return Result.failure(e)
+        }
     }
 
     fun setPlayerLanguage(uuid: UUID, language: String) {
