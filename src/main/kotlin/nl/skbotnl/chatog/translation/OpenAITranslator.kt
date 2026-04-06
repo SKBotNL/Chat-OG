@@ -1,4 +1,4 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.translation
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -6,12 +6,13 @@ import java.util.logging.Level
 import net.kyori.adventure.text.Component
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-internal class OpenAI {
+internal class OpenAITranslator {
     data class Translated(val translatedFrom: String?, val translatedText: String?, val error: Component?)
 
     private var httpClient: OkHttpClient = OkHttpClient()
@@ -31,7 +32,7 @@ internal class OpenAI {
     fun translate(text: String, language: String): Translated {
         val openAICompletion =
             CompletionReq(
-                model = config.openAIModel ?: "",
+                model = config.openai.model ?: "",
                 messages =
                     listOf(
                         Message(
@@ -44,19 +45,19 @@ internal class OpenAI {
 
         val request: Request =
             Request.Builder()
-                .url(config.openAIBaseUrl + "/v1/chat/completions")
-                .header("Authorization", "Bearer ${config.openAIApiKey}")
+                .url(config.openai.baseUrl + "/v1/chat/completions")
+                .header("Authorization", "Bearer ${config.openai.apiKey}")
                 .post(gson.toJson(openAICompletion).toRequestBody("application/json".toMediaType()))
                 .build()
 
         try {
             httpClient.newCall(request).execute().use { response ->
-                val completionResp = gson.fromJson(response.body!!.string(), CompletionResp::class.java)
+                val completionResp = gson.fromJson(response.body.string(), CompletionResp::class.java)
                 val respSplit = completionResp.choices[0].message.content.split(" | ", limit = 2)
                 return Translated(respSplit[0], respSplit[1], null)
             }
         } catch (e: Exception) {
-            ChatOG.plugin.logger.log(Level.SEVERE, "Exception:", e)
+            plugin.logger.log(Level.SEVERE, "Exception:", e)
             return Translated(
                 null,
                 null,

@@ -1,13 +1,10 @@
-package nl.skbotnl.chatog
+package nl.skbotnl.chatog.util
 
 import dev.minn.jda.ktx.coroutines.await
-import java.util.HashMap
-import java.util.UUID
-import kotlin.collections.forEach
+import java.util.*
 import kotlin.concurrent.read
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
@@ -21,25 +18,14 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.blocklistManager
 import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.discordBridge
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
+import nl.skbotnl.chatog.ChatOG.Companion.plugin
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 internal object ChatUtil {
-    fun getPlayerPart(player: Player, addSuffix: Boolean): TextComponent {
-        val playerPartString = getPlayerPartString(player)
-
-        val suffix =
-            if (addSuffix) {
-                PlayerAffix.getSuffix(player.uniqueId)
-            } else {
-                ""
-            }
-
-        return UtilitiesOG.trueogColorize(legacyToMm("$playerPartString<reset>$suffix"))
-    }
-
     fun getPlayerPartString(player: Player): String {
         var playerPart = "${PlayerAffix.getPrefix(player.uniqueId)}${player.name}"
 
@@ -117,9 +103,9 @@ internal object ChatUtil {
     private val getHandle = Regex("@([a-z0-9_.]{2,32})")
 
     suspend fun convertMentions(text: String): String {
-        val guild = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!) }
+        val guild = discordBridgeLock.read { discordBridge?.getGuildById(config.discord.guildId!!) }
         if (guild == null) {
-            ChatOG.plugin.logger.warning("Guild was null")
+            plugin.logger.warning("Guild was null")
             return text
         }
 
@@ -128,7 +114,7 @@ internal object ChatUtil {
 
         getHandle.findAll(tempText).iterator().forEach { handle ->
             for (member in members) {
-                if (member.user.name.lowercase() == handle.groupValues[1].lowercase()) {
+                if (member.user.name.equals(handle.groupValues[1], ignoreCase = true)) {
                     tempText = tempText.replace(handle.value, member.asMention)
                 }
             }
@@ -234,9 +220,9 @@ internal object ChatUtil {
     fun convertEmojis(text: String): String {
         var discordMessageString = text
 
-        val guildEmojis = discordBridgeLock.read { ChatOG.discordBridge?.getGuildById(config.guildId!!)?.emojis }
+        val guildEmojis = discordBridgeLock.read { discordBridge?.getGuildById(config.discord.guildId!!)?.emojis }
         if (guildEmojis == null) {
-            ChatOG.plugin.logger.warning("Guild emojis was null")
+            plugin.logger.warning("Guild emojis was null")
         }
 
         if (guildEmojis != null) {

@@ -1,10 +1,11 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.chatsystem.command
 
-import kotlin.collections.set
+import kotlinx.coroutines.launch
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.ChatSystem
-import nl.skbotnl.chatog.ChatSystem.ChatType
+import nl.skbotnl.chatog.ChatOG.Companion.scope
+import nl.skbotnl.chatog.chatsystem.GeneralChatSystem
+import nl.skbotnl.chatog.util.PlayerExtensions.chatSystem
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -17,9 +18,9 @@ class GeneralChat : CommandExecutor {
             return true
         }
 
-        if (args == null || args.isEmpty()) {
-            if (ChatSystem.inChat[sender.uniqueId] != ChatType.GENERAL_CHAT) {
-                ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
+        if (args.isNullOrEmpty()) {
+            if (sender.chatSystem != GeneralChatSystem) {
+                sender.chatSystem = GeneralChatSystem
 
                 sender.sendMessage(
                     UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the general chat.")
@@ -32,10 +33,7 @@ class GeneralChat : CommandExecutor {
             return true
         }
 
-        val originalChat = ChatSystem.inChat[sender.uniqueId]
-        ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
-        sender.chat(args.joinToString(separator = " "))
-        if (originalChat != null) ChatSystem.inChat[sender.uniqueId] = originalChat
+        scope.launch { GeneralChatSystem.sendMessage(args.joinToString(separator = " "), sender) }
         return true
     }
 }

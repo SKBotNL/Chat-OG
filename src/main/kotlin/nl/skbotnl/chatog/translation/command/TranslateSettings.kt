@@ -1,8 +1,8 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.translation.command
 
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
+import nl.skbotnl.chatog.ChatOG.Companion.languageDatabase
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -76,7 +76,7 @@ internal class TranslateSettings : CommandExecutor {
             return true
         }
 
-        ChatOG.languageDatabase.setPlayerLanguage(sender.uniqueId, language)
+        languageDatabase.setPlayerLanguage(sender.uniqueId, language)
         sender.sendMessage(
             UtilitiesOG.trueogColorize("${config.prefix}<reset>: <green>Set language to: <white>$language.")
         )

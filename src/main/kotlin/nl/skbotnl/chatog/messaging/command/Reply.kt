@@ -1,7 +1,6 @@
-package nl.skbotnl.chatog.commands
+package nl.skbotnl.chatog.messaging.command
 
-import java.util.UUID
-import kotlin.collections.set
+import java.util.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.event.ClickEvent
@@ -9,7 +8,8 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatOG.Companion.lastMessagedMap
-import nl.skbotnl.chatog.ChatUtil
+import nl.skbotnl.chatog.translation.command.TranslateMessage
+import nl.skbotnl.chatog.util.ChatUtil
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -23,7 +23,7 @@ internal class Reply : CommandExecutor {
             return true
         }
 
-        if (args == null || args.isEmpty()) {
+        if (args.isNullOrEmpty()) {
             sender.sendMessage(
                 UtilitiesOG.trueogColorize("${config.prefix}<reset>: <red>You did not provide your message.")
             )
@@ -53,10 +53,7 @@ internal class Reply : CommandExecutor {
         TranslateMessage.pmMessages[randomUUID] =
             TranslateMessage.SentPMMessage(message, sender.uniqueId, toPlayer.uniqueId)
 
-        val messageComponent = ChatUtil.processText(message, sender)
-        if (messageComponent == null) {
-            return true
-        }
+        val messageComponent = ChatUtil.processText(message, sender) ?: return true
 
         val toSenderPrefix = "<gold>[<red>me <gold>-> <dark_red>${toPlayer.name}<gold>]<white>"
         var toSenderTextComponent =

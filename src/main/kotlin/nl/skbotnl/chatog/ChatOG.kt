@@ -7,7 +7,23 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 import kotlinx.coroutines.*
 import net.luckperms.api.LuckPerms
-import nl.skbotnl.chatog.commands.*
+import nl.skbotnl.chatog.chatsystem.command.DeveloperChat
+import nl.skbotnl.chatog.chatsystem.command.GeneralChat
+import nl.skbotnl.chatog.chatsystem.command.PremiumChat
+import nl.skbotnl.chatog.chatsystem.command.StaffChat
+import nl.skbotnl.chatog.config.Config
+import nl.skbotnl.chatog.config.ConfigModel
+import nl.skbotnl.chatog.config.command.ChatConfigReload
+import nl.skbotnl.chatog.discord.DiscordBridge
+import nl.skbotnl.chatog.messaging.command.PrivateMessage
+import nl.skbotnl.chatog.messaging.command.Reply
+import nl.skbotnl.chatog.translation.LanguageDatabase
+import nl.skbotnl.chatog.translation.OpenAITranslator
+import nl.skbotnl.chatog.translation.command.TranslateMessage
+import nl.skbotnl.chatog.translation.command.TranslateSettings
+import nl.skbotnl.chatog.translation.command.TranslateSettingsTabCompleter
+import nl.skbotnl.chatog.util.BlocklistManager
+import nl.skbotnl.chatog.util.EmojiConverter
 import org.bukkit.Bukkit
 import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
@@ -17,15 +33,17 @@ internal class ChatOG : JavaPlugin() {
         val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         lateinit var plugin: JavaPlugin
-        lateinit var config: Config
+        lateinit var config: ConfigModel
         var blocklistManager: BlocklistManager? = null
         lateinit var luckPerms: LuckPerms
         lateinit var languageDatabase: LanguageDatabase
-        var translator: OpenAI? = null
+        var translator: OpenAITranslator? = null
         var discordBridge: DiscordBridge? = null
         val discordBridgeLock = ReentrantReadWriteLock()
         var essentials = Bukkit.getServer().pluginManager.getPlugin("Essentials-OG") as Essentials
         var lastMessagedMap: MutableMap<UUID, UUID> = HashMap()
+
+        fun isConfigInitialized() = ::config.isInitialized
 
         fun isLanguageDatabaseInitialized() = ::languageDatabase.isInitialized
     }
@@ -34,30 +52,30 @@ internal class ChatOG : JavaPlugin() {
         plugin = this
 
         Companion.config =
-            Config.create()
+            Config.loadConfig()
                 ?: run {
                     Bukkit.getPluginManager().disablePlugin(this)
                     return
                 }
 
-        if (Companion.config.blocklistEnabled) {
+        if (Companion.config.blocklist.enabled) {
             blocklistManager = BlocklistManager()
         }
 
         translator =
-            if (Companion.config.openAIEnabled) {
-                if (Companion.config.openAIBaseUrl == null) {
+            if (Companion.config.openai.enabled) {
+                if (Companion.config.openai.baseUrl == null) {
                     this.logger.warning(
                         "You have enabled OpenAI translation but have not set up the base url, not enabling the translator"
                     )
                     null
-                } else if (Companion.config.openAIApiKey == null) {
+                } else if (Companion.config.openai.apiKey == null) {
                     this.logger.warning(
                         "You have enabled OpenAI translation but have not set up the api key, not enabling the translator"
                     )
                     null
                 } else {
-                    OpenAI()
+                    OpenAITranslator()
                 }
             } else null
 
@@ -97,7 +115,7 @@ internal class ChatOG : JavaPlugin() {
         this.getCommand("reply")?.setExecutor(Reply())
         this.getCommand("r")?.setExecutor(Reply())
 
-        if (Companion.config.discordEnabled) {
+        if (Companion.config.discord.enabled) {
             scope.launch { discordBridgeLock.write { discordBridge = DiscordBridge.create() } }
         }
 
@@ -106,20 +124,13 @@ internal class ChatOG : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (discordBridge != null) {
-            discordBridgeLock.read {
-                val discordBridge = discordBridge
-                val serverHasStoppedMessage =
-                    if (Companion.config.serverHasStoppedMessage == null) {
-                        this.logger.warning(
-                            "You have enabled Discord but have not set up the server has stopped message, using the default one instead"
-                        )
-                        "The server has stopped"
-                    } else {
-                        Companion.config.serverHasStoppedMessage!!
-                    }
-                discordBridge!!.sendMessageWithBot(serverHasStoppedMessage)
-                discordBridge.shutdownNow()
+        if (isConfigInitialized()) {
+            if (discordBridge != null) {
+                discordBridgeLock.read {
+                    val discordBridge = discordBridge
+                    discordBridge!!.sendMessageWithBot(Companion.config.discord.serverHasStoppedMessage)
+                    discordBridge.shutdownNow()
+                }
             }
         }
 
