@@ -1,48 +1,34 @@
 package nl.skbotnl.chatog
 
-import java.util.*
-import kotlin.concurrent.read
-import kotlinx.coroutines.launch
+import java.util.UUID
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
-import nl.skbotnl.chatog.ChatUtil.legacyToMm
 import nl.skbotnl.chatog.commands.TranslateMessage
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-internal object ChatSystem {
-    enum class ChatType {
-        GENERAL_CHAT,
-        STAFF_CHAT,
-        PREMIUM_CHAT,
-        DEVELOPER_CHAT,
-    }
+internal abstract class ChatSystem {
+    abstract val prefix: String?
+    abstract val audience: Audience
+    abstract val name: String
 
-    var inChat: MutableMap<UUID, ChatType> = HashMap()
+    abstract fun sendDiscordMessage(text: String, playerPartString: String, uuid: UUID)
 
-    fun sendMessageInStaffChat(player: Player, text: String) {
+    fun sendMessage(text: String, player: Player) {
         var playerPartString = ChatUtil.getPlayerPartString(player)
-        playerPartString = "&cSTAFF | $playerPartString"
+        playerPartString = listOfNotNull(prefix, playerPartString).joinToString(" | ")
 
-        if (config.staffDiscordEnabled) {
-            val discordMessageString = ChatUtil.convertEmojis(text)
-
-            ChatOG.scope.launch {
-                discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendStaffMessage(discordMessageString, playerPartString, player.uniqueId)
-                }
-            }
-        }
+        sendDiscordMessage(text, playerPartString, player.uniqueId)
 
         val messageComponent = ChatUtil.processText(text, player) ?: return
 
         val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
+            UtilitiesOG.trueogColorize(
+                ChatUtil.legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}")
+            )
 
         var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
         textComponent =
@@ -61,96 +47,8 @@ internal object ChatSystem {
 
         TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
 
-        for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("chat-og.staff")) {
-                p.sendMessage(textComponent)
-            }
-        }
-    }
+        audience.sendMessage(textComponent)
 
-    fun sendMessageInPremiumChat(player: Player, text: String) {
-        var playerPartString = ChatUtil.getPlayerPartString(player)
-        playerPartString = "&aPREMIUM | $playerPartString"
-
-        if (config.premiumDiscordEnabled) {
-            val discordMessageString = ChatUtil.convertEmojis(text)
-
-            ChatOG.scope.launch {
-                discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendPremiumMessage(discordMessageString, playerPartString, player.uniqueId)
-                }
-            }
-        }
-
-        val messageComponent = ChatUtil.processText(text, player) ?: return
-
-        val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
-
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
-        textComponent =
-            textComponent.hoverEvent(
-                HoverEvent.hoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
-                )
-            )
-
-        val randomUUID = UUID.randomUUID()
-        textComponent =
-            textComponent.clickEvent(
-                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
-            )
-
-        TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
-
-        for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("chat-og.premium")) {
-                p.sendMessage(textComponent)
-            }
-        }
-    }
-
-    fun sendMessageInDeveloperChat(player: Player, text: String) {
-        var playerPartString = ChatUtil.getPlayerPartString(player)
-        playerPartString = "<aqua>DEVELOPER | $playerPartString"
-
-        if (config.developerDiscordEnabled) {
-            val discordMessageString = ChatUtil.convertEmojis(text)
-
-            ChatOG.scope.launch {
-                discordBridgeLock.read {
-                    ChatOG.discordBridge?.sendDeveloperMessage(discordMessageString, playerPartString, player.uniqueId)
-                }
-            }
-        }
-
-        val messageComponent = ChatUtil.processText(text, player) ?: return
-
-        val chatComponent =
-            UtilitiesOG.trueogColorize(legacyToMm("$playerPartString <reset>${PlayerAffix.getSuffix(player.uniqueId)}"))
-
-        var textComponent = Component.join(JoinConfiguration.noSeparators(), chatComponent, messageComponent)
-        textComponent =
-            textComponent.hoverEvent(
-                HoverEvent.hoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    UtilitiesOG.trueogColorize("<green>Click to translate this message"),
-                )
-            )
-
-        val randomUUID = UUID.randomUUID()
-        textComponent =
-            textComponent.clickEvent(
-                ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
-            )
-
-        TranslateMessage.chatMessages[randomUUID] = TranslateMessage.SentChatMessage(text, player)
-
-        for (p in Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("chat-og.developer")) {
-                p.sendMessage(textComponent)
-            }
-        }
+        ChatUtil.dingForMentions(player.uniqueId, messageComponent)
     }
 }

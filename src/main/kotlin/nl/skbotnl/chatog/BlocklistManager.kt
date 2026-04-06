@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class BlocklistManager {
+internal class BlocklistManager {
     private val lock = Any()
     private val blockList = mutableListOf<String>()
 

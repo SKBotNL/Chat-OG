@@ -2,26 +2,21 @@ package nl.skbotnl.chatog
 
 import io.papermc.paper.advancement.AdvancementDisplay.Frame.*
 import io.papermc.paper.event.player.AsyncChatEvent
-import java.util.*
 import kotlin.concurrent.read
 import kotlinx.coroutines.launch
 import me.clip.placeholderapi.PlaceholderAPI
 import net.ess3.api.events.VanishStatusChangeEvent
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TranslatableComponent
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trueog.utilitiesog.UtilitiesOG
 import nl.skbotnl.chatog.ChatOG.Companion.config
 import nl.skbotnl.chatog.ChatOG.Companion.discordBridgeLock
-import nl.skbotnl.chatog.ChatSystem.ChatType
 import nl.skbotnl.chatog.ChatUtil.legacyToMm
-import nl.skbotnl.chatog.commands.TranslateMessage
+import nl.skbotnl.chatog.PlayerExtensions.chatSystem
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -166,54 +161,7 @@ internal class Events : Listener {
 
         ChatOG.scope.launch {
             val eventMessage = event.message() as TextComponent
-
-            when (ChatSystem.inChat[event.player.uniqueId]) {
-                ChatType.STAFF_CHAT -> {
-                    ChatSystem.sendMessageInStaffChat(event.player, eventMessage.content())
-                    return@launch
-                }
-
-                ChatType.PREMIUM_CHAT -> {
-                    ChatSystem.sendMessageInPremiumChat(event.player, eventMessage.content())
-                    return@launch
-                }
-
-                ChatType.DEVELOPER_CHAT -> {
-                    ChatSystem.sendMessageInDeveloperChat(event.player, eventMessage.content())
-                    return@launch
-                }
-
-                else -> {}
-            }
-
-            val discordMessageString = ChatUtil.convertEmojis(eventMessage.content())
-            launch { discordBridgeLock.read { ChatOG.discordBridge?.sendMessage(discordMessageString, event.player) } }
-
-            val playerPart = ChatUtil.getPlayerPart(event.player, true)
-
-            val messageComponent = ChatUtil.processText(eventMessage.content(), event.player) ?: return@launch
-
-            var textComponent = Component.join(JoinConfiguration.noSeparators(), playerPart, messageComponent)
-            textComponent =
-                textComponent.hoverEvent(
-                    HoverEvent.hoverEvent(
-                        HoverEvent.Action.SHOW_TEXT,
-                        UtilitiesOG.trueogColorize("<green>Click to translate this message"),
-                    )
-                )
-
-            val randomUUID = UUID.randomUUID()
-            textComponent =
-                textComponent.clickEvent(
-                    ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/translatemessage $randomUUID 1")
-                )
-
-            event.viewers().forEach { it.sendMessage(textComponent) }
-
-            ChatUtil.dingForMentions(event.player.uniqueId, messageComponent)
-
-            TranslateMessage.chatMessages[randomUUID] =
-                TranslateMessage.SentChatMessage(eventMessage.content(), event.player)
+            event.player.chatSystem.sendMessage(eventMessage.content(), event.player)
         }
     }
 

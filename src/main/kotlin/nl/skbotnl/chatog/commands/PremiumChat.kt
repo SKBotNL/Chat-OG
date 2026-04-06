@@ -1,46 +1,8 @@
 package nl.skbotnl.chatog.commands
 
-import net.trueog.utilitiesog.UtilitiesOG
-import nl.skbotnl.chatog.ChatOG.Companion.config
-import nl.skbotnl.chatog.ChatSystem
-import nl.skbotnl.chatog.ChatSystem.ChatType
-import org.bukkit.command.Command
-import org.bukkit.command.CommandExecutor
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
+import nl.skbotnl.chatog.chatsystem.PremiumChatSystem
 
-internal class PremiumChat : CommandExecutor {
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
-        if (sender !is Player) {
-            sender.sendMessage("You can only execute this command as a player.")
-            return true
-        }
-        if (!sender.hasPermission("chat-og.premium")) {
-            sender.sendMessage(
-                UtilitiesOG.trueogColorize(
-                    "${config.prefix}<reset>: <red>You do not have permission to run this command."
-                )
-            )
-            return true
-        }
-        if (args == null || args.isEmpty()) {
-            if (ChatSystem.inChat[sender.uniqueId] == ChatType.PREMIUM_CHAT) {
-                ChatSystem.inChat[sender.uniqueId] = ChatType.GENERAL_CHAT
-
-                sender.sendMessage(
-                    UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the general chat.")
-                )
-                return true
-            }
-            ChatSystem.inChat[sender.uniqueId] = ChatType.PREMIUM_CHAT
-            sender.sendMessage(
-                UtilitiesOG.trueogColorize("${config.prefix}<reset>: You are now talking in the premium chat.")
-            )
-            return true
-        }
-
-        ChatSystem.sendMessageInPremiumChat(sender, args.joinToString(separator = " "))
-
-        return true
-    }
+internal class PremiumChat : ChatSystemChat<PremiumChatSystem>() {
+    override val chatSystem = PremiumChatSystem
+    override val permission = "chat-og.premium"
 }
