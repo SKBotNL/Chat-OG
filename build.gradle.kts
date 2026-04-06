@@ -10,7 +10,7 @@ plugins {
     kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
 }
 
-/* --------------------------- JDK / Kotlin ---------------------------- */
+/* ---------------------------- Java / Kotlin -------------------------- */
 java {
     sourceCompatibility = JavaVersion.VERSION_17 // Compile with JDK 17 compatibility.
     toolchain { // Select Java toolchain.
@@ -27,7 +27,7 @@ val commitHash: String =
 
 group = "nl.skbotnl.chatog" // Declare bundle identifier.
 
-val apiVersion = "1.19" // Declare minecraft server target version.
+val apiVersion = "1.19" // Declare plugin version (will be in .jar).
 
 version = "$apiVersion-$commitHash" // Declare plugin version (will be in .jar).
 
@@ -93,7 +93,7 @@ tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     exclude("natives/**")
     mergeServiceFiles()
-    minimize()
+    minimize { exclude(dependency("org.slf4j:slf4j-nop:.*")) }
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
@@ -102,8 +102,6 @@ tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-parameters") // Enable reflection for java code.
-    options.isFork = true // Run javac in its own process.
     options.compilerArgs.add("-Xlint:deprecation") // Trigger deprecation warning messages.
     options.encoding = "UTF-8" // Use UTF-8 file encoding.
 }
